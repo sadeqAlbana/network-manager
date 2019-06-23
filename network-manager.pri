@@ -1,3 +1,4 @@
+QT += network
 INCLUDEPATH += $$PWD/src
 SOURCES += \
     $$PWD/src/networkmanager.cpp \

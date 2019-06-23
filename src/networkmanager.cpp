@@ -2,8 +2,9 @@
 #include <QNetworkAccessManager>
 #include <QJsonDocument>
 #include <QJsonObject>
-NetworkManager::NetworkManager()
+NetworkManager::NetworkManager(QObject *parent) : QObject (parent)
 {
+    QObject::connect(&m_manager,&QNetworkAccessManager::finished,this,&NetworkManager::routeReply);
 
 }
 
@@ -74,5 +75,13 @@ void NetworkManager::setJwtToken(QString token)
 {
     _jwtToken=token;
     _rawToken.append(_jwtToken);
+}
+
+void NetworkManager::routeReply(QNetworkReply *reply)
+{
+    NetworkResponse *res=new NetworkResponse(reply);
+    router.route(res);
+    reply->deleteLater();
+    delete res;
 }
 

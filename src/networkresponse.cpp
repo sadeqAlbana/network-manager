@@ -42,7 +42,7 @@ QByteArray NetworkResponse::binaryData() const
 
 bool NetworkResponse::isJson()
 {
-    return _reply->header(QNetworkRequest::ContentTypeHeader)=="application/json";
+    return _reply->header(QNetworkRequest::ContentTypeHeader).toString().contains("application/json");
 }
 
 QString NetworkResponse::contentType() const

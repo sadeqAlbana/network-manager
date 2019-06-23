@@ -6,10 +6,12 @@
 #include "QNetworkReply"
 #include "networkresponse.h"
 #include <QSettings>
-class NetworkManager
+#include <QObject>
+class NetworkManager : public QObject
 {
+    Q_OBJECT
 public:
-    NetworkManager();
+    NetworkManager(QObject *parent=nullptr);
     QNetworkAccessManager* manager(){return &m_manager;}
     NetworkManager *get(QString url);
     NetworkManager *post(QString url, QJsonObject object);
@@ -41,6 +43,8 @@ private:
     Router router;
     bool _usingBaseUrl=false;
     //QUrl base;
+
+     void routeReply(QNetworkReply *reply);
 
 };
 
