@@ -17,8 +17,9 @@ NetworkManager* NetworkManager::get(QString url)
     _lastRequest=req;
     _lastOperation=QNetworkAccessManager::GetOperation;
 
-    if(!_jwtToken.isEmpty())
-        req.setRawHeader(QByteArray("Authorization"),_rawToken);
+    for(const QByteArray &header : _rawHeaders.keys()){
+        req.setRawHeader(header,_rawHeaders[header]);
+    }
 
     manager()->get(req);
     return this;
@@ -38,8 +39,9 @@ NetworkManager* NetworkManager::post(QString url, QJsonObject object)
     req.setUrl(requestUrl);
     req.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    if(!_jwtToken.isEmpty())
-        req.setRawHeader(QByteArray("Authorization"),_rawToken);
+    for(const QByteArray &header : _rawHeaders.keys()){
+        req.setRawHeader(header,_rawHeaders[header]);
+    }
 
     manager()->post(req,doc.toJson());
     return this;
@@ -57,8 +59,9 @@ NetworkManager *NetworkManager::put(QString url, QJsonObject object)
     req.setUrl(requestUrl);
     req.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    if(!_jwtToken.isEmpty())
-        req.setRawHeader(QByteArray("Authorization"),_rawToken);
+    for(const QByteArray &header : _rawHeaders.keys()){
+        req.setRawHeader(header,_rawHeaders[header]);
+    }
 
     manager()->put(req,doc.toJson());
     return this;
@@ -69,6 +72,11 @@ NetworkManager *NetworkManager::put(QString url, QJsonObject object)
 void NetworkManager::subcribe(Callback cb)
 {
     router.registerRoute(_lastOperation,_lastUrl,cb);
+}
+
+void NetworkManager::setRawHeader(const QByteArray &headerName, const QByteArray &headerValue)
+{
+    _rawHeaders.insert(headerName,headerValue);
 }
 
 void NetworkManager::setJwtToken(QString token)

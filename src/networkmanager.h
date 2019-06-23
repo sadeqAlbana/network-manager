@@ -26,6 +26,7 @@ public:
 
     void setBaseUrl(QString url){baseUrl=url; _usingBaseUrl=true;}
     bool usingBaseUrl(){return _usingBaseUrl;}
+    void setRawHeader(const QByteArray &headerName, const QByteArray &headerValue);
 
 protected:
     void setJwtToken(QString token);
@@ -45,6 +46,8 @@ private:
     //QUrl base;
 
      void routeReply(QNetworkReply *reply);
+
+     QMap<QByteArray,QByteArray> _rawHeaders;
 
 };
 
