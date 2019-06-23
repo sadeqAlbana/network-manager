@@ -7,6 +7,9 @@
 #include "networkresponse.h"
 #include <QSettings>
 #include <QObject>
+
+using RawHeaderPair = QPair<QByteArray,QByteArray>;
+using RawHeaderPairs = QList<RawHeaderPair>;
 class NetworkManager : public QObject
 {
     Q_OBJECT
@@ -27,6 +30,7 @@ public:
     void setBaseUrl(QString url){baseUrl=url; _usingBaseUrl=true;}
     bool usingBaseUrl(){return _usingBaseUrl;}
     void setRawHeader(const QByteArray &headerName, const QByteArray &headerValue);
+    void removeRawHeader(const QByteArray &headerName);
 
 protected:
     void setJwtToken(QString token);
@@ -39,6 +43,7 @@ private:
     QString _lastUrl;
     QNetworkAccessManager::Operation _lastOperation;
     QNetworkRequest _lastRequest;
+    RawHeaderPairs _permanentRawHeaders;
     QString _jwtToken;
     QByteArray _rawToken;
     Router router;
@@ -47,7 +52,6 @@ private:
 
      void routeReply(QNetworkReply *reply);
 
-     QMap<QByteArray,QByteArray> _rawHeaders;
 
 };
 

@@ -17,8 +17,8 @@ NetworkManager* NetworkManager::get(QString url)
     _lastRequest=req;
     _lastOperation=QNetworkAccessManager::GetOperation;
 
-    for(const QByteArray &header : _rawHeaders.keys()){
-        req.setRawHeader(header,_rawHeaders[header]);
+    for (const RawHeaderPair & pair : _permanentRawHeaders) {
+        req.setRawHeader(pair.first,pair.second);
     }
 
     manager()->get(req);
@@ -28,22 +28,22 @@ NetworkManager* NetworkManager::get(QString url)
 
 NetworkManager* NetworkManager::post(QString url, QJsonObject object)
 {
-    QNetworkRequest req;
+    QNetworkRequest request;
 
     QString requestUrl= usingBaseUrl() ? baseUrl+url : url;
     _lastUrl=requestUrl;
-    _lastRequest=req;
+    _lastRequest=request;
     _lastOperation=QNetworkAccessManager::PostOperation;
     QJsonDocument doc;
     doc.setObject(object);  
-    req.setUrl(requestUrl);
-    req.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
+    request.setUrl(requestUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    for(const QByteArray &header : _rawHeaders.keys()){
-        req.setRawHeader(header,_rawHeaders[header]);
+    for (const RawHeaderPair & pair : _permanentRawHeaders) {
+        request.setRawHeader(pair.first,pair.second);
     }
 
-    manager()->post(req,doc.toJson());
+    manager()->post(request,doc.toJson());
     return this;
 }
 
@@ -59,10 +59,9 @@ NetworkManager *NetworkManager::put(QString url, QJsonObject object)
     req.setUrl(requestUrl);
     req.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    for(const QByteArray &header : _rawHeaders.keys()){
-        req.setRawHeader(header,_rawHeaders[header]);
+    for (const RawHeaderPair & pair : _permanentRawHeaders) {
+        req.setRawHeader(pair.first,pair.second);
     }
-
     manager()->put(req,doc.toJson());
     return this;
 }
@@ -76,7 +75,18 @@ void NetworkManager::subcribe(Callback cb)
 
 void NetworkManager::setRawHeader(const QByteArray &headerName, const QByteArray &headerValue)
 {
-    _rawHeaders.insert(headerName,headerValue);
+    _permanentRawHeaders << RawHeaderPair(headerName,headerValue);
+}
+
+void NetworkManager::removeRawHeader(const QByteArray &headerName)
+{
+    for (const RawHeaderPair &pair : _permanentRawHeaders ) {
+        if(pair.first==headerName)
+        {
+            _permanentRawHeaders.removeOne(pair);
+            return;
+        }
+    }
 }
 
 void NetworkManager::setJwtToken(QString token)
