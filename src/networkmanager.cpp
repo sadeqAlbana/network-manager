@@ -13,14 +13,14 @@ NetworkManager* NetworkManager::get(QString url)
     QNetworkRequest req;
     QString requestUrl= usingBaseUrl() ? baseUrl+url : url;
     req.setUrl(requestUrl);
-    _lastUrl=requestUrl;
-    _lastRequest=req;
-    _lastOperation=QNetworkAccessManager::GetOperation;
+    setLastUrl(requestUrl);
+    setLastOperation(QNetworkAccessManager::GetOperation);
 
-    for (const RawHeaderPair & pair : _permanentRawHeaders) {
-        req.setRawHeader(pair.first,pair.second);
+    for (const QByteArray & headerName : permanentRawHeaders()) {
+        req.setRawHeader(headerName,permanentRawHeaders()[headerName]);
     }
 
+    setLastRequest(req);
     manager()->get(req);
     return this;
 }
@@ -31,18 +31,18 @@ NetworkManager* NetworkManager::post(QString url, QJsonObject object)
     QNetworkRequest request;
 
     QString requestUrl= usingBaseUrl() ? baseUrl+url : url;
-    _lastUrl=requestUrl;
-    _lastRequest=request;
-    _lastOperation=QNetworkAccessManager::PostOperation;
+    request.setUrl(requestUrl);
+    setLastUrl(requestUrl);
+    setLastOperation(QNetworkAccessManager::PostOperation);
     QJsonDocument doc;
     doc.setObject(object);  
     request.setUrl(requestUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    for (const RawHeaderPair & pair : _permanentRawHeaders) {
-        request.setRawHeader(pair.first,pair.second);
+    for (const QByteArray & headerName : permanentRawHeaders()) {
+        request.setRawHeader(headerName,permanentRawHeaders()[headerName]);
     }
-
+    setLastRequest(request);
     manager()->post(request,doc.toJson());
     return this;
 }
@@ -51,17 +51,18 @@ NetworkManager *NetworkManager::put(QString url, QJsonObject object)
 {
     QNetworkRequest req;
     QString requestUrl= usingBaseUrl() ? baseUrl+url : url;
-    _lastUrl=requestUrl;
-    _lastRequest=req;
-    _lastOperation=QNetworkAccessManager::PutOperation;
+    req.setUrl(requestUrl);
+    setLastUrl(requestUrl);
+    setLastOperation(QNetworkAccessManager::PutOperation);
     QJsonDocument doc;
     doc.setObject(object);
     req.setUrl(requestUrl);
     req.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
-    for (const RawHeaderPair & pair : _permanentRawHeaders) {
-        req.setRawHeader(pair.first,pair.second);
+    for (const QByteArray & headerName : permanentRawHeaders()) {
+        req.setRawHeader(headerName,permanentRawHeaders()[headerName]);
     }
+    setLastRequest(req);
     manager()->put(req,doc.toJson());
     return this;
 }
@@ -75,31 +76,24 @@ void NetworkManager::subcribe(Callback cb)
 
 void NetworkManager::setRawHeader(const QByteArray &headerName, const QByteArray &headerValue)
 {
-    _permanentRawHeaders << RawHeaderPair(headerName,headerValue);
+    permanentRawHeaders()[headerName]=headerValue;
 }
 
 void NetworkManager::removeRawHeader(const QByteArray &headerName)
 {
-    for (const RawHeaderPair &pair : _permanentRawHeaders ) {
-        if(pair.first==headerName)
-        {
-            _permanentRawHeaders.removeOne(pair);
-            return;
-        }
-    }
+    permanentRawHeaders().remove(headerName);
 }
 
-void NetworkManager::setJwtToken(QString token)
+void NetworkManager::setJwtToken(QByteArray token)
 {
-    _jwtToken=token;
-    _rawToken.append(_jwtToken);
+    permanentRawHeaders()["authorization"]=token;
 }
 
 void NetworkManager::routeReply(QNetworkReply *reply)
 {
-    NetworkResponse *res=new NetworkResponse(reply);
-    router.route(res);
+    NetworkResponse *response=new NetworkResponse(reply);
+    router.route(response);
     reply->deleteLater();
-    delete res;
+    delete response;
 }
 

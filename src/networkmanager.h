@@ -8,14 +8,14 @@
 #include <QSettings>
 #include <QObject>
 
-using RawHeaderPair = QPair<QByteArray,QByteArray>;
-using RawHeaderPairs = QList<RawHeaderPair>;
+
+using HeadersMap= QMap<QByteArray,QByteArray>;
 class NetworkManager : public QObject
 {
     Q_OBJECT
 public:
     NetworkManager(QObject *parent=nullptr);
-    QNetworkAccessManager* manager(){return &m_manager;}
+    inline QNetworkAccessManager* manager(){return &m_manager;}
     NetworkManager *get(QString url);
     NetworkManager *post(QString url, QJsonObject object);
     NetworkManager * put (QString url, QJsonObject object);
@@ -33,8 +33,8 @@ public:
     void removeRawHeader(const QByteArray &headerName);
 
 protected:
-    void setJwtToken(QString token);
-    QString jwtToken(){return _jwtToken;}
+    void setJwtToken(QByteArray token);
+    QString jwtToken(){return _permanentRawHeaders["authorization"];}
     QSettings settings;
 
 private:
@@ -43,14 +43,16 @@ private:
     QString _lastUrl;
     QNetworkAccessManager::Operation _lastOperation;
     QNetworkRequest _lastRequest;
-    RawHeaderPairs _permanentRawHeaders;
-    QString _jwtToken;
-    QByteArray _rawToken;
+    HeadersMap _permanentRawHeaders;
     Router router;
     bool _usingBaseUrl=false;
     //QUrl base;
 
      void routeReply(QNetworkReply *reply);
+     inline void setLastRequest(const QNetworkRequest &request){_lastRequest=request;}
+     inline void setLastUrl(const QString &url){_lastUrl=url;}
+     inline void setLastOperation(const QNetworkAccessManager::Operation &operation){_lastOperation=operation;}
+     HeadersMap & permanentRawHeaders(){return _permanentRawHeaders;}
 
 
 };
