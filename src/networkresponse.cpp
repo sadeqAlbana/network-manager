@@ -2,15 +2,15 @@
 
 NetworkResponse::NetworkResponse(QNetworkReply *reply)
 {
-    _reply=reply;
-    _data=reply->readAll();
+    setNetworkReply(reply);
+    setBinaryData(networkReply()->readAll());
     if(isJson())
     {
-         _document=QJsonDocument::fromJson(_data);
-        if(_document.isObject())
-            _object=_document.object();
-        else if(_document.isArray())
-            _array=_document.array();
+         setJsonDocument(QJsonDocument::fromJson(binaryData()));
+        if(jsonDocument().isObject())
+        setJsonObject(jsonDocument().object());
+        else if(jsonDocument().isArray())
+            setJsonArray(jsonDocument().array());
     }
 
 }
@@ -22,32 +22,29 @@ NetworkResponse::~NetworkResponse()
 
 QJsonValue NetworkResponse::json(QString key)
 {
-    return _object.value(key);
+    return jsonObject().value(key);
 }
 
 QJsonValue NetworkResponse::json()
 {
-    if(_document.isObject())
-        return _object;
-    else if(_document.isArray())
-        return _array;
+    if(jsonDocument().isObject())
+        return jsonObject();
+    else if(jsonDocument().isArray())
+        return jsonArray();
     else
         return QJsonValue();
 }
 
-QByteArray NetworkResponse::binaryData() const
-{
-    return _data;
-}
+
 
 bool NetworkResponse::isJson()
 {
-    return _reply->header(QNetworkRequest::ContentTypeHeader).toString().contains("application/json");
+    return networkReply()->header(QNetworkRequest::ContentTypeHeader).toString().contains("application/json");
 }
 
 QString NetworkResponse::contentType() const
 {
-    return _reply->rawHeader("content-type");
+    return networkReply()->rawHeader("content-type");
 }
 
 

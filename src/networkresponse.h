@@ -17,7 +17,7 @@ public:
     ~NetworkResponse();
     QJsonValue json(QString key);
     QJsonValue json();
-    QByteArray binaryData() const;
+    QByteArray binaryData() const{return _data;}
 
     bool isJson();
     QString contentType() const;
@@ -28,6 +28,9 @@ public:
     QVariant status() const {return _reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);}
     QNetworkReply *networkReply() const {return _reply;}
     friend QDebug operator <<(QDebug dbg, const NetworkResponse &res);
+    const QJsonDocument& jsonDocument() const{return _document;}
+    const QJsonObject& jsonObject() const {return _object;}
+    const QJsonArray& jsonArray() const {return _array;}
 
 private:
     QNetworkReply *_reply;
@@ -35,6 +38,12 @@ private:
     QJsonObject _object;
     QJsonArray _array;
     QJsonDocument _document;
+    void setNetworkReply(QNetworkReply *reply){_reply=reply;}
+    void setBinaryData(const QByteArray &data){_data=data;}
+    void setJsonObject(const QJsonObject &object){_object=object;}
+    void setJsonArray(const QJsonArray &array){_array=array;}
+    void setJsonDocument(const QJsonDocument &document){_document=document;}
+
 };
 
 typedef NetworkResponse Response;
