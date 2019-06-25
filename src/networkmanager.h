@@ -10,6 +10,7 @@
 
 
 using HeadersMap= QMap<QByteArray,QByteArray>;
+
 class NetworkManager : public QObject
 {
     Q_OBJECT
@@ -24,7 +25,7 @@ public:
     template <class T>
     void subcribe(T *instance,void (T::*ptr)(NetworkResponse *))
     {
-        router.registerRoute(_lastOperation,_lastUrl,instance,ptr);
+        router.registerRoute(lastOperation(),lastUrl(),instance,ptr);
     }
 
     void setBaseUrl(QString url){baseUrl=url; _usingBaseUrl=true;}
@@ -34,7 +35,7 @@ public:
 
 protected:
     void setJwtToken(QByteArray token);
-    QString jwtToken(){return _permanentRawHeaders["authorization"];}
+    QString jwtToken(){return permanentRawHeaders()["authorization"];}
     QSettings settings;
 
 private:
@@ -46,13 +47,14 @@ private:
     HeadersMap _permanentRawHeaders;
     Router router;
     bool _usingBaseUrl=false;
-    //QUrl base;
 
-     void routeReply(QNetworkReply *reply);
-     inline void setLastRequest(const QNetworkRequest &request){_lastRequest=request;}
-     inline void setLastUrl(const QString &url){_lastUrl=url;}
-     inline void setLastOperation(const QNetworkAccessManager::Operation &operation){_lastOperation=operation;}
-     HeadersMap & permanentRawHeaders(){return _permanentRawHeaders;}
+    void routeReply(QNetworkReply *reply);
+    inline void setLastRequest(const QNetworkRequest &request){_lastRequest=request;}
+    inline void setLastUrl(const QString &url){_lastUrl=url;}
+    inline void setLastOperation(const QNetworkAccessManager::Operation &operation){_lastOperation=operation;}
+    QNetworkAccessManager::Operation lastOperation() const {return _lastOperation;}
+    QString lastUrl() const {return _lastUrl;}
+    HeadersMap & permanentRawHeaders(){return _permanentRawHeaders;}
 
 
 };
