@@ -10,3 +10,9 @@ HEADERS += \
     $$PWD/src/networkmanager.h \
     $$PWD/src/networkresponse.h \
     $$PWD/src/router.h
+
+
+unix {
+    target.path = /usr/lib
+    INSTALLS += target
+}

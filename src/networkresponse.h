@@ -26,7 +26,7 @@ public:
     QNetworkAccessManager::Operation operation() const {return _reply->operation();}
     QByteArray rawHeader(const QByteArray &headerName) const{return _reply->rawHeader(headerName);}
     QVariant attribute(QNetworkRequest::Attribute code) const{return _reply->attribute(code);}
-    QVariant status() const {return _reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);}
+    int status() const {return _reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();}
     QNetworkReply *networkReply() const {return _reply;}
     friend QDebug operator <<(QDebug dbg, const NetworkResponse &res);
     const QJsonDocument& jsonDocument() const{return _document;}

@@ -11,6 +11,8 @@ NetworkManager::NetworkManager(QObject *parent) : QObject (parent)
 NetworkManager* NetworkManager::get(QString url)
 {
     QNetworkRequest req;
+    req.setAttribute(QNetworkRequest::RedirectionTargetAttribute,true);
+    req.setAttribute(QNetworkRequest::RedirectPolicyAttribute,QNetworkRequest::SameOriginRedirectPolicy);
     QString requestUrl= usingBaseUrl() ? baseUrl+url : url;
     req.setUrl(requestUrl);
     setLastUrl(requestUrl);
@@ -22,6 +24,7 @@ NetworkManager* NetworkManager::get(QString url)
 
     setLastRequest(req);
     manager()->get(req);
+
     return this;
 }
 
@@ -91,6 +94,7 @@ void NetworkManager::setJwtToken(QByteArray token)
 
 void NetworkManager::routeReply(QNetworkReply *reply)
 {
+
     NetworkResponse *response=new NetworkResponse(reply);
     router.route(response);
     reply->deleteLater();
