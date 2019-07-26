@@ -9,7 +9,7 @@
 #include <QJsonValue>
 #include <QString>
 #include <QDebug>
-
+#include <QImage>
 class NetworkResponse
 {
 public:
@@ -20,6 +20,7 @@ public:
     QByteArray binaryData() const{return _data;}
 
     bool isJson();
+    bool isImage();
     QString contentType() const;
     QUrl url(){return _reply->url();}
     QNetworkAccessManager::Operation operation() const {return _reply->operation();}
@@ -31,6 +32,7 @@ public:
     const QJsonDocument& jsonDocument() const{return _document;}
     const QJsonObject& jsonObject() const {return _object;}
     const QJsonArray& jsonArray() const {return _array;}
+    QImage image() const {return _image;}
 
 private:
     QNetworkReply *_reply;
@@ -38,11 +40,13 @@ private:
     QJsonObject _object;
     QJsonArray _array;
     QJsonDocument _document;
+    QImage _image;
     void setNetworkReply(QNetworkReply *reply){_reply=reply;}
     void setBinaryData(const QByteArray &data){_data=data;}
     void setJsonObject(const QJsonObject &object){_object=object;}
     void setJsonArray(const QJsonArray &array){_array=array;}
     void setJsonDocument(const QJsonDocument &document){_document=document;}
+
 
 };
 

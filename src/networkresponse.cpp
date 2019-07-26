@@ -12,6 +12,10 @@ NetworkResponse::NetworkResponse(QNetworkReply *reply)
         else if(jsonDocument().isArray())
             setJsonArray(jsonDocument().array());
     }
+    else if(isImage())
+    {
+        _image=QImage::fromData(binaryData());
+    }
 
 }
 
@@ -40,6 +44,11 @@ QJsonValue NetworkResponse::json()
 bool NetworkResponse::isJson()
 {
     return networkReply()->header(QNetworkRequest::ContentTypeHeader).toString().contains("application/json");
+}
+
+bool NetworkResponse::isImage()
+{
+    return networkReply()->header(QNetworkRequest::ContentTypeHeader).toString().contains("image/x-icon");
 }
 
 QString NetworkResponse::contentType() const
