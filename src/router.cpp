@@ -9,6 +9,7 @@ Router::Router()
 void Router::route(NetworkResponse *reply)
 {
     MemberCallbacks *callBacks;
+
     QNetworkAccessManager::Operation op=reply->operation();
     switch(op)
     {
@@ -20,9 +21,10 @@ void Router::route(NetworkResponse *reply)
     default: qDebug()<<"invalid operation";                               return;
     }
 
-    if(callBacks->contains(reply->url().toString()))
+    QString url=reply->networkReply()->request().url().toString(); //url should be the original request url in case of url redirection !
+    if(callBacks->contains(url))
     {
-        MemberCallbackInfo cb= callBacks->value(reply->url().toString());
+        MemberCallbackInfo cb= callBacks->value(url);
         cb.instance ? (cb.instance->*cb.ptr)(reply) : cb.callback(reply);
     }
 }
