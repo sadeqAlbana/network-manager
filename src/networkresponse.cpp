@@ -62,6 +62,13 @@ QString NetworkResponse::contentType() const
 }
 
 
+
+NetworkResponse::operator bool()
+{
+    return !error();
+}
+
+
 QDebug operator <<(QDebug dbg, const NetworkResponse &res)
 {
         QDebugStateSaver saver(dbg);

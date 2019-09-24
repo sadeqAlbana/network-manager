@@ -35,6 +35,8 @@ public:
     const QJsonArray& jsonArray() const {return _array;}
     QImage image() const {return _image;}
 
+    operator bool();
+
 private:
     QNetworkReply *_reply;
     QByteArray _data;

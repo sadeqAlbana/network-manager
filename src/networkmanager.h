@@ -25,7 +25,7 @@ public:
     template <class T>
     void subcribe(T *instance,void (T::*ptr)(NetworkResponse *))
     {
-        router.registerRoute(lastOperation(),lastUrl(),instance,ptr);
+        router.registerRoute(_lastReply,instance,ptr);
     }
 
     void setBaseUrl(QString url){baseUrl=url; _usingBaseUrl=true;}
@@ -41,19 +41,17 @@ protected:
 private:
     QNetworkAccessManager m_manager;
     QString baseUrl;
-    QString _lastUrl;
     QNetworkAccessManager::Operation _lastOperation;
-    QNetworkRequest _lastRequest;
+    QNetworkReply* _lastReply;
     HeadersMap _permanentRawHeaders;
     Router router;
     bool _usingBaseUrl=false;
 
     void routeReply(QNetworkReply *reply);
-    inline void setLastRequest(const QNetworkRequest &request){_lastRequest=request;}
-    inline void setLastUrl(const QString &url){_lastUrl=url;}
+
     inline void setLastOperation(const QNetworkAccessManager::Operation &operation){_lastOperation=operation;}
+    inline void setLastReply(QNetworkReply *reply){_lastReply=reply;}
     QNetworkAccessManager::Operation lastOperation() const {return _lastOperation;}
-    QString lastUrl() const {return _lastUrl;}
     HeadersMap & permanentRawHeaders(){return _permanentRawHeaders;}
 
 

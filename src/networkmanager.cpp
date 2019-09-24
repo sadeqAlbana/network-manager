@@ -15,15 +15,13 @@ NetworkManager* NetworkManager::get(QString url)
     req.setAttribute(QNetworkRequest::RedirectPolicyAttribute,QNetworkRequest::SameOriginRedirectPolicy);
     QString requestUrl= usingBaseUrl() ? baseUrl+url : url;
     req.setUrl(requestUrl);
-    setLastUrl(requestUrl);
     setLastOperation(QNetworkAccessManager::GetOperation);
 
     for (const QByteArray & headerName : permanentRawHeaders()) {
         req.setRawHeader(headerName,permanentRawHeaders()[headerName]);
     }
 
-    setLastRequest(req);
-    manager()->get(req);
+    setLastReply(manager()->get(req));
 
     return this;
 }
@@ -35,7 +33,6 @@ NetworkManager* NetworkManager::post(QString url, QJsonObject object)
 
     QString requestUrl= usingBaseUrl() ? baseUrl+url : url;
     request.setUrl(requestUrl);
-    setLastUrl(requestUrl);
     setLastOperation(QNetworkAccessManager::PostOperation);
     QJsonDocument doc;
     doc.setObject(object);  
@@ -45,8 +42,7 @@ NetworkManager* NetworkManager::post(QString url, QJsonObject object)
     for (const QByteArray & headerName : permanentRawHeaders()) {
         request.setRawHeader(headerName,permanentRawHeaders()[headerName]);
     }
-    setLastRequest(request);
-    manager()->post(request,doc.toJson());
+    setLastReply(manager()->post(request,doc.toJson()));
     return this;
 }
 
@@ -55,7 +51,6 @@ NetworkManager *NetworkManager::put(QString url, QJsonObject object)
     QNetworkRequest req;
     QString requestUrl= usingBaseUrl() ? baseUrl+url : url;
     req.setUrl(requestUrl);
-    setLastUrl(requestUrl);
     setLastOperation(QNetworkAccessManager::PutOperation);
     QJsonDocument doc;
     doc.setObject(object);
@@ -65,8 +60,7 @@ NetworkManager *NetworkManager::put(QString url, QJsonObject object)
     for (const QByteArray & headerName : permanentRawHeaders()) {
         req.setRawHeader(headerName,permanentRawHeaders()[headerName]);
     }
-    setLastRequest(req);
-    manager()->put(req,doc.toJson());
+    setLastReply(manager()->put(req,doc.toJson()));
     return this;
 }
 
@@ -74,7 +68,7 @@ NetworkManager *NetworkManager::put(QString url, QJsonObject object)
 
 void NetworkManager::subcribe(Callback cb)
 {
-    router.registerRoute(_lastOperation,_lastUrl,cb);
+    router.registerRoute(_lastReply,cb);
 }
 
 void NetworkManager::setRawHeader(const QByteArray &headerName, const QByteArray &headerValue)
@@ -94,10 +88,11 @@ void NetworkManager::setJwtToken(QByteArray token)
 
 void NetworkManager::routeReply(QNetworkReply *reply)
 {
-
     NetworkResponse *response=new NetworkResponse(reply);
     router.route(response);
     reply->deleteLater();
     delete response;
 }
+
+
 

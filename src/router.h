@@ -23,7 +23,7 @@ struct MemberCallbackInfo
     Callback callback;
 };
 
-typedef QMap<QString,MemberCallbackInfo> MemberCallbacks;
+typedef QMap<QNetworkReply *,MemberCallbackInfo> MemberCallbacks;
 
 class Router
 {
@@ -33,92 +33,20 @@ public:
     void route(NetworkResponse *reply);
 
     template <class T>
-    void registerRoute(QNetworkAccessManager::Operation op,const QString& action, T *instance, MemberCallback<T> ptr)
+    void registerRoute(QNetworkReply *reply, T *instance, MemberCallback<T> ptr)
     {
-        MemberCallbacks *callBacks;
-        switch(op)
-        {
-        case QNetworkAccessManager::GetOperation:    callBacks=&getRoutes    ; break;
-        case QNetworkAccessManager::PostOperation:   callBacks=&postRoutes   ; break;
-        case QNetworkAccessManager::PutOperation:    callBacks=&putRoutes    ; break;
-        case QNetworkAccessManager::DeleteOperation: callBacks=&DeleteRoutes ; break;
-        case QNetworkAccessManager::HeadOperation:   callBacks=&headerhRoutes; break;
-        default: qDebug()<<"invalid operation";                               return;
-        }
         MemberCallbackInfo obj={reinterpret_cast<CNTRLR *>(instance),reinterpret_cast<MemberCallback<CNTRLR>>(ptr),0};
-        callBacks->insert(action, obj);
+        callbacks.insert(reply, obj);
     }
 
-
-    template <class T>
-    void get   (const QString& action, T *instance, MemberCallback<T> ptr)
+    void registerRoute(QNetworkReply *reply, Callback cb)
     {
-        registerRoute(QNetworkAccessManager::GetOperation,action,instance,ptr);
-    }
-
-    template <class T>
-    void post  (const QString& action, T *instance, MemberCallback<T> ptr)
-    {
-        registerRoute(QNetworkAccessManager::PostOperation,action,instance,ptr);
-    }
-
-    template <class T>
-    void head (const QString& action, T *instance, MemberCallback<T> ptr)
-    {
-        registerRoute(QNetworkAccessManager::HeadOperation,action,instance,ptr);
-    }
-
-    template <class T>
-    void put   (const QString& action, T *instance, MemberCallback<T> ptr)
-    {
-        registerRoute(QNetworkAccessManager::PutOperation,action,instance,ptr);
-    }
-
-    template <class T>
-    void Delete(const QString& action, T *instance, MemberCallback<T> ptr)
-    {
-        registerRoute(QNetworkAccessManager::DeleteOperation,action,instance,ptr);
-    }
-
-
-
-    void registerRoute(QNetworkAccessManager::Operation op, const QString& action, Callback cb)
-    {
-        MemberCallbacks *callBacks;
-        switch(op)
-        {
-        case QNetworkAccessManager::GetOperation:    callBacks=&getRoutes    ; break;
-        case QNetworkAccessManager::PostOperation:   callBacks=&postRoutes   ; break;
-        case QNetworkAccessManager::PutOperation:    callBacks=&putRoutes    ; break;
-        case QNetworkAccessManager::DeleteOperation: callBacks=&DeleteRoutes ; break;
-        case QNetworkAccessManager::HeadOperation:   callBacks=&headerhRoutes; break;
-        default: qDebug()<<"invalid operation";                               return;
-        }
-
-
-
         MemberCallbackInfo obj={0,0,cb};
-        callBacks->insert(action, obj);
+        callbacks.insert(reply, obj);
     }
-
-
-    void post(const QString& action, Callback cb)
-    {
-        registerRoute(QNetworkAccessManager::PostOperation,action,cb);
-    }
-
-    void get(const QString& action, Callback cb)
-    {
-        registerRoute(QNetworkAccessManager::GetOperation,action,cb);
-    }
-
 
 private:
-    MemberCallbacks getRoutes;
-    MemberCallbacks postRoutes;
-    MemberCallbacks headerhRoutes;
-    MemberCallbacks putRoutes;
-    MemberCallbacks DeleteRoutes;
+    MemberCallbacks callbacks;
 };
 
 typedef Router Route;
