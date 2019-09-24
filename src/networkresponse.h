@@ -15,6 +15,7 @@ class NetworkResponse
 public:
     NetworkResponse(QNetworkReply *reply);
     ~NetworkResponse();
+    QNetworkReply::NetworkError error() const;
     QJsonValue json(QString key);
     QJsonValue json();
     QByteArray binaryData() const{return _data;}
