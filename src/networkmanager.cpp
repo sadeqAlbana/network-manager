@@ -11,11 +11,12 @@ NetworkManager::NetworkManager(QObject *parent) : QObject (parent)
 NetworkManager* NetworkManager::get(QString url)
 {
     QNetworkRequest req;
-    req.setAttribute(QNetworkRequest::RedirectionTargetAttribute,true);
-    req.setAttribute(QNetworkRequest::RedirectPolicyAttribute,QNetworkRequest::SameOriginRedirectPolicy);
+    if(redirectAllowed()){
+        req.setAttribute(QNetworkRequest::RedirectionTargetAttribute,true);
+        req.setAttribute(QNetworkRequest::RedirectPolicyAttribute,QNetworkRequest::SameOriginRedirectPolicy);
+    }
     QString requestUrl= usingBaseUrl() ? baseUrl+url : url;
     req.setUrl(requestUrl);
-    setLastOperation(QNetworkAccessManager::GetOperation);
 
     for (const QByteArray & headerName : permanentRawHeaders()) {
         req.setRawHeader(headerName,permanentRawHeaders()[headerName]);
@@ -32,8 +33,6 @@ NetworkManager* NetworkManager::post(QString url, QJsonObject object)
     QNetworkRequest request;
 
     QString requestUrl= usingBaseUrl() ? baseUrl+url : url;
-    request.setUrl(requestUrl);
-    setLastOperation(QNetworkAccessManager::PostOperation);
     QJsonDocument doc;
     doc.setObject(object);  
     request.setUrl(requestUrl);
@@ -51,7 +50,6 @@ NetworkManager *NetworkManager::put(QString url, QJsonObject object)
     QNetworkRequest req;
     QString requestUrl= usingBaseUrl() ? baseUrl+url : url;
     req.setUrl(requestUrl);
-    setLastOperation(QNetworkAccessManager::PutOperation);
     QJsonDocument doc;
     doc.setObject(object);
     req.setUrl(requestUrl);
@@ -80,6 +78,8 @@ void NetworkManager::removeRawHeader(const QByteArray &headerName)
 {
     permanentRawHeaders().remove(headerName);
 }
+
+
 
 void NetworkManager::setJwtToken(QByteArray token)
 {
