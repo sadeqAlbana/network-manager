@@ -79,13 +79,6 @@ void NetworkManager::removeRawHeader(const QByteArray &headerName)
     permanentRawHeaders().remove(headerName);
 }
 
-
-
-void NetworkManager::setJwtToken(QByteArray token)
-{
-    permanentRawHeaders()["authorization"]=token;
-}
-
 void NetworkManager::routeReply(QNetworkReply *reply)
 {
     NetworkResponse *response=new NetworkResponse(reply);

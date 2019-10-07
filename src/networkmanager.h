@@ -30,16 +30,14 @@ public:
 
     void setBaseUrl(QString url){baseUrl=url; _usingBaseUrl=true;}
     bool usingBaseUrl(){return _usingBaseUrl;}
-    void setRawHeader(const QByteArray &headerName, const QByteArray &headerValue);
-    void removeRawHeader(const QByteArray &headerName);
     void allowRedirect(bool allow){_allowRedirect=allow;}
     inline bool redirectAllowed() const{return _allowRedirect;}
 
 protected:
-    void setJwtToken(QByteArray token);
-    QString jwtToken(){return permanentRawHeaders()["authorization"];}
     QSettings settings;
     virtual void routeReply(QNetworkReply *reply);
+    void setRawHeader(const QByteArray &headerName, const QByteArray &headerValue);
+    void removeRawHeader(const QByteArray &headerName);
 
 private:
     QNetworkAccessManager m_manager;
@@ -49,8 +47,6 @@ private:
     Router router;
     bool _usingBaseUrl=false;
     bool _allowRedirect=false;
-
-
 
     inline void setLastReply(QNetworkReply *reply){_lastReply=reply;}
     HeadersMap & permanentRawHeaders(){return _permanentRawHeaders;}
