@@ -12,5 +12,9 @@ int main(int argc, char *argv[])
         qDebug()<<res->json();
     });
 
+
+    NetworkResponse *res=manager.getSynch("https://reqres.in/api/users?page=2");
+
+
     return a.exec();
 }

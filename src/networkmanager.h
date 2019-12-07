@@ -7,10 +7,9 @@
 #include "networkresponse.h"
 #include <QSettings>
 #include <QObject>
-
+#include <QEventLoop>
 
 using HeadersMap= QMap<QByteArray,QByteArray>;
-
 class NetworkManager : public QObject
 {
     Q_OBJECT
@@ -20,6 +19,10 @@ public:
     NetworkManager *get(QString url);
     NetworkManager *post(QString url, QJsonObject object);
     NetworkManager * put (QString url, QJsonObject object);
+
+    NetworkResponse *getSynch(QString url);
+    NetworkResponse *postSynch(QString url, QJsonObject object);
+    NetworkResponse *putSynch(QString url, QJsonObject object);
 
     void subcribe(Callback cb);
     template <class T>
@@ -41,6 +44,7 @@ protected:
 
 private:
     QNetworkAccessManager m_manager;
+    QNetworkAccessManager synchronousManager;
     QString baseUrl;
     QNetworkReply* _lastReply;
     HeadersMap _permanentRawHeaders;
@@ -50,6 +54,8 @@ private:
 
     inline void setLastReply(QNetworkReply *reply){_lastReply=reply;}
     HeadersMap & permanentRawHeaders(){return _permanentRawHeaders;}
+
+    QEventLoop eventLoop;
 
 
 };
