@@ -97,6 +97,7 @@ NetworkResponse *NetworkManager::postSynch(QString url, QJsonObject object)
         request.setRawHeader(headerName,permanentRawHeaders()[headerName]);
     }
     QNetworkReply *reply= synchronousManager.post(request,doc.toJson());
+    eventLoop.exec();
     return new NetworkResponse(reply);
 }
 
@@ -114,6 +115,7 @@ NetworkResponse *NetworkManager::putSynch(QString url, QJsonObject object)
         request.setRawHeader(headerName,permanentRawHeaders()[headerName]);
     }
     QNetworkReply *reply= synchronousManager.put(request,doc.toJson());
+    eventLoop.exec();
     return new NetworkResponse(reply);
 }
 
