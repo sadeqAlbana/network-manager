@@ -140,6 +140,40 @@ QByteArray NetworkManager::rawData(const QVariant &data)
         return document.toJson(QJsonDocument::Compact);
     }
 
+    if(type==QMetaType::QJsonValue)
+    {
+        QJsonValue jsonValue=data.toJsonValue();
+
+        if(jsonValue.type()==QJsonValue::Array)
+        {
+            QJsonArray array=jsonValue.toArray();
+            QJsonDocument document;
+            document.setArray(array);
+            return document.toJson(QJsonDocument::Compact);
+        }
+
+        if(jsonValue.type()==QJsonValue::Object)
+        {
+            QJsonObject object=jsonValue.toObject();
+            QJsonDocument document;
+            document.setObject(object);
+            return document.toJson(QJsonDocument::Compact);
+        }
+        if(jsonValue.type()==QJsonValue::String)
+        {
+            return jsonValue.toString().toUtf8();
+        }
+        if(jsonValue==QJsonValue::Double)
+        {
+            return QString::number(jsonValue.toDouble()).toUtf8();
+        }
+        if(jsonValue.type()==QJsonValue::Bool)
+        {
+            return jsonValue.toBool() ? QByteArray("1") : QByteArray("0");
+        }
+
+    }
+
     return QByteArray();
 }
 
