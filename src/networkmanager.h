@@ -21,8 +21,8 @@ public:
     NetworkManager * put (QString url, QJsonObject object);
 
     NetworkResponse *getSynch(QString url);
-    NetworkResponse *postSynch(QString url, QJsonObject object);
-    NetworkResponse *putSynch(QString url, QJsonObject object);
+    NetworkResponse *postSynch(QString url, QVariant data);
+    NetworkResponse *putSynch(QString url, QVariant data);
 
     void subcribe(Callback cb);
     template <class T>
@@ -41,6 +41,9 @@ protected:
     virtual void routeReply(QNetworkReply *reply);
     void setRawHeader(const QByteArray &headerName, const QByteArray &headerValue);
     void removeRawHeader(const QByteArray &headerName);
+    QNetworkRequest createRequest(const QString &url);
+    QByteArray mapContentType(const QVariant &data);
+    QByteArray rawData(const QVariant &data);
 
 private:
     QNetworkAccessManager m_manager;

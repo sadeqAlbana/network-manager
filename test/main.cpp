@@ -1,6 +1,6 @@
 #include <QCoreApplication>
 #include "networkmanager.h"
-
+#include <QFile>
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc,argv);
@@ -12,12 +12,19 @@ int main(int argc, char *argv[])
 //        qDebug()<<res->json();
 //    });
 
-
     qDebug()<<"before";
 
-    NetworkResponse *res=manager.getSynch("https://reqres.in/api/users?page=2");
+    NetworkResponse *res=manager.getSynch("http://www.mitelove.com/image/catalog/2019/05/mite-love-boyundan-askili-seksi-vucut-corabi.jpg");
 
-    qDebug()<<res->json();
+    res->image().save("/tmp/test2.jpg");
+
+
+    qDebug()<<res;
+
+    QFile file("/tmp/test.jpg");
+    file.open(QIODevice::WriteOnly);
+    file.write(res->binaryData());
+    file.close();
 
     qDebug()<<"after";
 

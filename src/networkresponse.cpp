@@ -16,7 +16,6 @@ NetworkResponse::NetworkResponse(QNetworkReply *reply)
     {
         _image=QImage::fromData(binaryData());
     }
-
 }
 
 NetworkResponse::~NetworkResponse()
@@ -53,7 +52,7 @@ bool NetworkResponse::isJson()
 
 bool NetworkResponse::isImage()
 {
-    return networkReply()->header(QNetworkRequest::ContentTypeHeader).toString().contains("image/x-icon");
+    return networkReply()->header(QNetworkRequest::ContentTypeHeader).toString().contains("image/");
 }
 
 QString NetworkResponse::contentType() const

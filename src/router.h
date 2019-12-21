@@ -41,7 +41,7 @@ public:
 
     void registerRoute(QNetworkReply *reply, Callback cb)
     {
-        MemberCallbackInfo obj={0,0,cb};
+        MemberCallbackInfo obj={nullptr,nullptr,cb};
         callbacks.insert(reply, obj);
     }
 
