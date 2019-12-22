@@ -2,6 +2,9 @@
 #include <QNetworkAccessManager>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QBitArray>
+#include <QBuffer>
+#include <QIcon>
 NetworkManager::NetworkManager(QObject *parent) : QObject (parent)
 {
     QObject::connect(&m_manager,&QNetworkAccessManager::finished,this,&NetworkManager::routeReply);
@@ -124,6 +127,7 @@ QByteArray NetworkManager::rawData(const QVariant &data)
 {
     QMetaType::Type type=static_cast<QMetaType::Type>(data.type());
 
+    /**************************json**************************/
     if(type==QMetaType::QJsonObject)
     {
         QJsonObject object=data.toJsonObject();
@@ -138,6 +142,11 @@ QByteArray NetworkManager::rawData(const QVariant &data)
         QJsonDocument document;
         document.setArray(array);
         return document.toJson(QJsonDocument::Compact);
+    }
+
+    if(type==QMetaType::QJsonDocument)
+    {
+        return data.toJsonDocument().toJson(QJsonDocument::Compact);
     }
 
     if(type==QMetaType::QJsonValue)
@@ -173,6 +182,56 @@ QByteArray NetworkManager::rawData(const QVariant &data)
         }
 
     }
+
+    /**********************end json**************************/
+
+    if(type==QMetaType::QString)
+        return data.toString().toUtf8();
+
+    if(type==QMetaType::Int)
+        return QString::number(data.toInt()).toUtf8();
+
+    if(type==QMetaType::Double)
+        return QString::number(data.toDouble()).toUtf8();
+
+    if(type==QMetaType::Float)
+        return QString::number(data.toFloat()).toUtf8();
+
+    if(type==QMetaType::Long || type==QMetaType::LongLong)
+        return QString::number(data.toLongLong()).toUtf8();
+
+    if(type==QMetaType::UInt)
+        return QString::number(data.toUInt()).toUtf8();
+
+    if(type==QMetaType::ULongLong)
+        return QString::number(data.toULongLong()).toUtf8();
+
+    if(type==QMetaType::QByteArray)
+        return data.toByteArray();
+
+    if(type==QMetaType::QBitArray)
+    {
+        QBitArray bitArray = data.toBitArray();
+        QByteArray byteArray;
+        for (int i=0;i<bitArray.size();i++) {
+            byteArray.append(bitArray[i]); //check this !
+        }
+        return byteArray;
+    }
+
+    if(type==QMetaType::QImage)
+    {
+        QImage image=data.value<QImage>();
+        QByteArray imageData;
+        QBuffer buffer(&imageData);
+        buffer.open(QIODevice::WriteOnly);
+        image.save(&buffer,"PNG");
+        buffer.close();
+        return imageData;
+    }
+
+
+    qDebug()<<"NetworkManager::rawData : unsupported QVariant type";
 
     return QByteArray();
 }

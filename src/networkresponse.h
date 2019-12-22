@@ -44,6 +44,7 @@ private:
     QJsonArray _array;
     QJsonDocument _document;
     QImage _image;
+    QVariant _replyData;
     void setNetworkReply(QNetworkReply *reply){_reply=reply;}
     void setBinaryData(const QByteArray &data){_data=data;}
     void setJsonObject(const QJsonObject &object){_object=object;}
