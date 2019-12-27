@@ -4,23 +4,12 @@ NetworkResponse::NetworkResponse(QNetworkReply *reply)
 {
     setNetworkReply(reply);
     setBinaryData(networkReply()->readAll());
-    if(isJson())
-    {
-         setJsonDocument(QJsonDocument::fromJson(binaryData()));
-        if(jsonDocument().isObject())
-        setJsonObject(jsonDocument().object());
-        else if(jsonDocument().isArray())
-            setJsonArray(jsonDocument().array());
-    }
-    else if(isImage())
-    {
-        _image=QImage::fromData(binaryData());
-    }
+    processReply();
 }
 
 NetworkResponse::~NetworkResponse()
 {
-
+    _reply->deleteLater();
 }
 
 QNetworkReply::NetworkError NetworkResponse::error() const
@@ -35,10 +24,10 @@ QJsonValue NetworkResponse::json(QString key)
 
 QJsonValue NetworkResponse::json()
 {
-    if(jsonDocument().isObject())
-        return jsonObject();
-    else if(jsonDocument().isArray())
-        return jsonArray();
+    if(_replyData.type()==QMetaType::QJsonObject)
+        return _replyData.toJsonObject();
+    else if(_replyData.type()==QMetaType::QJsonArray)
+        return _replyData.toJsonArray();
     else
         return QJsonValue();
 }
@@ -55,11 +44,42 @@ bool NetworkResponse::isImage()
     return networkReply()->header(QNetworkRequest::ContentTypeHeader).toString().contains("image/");
 }
 
-QString NetworkResponse::contentType() const
+QString NetworkResponse::contentTypeHeader() const
 {
     return networkReply()->rawHeader("content-type");
 }
 
+void NetworkResponse::processReply()
+{
+
+    QString contentType=contentTypeHeader();
+    if(contentType=="application/json")
+    {
+        QJsonDocument doc=QJsonDocument::fromJson(binaryData());
+        if(!doc.isNull())
+        {
+            if(doc.isArray())
+                _replyData=doc.array();
+            if(doc.isObject())
+                _replyData=doc.object();
+        }
+        return;
+    }
+    if(contentType.contains("image/"))
+    {
+        QImage img=QImage::fromData(binaryData());
+        if(!img.isNull())
+            _replyData=img;
+    }
+    if(contentType=="text/xml" || contentType=="application/xml")
+    {
+        _domDoc.setContent(binaryData());
+    }
+    if(contentType.contains("text/"))
+    {
+        _replyData=QString(binaryData());
+    }
+}
 
 
 NetworkResponse::operator bool()
@@ -78,7 +98,7 @@ QDebug operator <<(QDebug dbg, const NetworkResponse &res)
             dbg.noquote() << pair.first <<" : " << pair.second << "\n";
         }
         dbg.noquote() << "body: \n";
-        dbg.noquote() << "content type:" << res.contentType() <<"\n";
+        dbg.noquote() << "content type:" << res.contentTypeHeader() <<"\n";
         dbg.noquote() << "status: "      <<      res.status() <<"\n";
         dbg.noquote() << res.binaryData();
         return dbg.maybeQuote();
