@@ -17,12 +17,12 @@ public:
     NetworkManager(QObject *parent=nullptr);
     inline QNetworkAccessManager* manager(){return &m_manager;}
     NetworkManager *get(QString url);
-    NetworkManager *post(QString url, QJsonObject object);
-    NetworkManager * put (QString url, QJsonObject object);
+    NetworkManager *post(const QString url, const QVariant data, QByteArray contentType=QByteArray());
+    NetworkManager * put (const QString url, const QVariant data, QByteArray contentType=QByteArray());
 
     NetworkResponse *getSynch(QString url);
-    NetworkResponse *postSynch(QString url, QVariant data);
-    NetworkResponse *putSynch(QString url, QVariant data);
+    NetworkResponse *postSynch(const QString url, const QVariant data, QByteArray contentType);
+    NetworkResponse *putSynch(const QString url, const QVariant data, QByteArray contentType);
 
     void subcribe(Callback cb);
     template <class T>

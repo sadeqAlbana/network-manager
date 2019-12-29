@@ -35,7 +35,7 @@ public:
     template <class T>
     void registerRoute(QNetworkReply *reply, T *instance, MemberCallback<T> ptr)
     {
-        MemberCallbackInfo obj={reinterpret_cast<CNTRLR *>(instance),reinterpret_cast<MemberCallback<CNTRLR>>(ptr),0};
+        MemberCallbackInfo obj={reinterpret_cast<CNTRLR *>(instance),reinterpret_cast<MemberCallback<CNTRLR>>(ptr),nullptr};
         callbacks.insert(reply, obj);
     }
 

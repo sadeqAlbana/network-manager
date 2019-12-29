@@ -5,6 +5,7 @@
 #include <QBitArray>
 #include <QBuffer>
 #include <QIcon>
+
 NetworkManager::NetworkManager(QObject *parent) : QObject (parent)
 {
     QObject::connect(&m_manager,&QNetworkAccessManager::finished,this,&NetworkManager::routeReply);
@@ -17,23 +18,27 @@ NetworkManager* NetworkManager::get(QString url)
     return this;
 }
 
-NetworkManager* NetworkManager::post(QString url, QJsonObject object)
+NetworkManager* NetworkManager::post(const QString url, const QVariant data, QByteArray contentType)
 {
-    QJsonDocument doc;
-    doc.setObject(object);  
     QNetworkRequest request = createRequest(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
-    setLastReply(manager()->post(request,doc.toJson()));
+
+    if(!contentType.isNull())
+        contentType=mapContentType(data);
+
+    request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
+    setLastReply(manager()->post(request,rawData(data)));
     return this;
 }
 
-NetworkManager *NetworkManager::put(QString url, QJsonObject object)
+NetworkManager *NetworkManager::put(const QString url, const QVariant data, QByteArray contentType)
 {
-    QJsonDocument doc;
-    doc.setObject(object);
     QNetworkRequest request = createRequest(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
-    setLastReply(manager()->put(request,doc.toJson()));
+
+    if(!contentType.isNull())
+        contentType=mapContentType(data);
+
+    request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
+    setLastReply(manager()->put(request,rawData(data)));
     return this;
 }
 
@@ -44,28 +49,30 @@ NetworkResponse *NetworkManager::getSynch(QString url)
     return new NetworkResponse(reply);
 }
 
-NetworkResponse *NetworkManager::postSynch(QString url, QVariant data)
+NetworkResponse *NetworkManager::postSynch(const QString url, const QVariant data, QByteArray contentType)
 {
     QNetworkRequest request=createRequest(url);
 
-    QJsonDocument doc;
-    doc.setObject(data.toJsonObject());
-    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
+    if(!contentType.isNull())
+        contentType=mapContentType(data);
 
-    QNetworkReply *reply= synchronousManager.post(request,doc.toJson());
+    request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
+
+    QNetworkReply *reply= synchronousManager.post(request,rawData(data));
     eventLoop.exec();
     return new NetworkResponse(reply);
 }
 
-NetworkResponse *NetworkManager::putSynch(QString url, QVariant data)
+NetworkResponse *NetworkManager::putSynch(const QString url, const QVariant data, QByteArray contentType)
 {
     QNetworkRequest request=createRequest(url);
 
-    QJsonDocument doc;
-    QByteArray payload=rawData(data);
-    request.setHeader(QNetworkRequest::ContentTypeHeader,mapContentType(data));
+    if(!contentType.isNull())
+        contentType=mapContentType(data);
 
-    QNetworkReply *reply= synchronousManager.put(request,payload);
+    request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
+
+    QNetworkReply *reply= synchronousManager.put(request,rawData(data));
     eventLoop.exec();
     return new NetworkResponse(reply);
 }
@@ -109,6 +116,9 @@ QNetworkRequest NetworkManager::createRequest(const QString &url)
 QByteArray NetworkManager::mapContentType(const QVariant &data)
 {
     QByteArray contentType;
+    if(permanentRawHeaders().contains("content-type")) //if this header exists then return it to avoid conflicts
+        return permanentRawHeaders()["content-type"];
+
     QMetaType::Type type=static_cast<QMetaType::Type>(data.type());
     switch (type) {
     case QMetaType::QJsonObject  :

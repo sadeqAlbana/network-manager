@@ -14,9 +14,3 @@ void Router::route(NetworkResponse *reply)
         cb.instance ? (cb.instance->*cb.ptr)(reply) : cb.callback(reply);
     }
 }
-
-
-
-
-
-

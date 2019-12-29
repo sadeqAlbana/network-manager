@@ -32,8 +32,6 @@ QJsonValue NetworkResponse::json()
         return QJsonValue();
 }
 
-
-
 bool NetworkResponse::isJson()
 {
     return networkReply()->header(QNetworkRequest::ContentTypeHeader).toString().contains("application/json");
@@ -51,7 +49,6 @@ QString NetworkResponse::contentTypeHeader() const
 
 void NetworkResponse::processReply()
 {
-
     QString contentType=contentTypeHeader();
     if(contentType=="application/json")
     {
@@ -71,10 +68,6 @@ void NetworkResponse::processReply()
         if(!img.isNull())
             _replyData=img;
     }
-    if(contentType=="text/xml" || contentType=="application/xml")
-    {
-        _domDoc.setContent(binaryData());
-    }
     if(contentType.contains("text/"))
     {
         _replyData=QString(binaryData());
@@ -87,13 +80,12 @@ NetworkResponse::operator bool()
     return !error();
 }
 
-
 QDebug operator <<(QDebug dbg, const NetworkResponse &res)
 {
         QDebugStateSaver saver(dbg);
         dbg.noquote() <<"Network response: \n";
         dbg.noquote() << "Headers: \n";
-        foreach (auto pair,res.networkReply()->rawHeaderPairs())
+        for (auto pair : res.networkReply()->rawHeaderPairs())
         {
             dbg.noquote() << pair.first <<" : " << pair.second << "\n";
         }
