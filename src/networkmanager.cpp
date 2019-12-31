@@ -2,10 +2,10 @@
 #include <QNetworkAccessManager>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QBitArray>
 #include <QBuffer>
-#include <QIcon>
-
+#include <QImage>
+#include <QJsonArray>
+#include <QJsonValue>
 NetworkManager::NetworkManager(QObject *parent) : QObject (parent)
 {
     QObject::connect(&m_manager,&QNetworkAccessManager::finished,this,&NetworkManager::routeReply);
@@ -218,16 +218,6 @@ QByteArray NetworkManager::rawData(const QVariant &data)
 
     if(type==QMetaType::QByteArray)
         return data.toByteArray();
-
-    if(type==QMetaType::QBitArray)
-    {
-        QBitArray bitArray = data.toBitArray();
-        QByteArray byteArray;
-        for (int i=0;i<bitArray.size();i++) {
-            byteArray.append(bitArray[i]); //check this !
-        }
-        return byteArray;
-    }
 
     if(type==QMetaType::QImage)
     {

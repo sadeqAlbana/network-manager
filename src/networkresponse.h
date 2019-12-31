@@ -1,15 +1,11 @@
 #ifndef NETWORKRESPONSE_H
 #define NETWORKRESPONSE_H
 
-#include <QByteArray>
-#include <QJsonDocument>
 #include <QNetworkReply>
-#include <QJsonArray>
-#include <QJsonObject>
-#include <QJsonValue>
-#include <QString>
-#include <QDebug>
-#include <QImage>
+
+class QDebug;
+class QImage;
+
 class NetworkResponse
 {
 public:
@@ -18,11 +14,13 @@ public:
     QNetworkReply::NetworkError error() const;
     QJsonValue json(QString key);
     QJsonValue json();
-    QByteArray binaryData() const{return _data;}
+    QByteArray binaryData() const{return _binaryData;}
+    QVariant data(){return _replyData;}
 
     bool isJson();
     bool isImage();
-    QString contentTypeHeader() const;
+    bool isText();
+    QByteArray contentTypeHeader() const;
     QUrl url(){return _reply->url();}
     QNetworkAccessManager::Operation operation() const {return _reply->operation();}
     QByteArray rawHeader(const QByteArray &headerName) const{return _reply->rawHeader(headerName);}
@@ -30,18 +28,16 @@ public:
     int status() const {return _reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();}
     QNetworkReply *networkReply() const {return _reply;}
     friend QDebug operator <<(QDebug dbg, const NetworkResponse &res);
-    const QJsonObject jsonObject() const {return _replyData.toJsonObject();}
-    const QJsonArray jsonArray() const {return _replyData.toJsonArray();}
-    QImage image() const {return _replyData.value<QImage>();}
+    const QJsonObject jsonObject() const;
+    const QJsonArray jsonArray() const;
+    QImage image() const;
 
     operator bool();
 
 private:
     QNetworkReply *_reply;
-    QByteArray _data;
+    QByteArray _binaryData;
     QVariant _replyData;
-    void setNetworkReply(QNetworkReply *reply){_reply=reply;}
-    void setBinaryData(const QByteArray &data){_data=data;}
     void processReply();
 
 

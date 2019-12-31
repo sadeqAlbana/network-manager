@@ -28,9 +28,16 @@ typedef QMap<QNetworkReply *,MemberCallbackInfo> MemberCallbacks;
 class Router
 {
 public:
-    explicit Router();
+    explicit Router(){}
 
-    void route(NetworkResponse *reply);
+    void route(NetworkResponse *reply)
+    {
+        if(callbacks.contains(reply->networkReply()))
+        {
+            MemberCallbackInfo cb= callbacks.value(reply->networkReply());
+            cb.instance ? (cb.instance->*cb.ptr)(reply) : cb.callback(reply);
+        }
+    }
 
     template <class T>
     void registerRoute(QNetworkReply *reply, T *instance, MemberCallback<T> ptr)

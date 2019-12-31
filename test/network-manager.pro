@@ -1,4 +1,3 @@
-QT += gui xml
 QT += core
 CONFIG += c++11 console
 CONFIG -= app_bundle
@@ -9,8 +8,6 @@ CONFIG -= app_bundle
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 
-
-
 include(../network-manager.pri)
 
 # You can also make your code fail to compile if it uses deprecated APIs.
@@ -20,8 +17,12 @@ include(../network-manager.pri)
 
 SOURCES += \
         main.cpp \
+    testclass.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+HEADERS += \
+    testclass.h

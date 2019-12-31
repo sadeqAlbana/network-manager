@@ -2,14 +2,14 @@
 #define NETWORKMANAGER_H
 
 
-#include "router.h"
-#include "QNetworkReply"
-#include "networkresponse.h"
-#include <QSettings>
 #include <QObject>
+#include "networkresponse.h"
+#include "router.h"
+#include <QNetworkReply>
 #include <QEventLoop>
 
 using HeadersMap= QMap<QByteArray,QByteArray>;
+
 class NetworkManager : public QObject
 {
     Q_OBJECT
@@ -37,7 +37,6 @@ public:
     inline bool redirectAllowed() const{return _allowRedirect;}
 
 protected:
-    QSettings settings;
     virtual void routeReply(QNetworkReply *reply);
     void setRawHeader(const QByteArray &headerName, const QByteArray &headerValue);
     void removeRawHeader(const QByteArray &headerName);
@@ -48,6 +47,7 @@ protected:
 private:
     QNetworkAccessManager m_manager;
     QNetworkAccessManager synchronousManager;
+    QEventLoop eventLoop;
     QString baseUrl;
     QNetworkReply* _lastReply;
     HeadersMap _permanentRawHeaders;
@@ -58,7 +58,7 @@ private:
     inline void setLastReply(QNetworkReply *reply){_lastReply=reply;}
     HeadersMap & permanentRawHeaders(){return _permanentRawHeaders;}
 
-    QEventLoop eventLoop;
+
 
 
 };

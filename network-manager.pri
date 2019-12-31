@@ -2,8 +2,7 @@ QT += network
 INCLUDEPATH += $$PWD/src
 SOURCES += \
     $$PWD/src/networkmanager.cpp \
-    $$PWD/src/networkresponse.cpp \
-    $$PWD/src/router.cpp
+    $$PWD/src/networkresponse.cpp
 
 HEADERS += \
     $$PWD/src/networkmanager.h \

@@ -1,9 +1,12 @@
 #include "networkresponse.h"
-
-NetworkResponse::NetworkResponse(QNetworkReply *reply)
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QImage>
+#include <QDebug>
+NetworkResponse::NetworkResponse(QNetworkReply *reply):_reply(reply)
 {
-    setNetworkReply(reply);
-    setBinaryData(networkReply()->readAll());
+    _binaryData=reply->readAll();
     processReply();
 }
 
@@ -42,15 +45,35 @@ bool NetworkResponse::isImage()
     return networkReply()->header(QNetworkRequest::ContentTypeHeader).toString().contains("image/");
 }
 
-QString NetworkResponse::contentTypeHeader() const
+bool NetworkResponse::isText()
+{
+    return networkReply()->header(QNetworkRequest::ContentTypeHeader).toString().contains("text/");
+}
+
+QByteArray NetworkResponse::contentTypeHeader() const
 {
     return networkReply()->rawHeader("content-type");
 }
 
+const QJsonObject NetworkResponse::jsonObject() const
+{
+    return _replyData.toJsonObject();
+}
+
+const QJsonArray NetworkResponse::jsonArray() const
+{
+    return _replyData.toJsonArray();
+}
+
+QImage NetworkResponse::image() const
+{
+    return _replyData.value<QImage>();
+}
+
 void NetworkResponse::processReply()
 {
-    QString contentType=contentTypeHeader();
-    if(contentType=="application/json")
+    QByteArray contentType=contentTypeHeader();
+    if(contentType.contains("application/json"))
     {
         QJsonDocument doc=QJsonDocument::fromJson(binaryData());
         if(!doc.isNull())
@@ -95,7 +118,6 @@ QDebug operator <<(QDebug dbg, const NetworkResponse &res)
         dbg.noquote() << res.binaryData();
         return dbg.maybeQuote();
 }
-
 
 QDebug operator <<(QDebug dbg, const NetworkResponse *res)
 {
