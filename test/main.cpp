@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     NetworkManager manager;
 
 
-    //callback to lambdas or normal functions
+    //callback to lambdas and non-member functions
     manager.get("https://reqres.in/api/users?page=1")->subcribe([](NetworkResponse *res)
     {
         qDebug()<<res->json();
@@ -21,12 +21,19 @@ int main(int argc, char *argv[])
 
     TestClass *testClass = new TestClass();
 
-    //callbacks to member functions of any class
+    //callbacks to member functions of any class type
     manager.get("https://reqres.in/api/users?page=1")->subcribe(testClass,&TestClass::processData);
 
+    //synchronus call
     NetworkResponse *res=manager.getSynch("https://reqres.in/api/users?page=1");
 
     qDebug()<<res->json("page").toInt();
+
+    QJsonObject object{{"testField","testValue"}};
+
+    manager.post("url",object); //content type will be mapped to according to QVariant type unless specified manually
+
+    manager.post("url",QByteArray("some data"),"text/raw");
 
 
 
