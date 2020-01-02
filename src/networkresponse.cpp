@@ -113,10 +113,9 @@ QDebug operator <<(QDebug dbg, const NetworkResponse &res)
             dbg.noquote() << pair.first <<" : " << pair.second << "\n";
         }
         dbg.noquote() << "body: \n";
-        dbg.noquote() << "content type:" << res.contentTypeHeader() <<"\n";
         dbg.noquote() << "status: "      <<      res.status() <<"\n";
         dbg.noquote() << res.binaryData();
-        return dbg.maybeQuote();
+        return dbg.noquote();
 }
 
 QDebug operator <<(QDebug dbg, const NetworkResponse *res)

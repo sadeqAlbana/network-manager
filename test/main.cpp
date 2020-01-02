@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
     manager.post("url",object); //content type will be mapped to according to QVariant type unless specified manually
 
-    manager.post("url",QByteArray("some data"),"text/raw");
+    manager.post("url",QByteArray("some text"),"text/raw");
 
 
 
