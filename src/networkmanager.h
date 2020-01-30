@@ -41,7 +41,7 @@ protected:
     void setRawHeader(const QByteArray &headerName, const QByteArray &headerValue);
     void removeRawHeader(const QByteArray &headerName);
     QNetworkRequest createRequest(const QString &url);
-    QByteArray mapContentType(const QVariant &data);
+    QByteArray mapContentType(const QVariant::Type type);
     QByteArray rawData(const QVariant &data);
 
 private:

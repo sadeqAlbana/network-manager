@@ -21,9 +21,8 @@ NetworkManager* NetworkManager::get(QString url)
 NetworkManager* NetworkManager::post(const QString url, const QVariant data, QByteArray contentType)
 {
     QNetworkRequest request = createRequest(url);
-
-    if(!contentType.isNull())
-        contentType=mapContentType(data);
+    if(contentType.isNull())
+        contentType=mapContentType(data.type());
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
     setLastReply(manager()->post(request,rawData(data)));
@@ -34,8 +33,8 @@ NetworkManager *NetworkManager::put(const QString url, const QVariant data, QByt
 {
     QNetworkRequest request = createRequest(url);
 
-    if(!contentType.isNull())
-        contentType=mapContentType(data);
+    if(contentType.isNull())
+        contentType=mapContentType(data.type());
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
     setLastReply(manager()->put(request,rawData(data)));
@@ -53,8 +52,8 @@ NetworkResponse *NetworkManager::postSynch(const QString url, const QVariant dat
 {
     QNetworkRequest request=createRequest(url);
 
-    if(!contentType.isNull())
-        contentType=mapContentType(data);
+    if(contentType.isNull())
+        contentType=mapContentType(data.type());
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
 
@@ -67,8 +66,8 @@ NetworkResponse *NetworkManager::putSynch(const QString url, const QVariant data
 {
     QNetworkRequest request=createRequest(url);
 
-    if(!contentType.isNull())
-        contentType=mapContentType(data);
+    if(contentType.isNull())
+        contentType=mapContentType(data.type());
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
 
@@ -113,13 +112,13 @@ QNetworkRequest NetworkManager::createRequest(const QString &url)
     return  req;
 }
 
-QByteArray NetworkManager::mapContentType(const QVariant &data)
+QByteArray NetworkManager::mapContentType(const QVariant::Type type)
 {
-    QByteArray contentType;
     if(permanentRawHeaders().contains("content-type")) //if this header exists then return it to avoid conflicts
         return permanentRawHeaders()["content-type"];
 
-    QMetaType::Type type=static_cast<QMetaType::Type>(data.type());
+    QByteArray contentType;
+    //QMetaType::Type type=static_cast<QMetaType::Type>(data.type());
     switch (type) {
     case QMetaType::QJsonObject  :
     case QMetaType::QJsonValue   :
