@@ -105,7 +105,7 @@ QNetworkRequest NetworkManager::createRequest(const QString &url)
     QString requestUrl= usingBaseUrl() ? baseUrl+url : url;
     req.setUrl(requestUrl);
 
-    for (const QByteArray & headerName : permanentRawHeaders()) {
+    for (const QByteArray & headerName : permanentRawHeaders().keys()) {
         req.setRawHeader(headerName,permanentRawHeaders()[headerName]);
     }
 
