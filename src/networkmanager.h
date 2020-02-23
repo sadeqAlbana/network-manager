@@ -21,8 +21,8 @@ public:
     NetworkManager * put (const QString url, const QVariant data, QByteArray contentType=QByteArray());
 
     NetworkResponse *getSynch(QString url);
-    NetworkResponse *postSynch(const QString url, const QVariant data, QByteArray contentType);
-    NetworkResponse *putSynch(const QString url, const QVariant data, QByteArray contentType);
+    NetworkResponse *postSynch(const QString url, const QVariant data, QByteArray contentType=QByteArray());
+    NetworkResponse *putSynch(const QString url, const QVariant data, QByteArray contentType=QByteArray());
 
     void subcribe(Callback cb);
     template <class T>
