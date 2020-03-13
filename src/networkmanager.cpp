@@ -6,7 +6,7 @@
 #include <QImage>
 #include <QJsonArray>
 #include <QJsonValue>
-NetworkManager::NetworkManager(QObject *parent) : QObject (parent)
+NetworkManager::NetworkManager(QObject *parent) : QObject (parent),_attempts(1)
 {
     QObject::connect(&m_manager,&QNetworkAccessManager::finished,this,&NetworkManager::routeReply);
     QObject::connect(&synchronousManager,&QNetworkAccessManager::finished,&eventLoop,&QEventLoop::quit);
@@ -41,14 +41,19 @@ NetworkManager *NetworkManager::put(const QString url, const QVariant data, QByt
     return this;
 }
 
-NetworkResponse *NetworkManager::getSynch(QString url)
+NetworkResponse NetworkManager::getSynch(QString url)
 {
-    QNetworkReply *reply= synchronousManager.get(createRequest(url));
+    QNetworkReply *reply;
+    for(int i=1; i<=attemptsCount();i++){
+    reply= synchronousManager.get(createRequest(url));
     eventLoop.exec();
-    return new NetworkResponse(reply);
+    if(reply->error()==QNetworkReply::NoError)
+        break;
+    }
+    return NetworkResponse(reply);
 }
 
-NetworkResponse *NetworkManager::postSynch(const QString url, const QVariant data, QByteArray contentType)
+NetworkResponse NetworkManager::postSynch(const QString url, const QVariant data, QByteArray contentType)
 {
     QNetworkRequest request=createRequest(url);
 
@@ -56,13 +61,17 @@ NetworkResponse *NetworkManager::postSynch(const QString url, const QVariant dat
         contentType=mapContentType(data.type());
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
-
-    QNetworkReply *reply= synchronousManager.post(request,rawData(data));
-    eventLoop.exec();
-    return new NetworkResponse(reply);
+    QNetworkReply *reply;
+    for(int i=1; i<=attemptsCount();i++){
+        reply= synchronousManager.post(request,rawData(data));
+        eventLoop.exec();
+        if(reply->error()==QNetworkReply::NoError)
+            break;
+    }
+    return NetworkResponse(reply);
 }
 
-NetworkResponse *NetworkManager::putSynch(const QString url, const QVariant data, QByteArray contentType)
+NetworkResponse NetworkManager::putSynch(const QString url, const QVariant data, QByteArray contentType)
 {
     QNetworkRequest request=createRequest(url);
 
@@ -70,10 +79,14 @@ NetworkResponse *NetworkManager::putSynch(const QString url, const QVariant data
         contentType=mapContentType(data.type());
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
-
-    QNetworkReply *reply= synchronousManager.put(request,rawData(data));
-    eventLoop.exec();
-    return new NetworkResponse(reply);
+    QNetworkReply *reply;
+    for(int i=1; i<=attemptsCount();i++){
+        reply= synchronousManager.put(request,rawData(data));
+        eventLoop.exec();
+        if(reply->error()==QNetworkReply::NoError)
+            break;
+    }
+    return NetworkResponse(reply);
 }
 
 
@@ -233,6 +246,18 @@ QByteArray NetworkManager::rawData(const QVariant &data)
     qDebug()<<"NetworkManager::rawData : unsupported QVariant type";
 
     return QByteArray();
+}
+
+int NetworkManager::attemptsCount() const
+{
+    return _attempts;
+}
+
+void NetworkManager::setAttemptsCount(int attempts)
+{
+    if(attempts<1)
+        return;
+    _attempts = attempts;
 }
 
 void NetworkManager::routeReply(QNetworkReply *reply)

@@ -15,14 +15,15 @@ class NetworkManager : public QObject
     Q_OBJECT
 public:
     NetworkManager(QObject *parent=nullptr);
-    inline QNetworkAccessManager* manager(){return &m_manager;}
+
     NetworkManager *get(QString url);
     NetworkManager *post(const QString url, const QVariant data, QByteArray contentType=QByteArray());
     NetworkManager * put (const QString url, const QVariant data, QByteArray contentType=QByteArray());
 
-    NetworkResponse *getSynch(QString url);
-    NetworkResponse *postSynch(const QString url, const QVariant data, QByteArray contentType=QByteArray());
-    NetworkResponse *putSynch(const QString url, const QVariant data, QByteArray contentType=QByteArray());
+    NetworkResponse getSynch(QString url);
+    NetworkResponse postSynch(const QString url, const QVariant data, QByteArray contentType=QByteArray());
+    NetworkResponse putSynch(const QString url, const QVariant data, QByteArray contentType=QByteArray());
+
 
     void subcribe(Callback cb);
     template <class T>
@@ -35,6 +36,10 @@ public:
     bool usingBaseUrl(){return _usingBaseUrl;}
     void allowRedirect(bool allow){_allowRedirect=allow;}
     inline bool redirectAllowed() const{return _allowRedirect;}
+    inline QNetworkAccessManager* manager(){return &m_manager;}
+
+    int attemptsCount() const;
+    void setAttemptsCount(int attempts);
 
 protected:
     virtual void routeReply(QNetworkReply *reply);
@@ -57,10 +62,7 @@ private:
 
     inline void setLastReply(QNetworkReply *reply){_lastReply=reply;}
     HeadersMap & permanentRawHeaders(){return _permanentRawHeaders;}
-
-
-
-
+    int _attempts;
 };
 
 #endif // NETWORKMANAGER_H
