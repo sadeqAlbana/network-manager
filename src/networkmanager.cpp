@@ -6,11 +6,22 @@
 #include <QImage>
 #include <QJsonArray>
 #include <QJsonValue>
+#include <QAuthenticator>
+#include <QNetworkProxy>
+#include <QNetworkConfiguration>
 NetworkManager::NetworkManager(QObject *parent) : QObject (parent),_attempts(1)
 {
     QObject::connect(&m_manager,&QNetworkAccessManager::finished,this,&NetworkManager::routeReply);
     QObject::connect(&synchronousManager,&QNetworkAccessManager::finished,&eventLoop,&QEventLoop::quit);
+
+    QObject::connect(&m_manager,&QNetworkAccessManager::authenticationRequired,this,&NetworkManager::onAuthenticationRequired);
+    QObject::connect(&synchronousManager,&QNetworkAccessManager::authenticationRequired,this,&NetworkManager::onAuthenticationRequired);
+
+    QObject::connect(&m_manager,&QNetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
+    QObject::connect(&synchronousManager,&QNetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
+
 }
+
 
 NetworkManager* NetworkManager::get(QString url)
 {
@@ -44,12 +55,19 @@ NetworkManager *NetworkManager::put(const QString url, const QVariant data, QByt
 NetworkResponse NetworkManager::getSynch(QString url)
 {
     QNetworkReply *reply;
-    for(int i=1; i<=attemptsCount();i++){
-    reply= synchronousManager.get(createRequest(url));
-    eventLoop.exec();
-    if(reply->error()==QNetworkReply::NoError)
-        break;
+    int attemps=1;
+    do{
+        reply= synchronousManager.get(createRequest(url));
+        eventLoop.exec();
+        if(reply->error()==QNetworkReply::NoError){
+            break;
+        }
+        else{
+            attemps++;
+        }
     }
+    while(attemps<=attemptsCount());
+
     return NetworkResponse(reply);
 }
 
@@ -62,12 +80,19 @@ NetworkResponse NetworkManager::postSynch(const QString url, const QVariant data
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
     QNetworkReply *reply;
-    for(int i=1; i<=attemptsCount();i++){
+    int attemps=1;
+    do{
         reply= synchronousManager.post(request,rawData(data));
         eventLoop.exec();
-        if(reply->error()==QNetworkReply::NoError)
+        if(reply->error()==QNetworkReply::NoError){
             break;
+        }
+        else{
+            attemps++;
+        }
     }
+    while(attemps<=attemptsCount());
+
     return NetworkResponse(reply);
 }
 
@@ -80,12 +105,19 @@ NetworkResponse NetworkManager::putSynch(const QString url, const QVariant data,
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
     QNetworkReply *reply;
-    for(int i=1; i<=attemptsCount();i++){
+    int attemps=1;
+    do{
         reply= synchronousManager.put(request,rawData(data));
         eventLoop.exec();
-        if(reply->error()==QNetworkReply::NoError)
+        if(reply->error()==QNetworkReply::NoError){
             break;
+        }
+        else{
+            attemps++;
+        }
     }
+    while(attemps<=attemptsCount());
+
     return NetworkResponse(reply);
 }
 
@@ -248,6 +280,13 @@ QByteArray NetworkManager::rawData(const QVariant &data)
     return QByteArray();
 }
 
+void NetworkManager::onAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator)
+{
+    Q_UNUSED(reply);
+    authenticator->setUser(authenticationCredentials.first);
+    authenticator->setPassword(authenticationCredentials.second);
+}
+
 int NetworkManager::attemptsCount() const
 {
     return _attempts;
@@ -260,8 +299,43 @@ void NetworkManager::setAttemptsCount(int attempts)
     _attempts = attempts;
 }
 
-void NetworkManager::routeReply(QNetworkReply *reply)
+void NetworkManager::setAuthenticationCredentails(const QString &user, const QString &password)
 {
+    authenticationCredentials.first=user;
+    authenticationCredentials.second=password;
+}
+
+void NetworkManager::setConfiguration(const QNetworkConfiguration &config)
+{
+    m_manager.setConfiguration(config);
+    synchronousManager.setConfiguration(config);
+}
+
+QNetworkConfiguration NetworkManager::configuration() const
+{
+    return m_manager.configuration();
+}
+
+void NetworkManager::setProxy(const QNetworkProxy &proxy)
+{
+    m_manager.setProxy(proxy);
+    synchronousManager.setProxy(proxy);
+}
+
+QNetworkProxy NetworkManager::proxy() const
+{
+    return m_manager.proxy();
+}
+
+void NetworkManager::onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator)
+{
+    Q_UNUSED(proxy);
+    authenticator->setUser(proxyAuthenticationCredentials.first);
+    authenticator->setPassword(proxyAuthenticationCredentials.second);
+}
+
+void NetworkManager::routeReply(QNetworkReply *reply)
+{   
     NetworkResponse *response=new NetworkResponse(reply);
     router.route(response);
     reply->deleteLater();

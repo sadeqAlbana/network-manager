@@ -40,6 +40,14 @@ public:
 
     int attemptsCount() const;
     void setAttemptsCount(int attempts);
+    void setAuthenticationCredentails(const QString &user, const QString &password);
+
+    void setConfiguration(const QNetworkConfiguration &config);
+    QNetworkConfiguration configuration() const;
+    void setProxy(const QNetworkProxy &proxy);
+    QNetworkProxy proxy() const;
+
+    void onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
 
 protected:
     virtual void routeReply(QNetworkReply *reply);
@@ -59,10 +67,12 @@ private:
     Router router;
     bool _usingBaseUrl=false;
     bool _allowRedirect=false;
-
+    void onAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
     inline void setLastReply(QNetworkReply *reply){_lastReply=reply;}
     HeadersMap & permanentRawHeaders(){return _permanentRawHeaders;}
     int _attempts;
+    QPair<QString,QString> authenticationCredentials;
+    QPair<QString,QString> proxyAuthenticationCredentials;
 };
 
 #endif // NETWORKMANAGER_H
