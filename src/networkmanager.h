@@ -57,6 +57,8 @@ protected:
     QByteArray mapContentType(const QVariant::Type type);
     QByteArray rawData(const QVariant &data);
 
+protected:
+    Router router;
 private:
     QNetworkAccessManager m_manager;
     QNetworkAccessManager synchronousManager;
@@ -64,7 +66,7 @@ private:
     QString baseUrl;
     QNetworkReply* _lastReply;
     HeadersMap _permanentRawHeaders;
-    Router router;
+
     bool _usingBaseUrl=false;
     bool _allowRedirect=false;
     void onAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);

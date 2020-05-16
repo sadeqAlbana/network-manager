@@ -20,6 +20,11 @@ QNetworkReply::NetworkError NetworkResponse::error() const
     return networkReply()->error();
 }
 
+QString NetworkResponse::errorString() const
+{
+    return _reply->errorString();
+}
+
 QJsonValue NetworkResponse::json(QString key)
 {
     return jsonObject().value(key);
