@@ -159,7 +159,7 @@ QNetworkRequest NetworkManager::createRequest(const QString &url)
 
 QByteArray NetworkManager::mapContentType(const QVariant::Type type)
 {
-    if(permanentRawHeaders().contains("content-type")) //if this header exists then return it to avoid conflicts
+    if(permanentRawHeaders().contains("content-type")) //if this header already exists then return it to avoid conflicts
         return permanentRawHeaders()["content-type"];
 
     QByteArray contentType;
