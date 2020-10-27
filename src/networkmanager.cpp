@@ -58,6 +58,10 @@ NetworkResponse NetworkManager::getSynch(QString url)
     int attemps=1;
     do{
         reply= synchronousManager.get(createRequest(url));
+
+        if(isIgnoringSslErrors())
+            reply->ignoreSslErrors();
+
         eventLoop.exec();
         if(reply->error()==QNetworkReply::NoError){
             break;
@@ -136,6 +140,22 @@ void NetworkManager::setRawHeader(const QByteArray &headerName, const QByteArray
 void NetworkManager::removeRawHeader(const QByteArray &headerName)
 {
     permanentRawHeaders().remove(headerName);
+}
+
+bool NetworkManager::isIgnoringSslErrors() const
+{
+    return _ignoreSslErrors;
+
+}
+
+void NetworkManager::ignoreSslErrors(bool ignore)
+{
+    _ignoreSslErrors = ignore;
+}
+
+void NetworkManager::onSSLError(QNetworkReply *reply, const QList<QSslError> &errors)
+{
+    reply->ignoreSslErrors();
 }
 
 QNetworkRequest NetworkManager::createRequest(const QString &url)
@@ -286,6 +306,7 @@ void NetworkManager::onAuthenticationRequired(QNetworkReply *reply, QAuthenticat
     authenticator->setUser(authenticationCredentials.first);
     authenticator->setPassword(authenticationCredentials.second);
 }
+
 
 int NetworkManager::attemptsCount() const
 {

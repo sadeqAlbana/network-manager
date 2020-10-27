@@ -49,10 +49,17 @@ public:
 
     void onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
 
-protected:
-    virtual void routeReply(QNetworkReply *reply);
     void setRawHeader(const QByteArray &headerName, const QByteArray &headerValue);
     void removeRawHeader(const QByteArray &headerName);
+
+    bool isIgnoringSslErrors() const;
+    void ignoreSslErrors(bool ignore);
+
+    void onSSLError(QNetworkReply *reply, const QList<QSslError> &errors);
+
+protected:
+    virtual void routeReply(QNetworkReply *reply);
+
     QNetworkRequest createRequest(const QString &url);
     QByteArray mapContentType(const QVariant::Type type);
     QByteArray rawData(const QVariant &data);
@@ -75,6 +82,8 @@ private:
     int _attempts;
     QPair<QString,QString> authenticationCredentials;
     QPair<QString,QString> proxyAuthenticationCredentials;
+
+    bool _ignoreSslErrors;
 };
 
 #endif // NETWORKMANAGER_H
