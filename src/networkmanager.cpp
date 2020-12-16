@@ -49,6 +49,7 @@ NetworkManager *NetworkManager::put(const QString url, const QVariant data, QByt
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
     setLastReply(manager()->put(request,rawData(data)));
+
     return this;
 }
 
@@ -87,6 +88,9 @@ NetworkResponse NetworkManager::postSynch(const QString url, const QVariant data
     int attemps=1;
     do{
         reply= synchronousManager.post(request,rawData(data));
+        if(isIgnoringSslErrors())
+            reply->ignoreSslErrors();
+
         eventLoop.exec();
         if(reply->error()==QNetworkReply::NoError){
             break;
@@ -112,6 +116,10 @@ NetworkResponse NetworkManager::putSynch(const QString url, const QVariant data,
     int attemps=1;
     do{
         reply= synchronousManager.put(request,rawData(data));
+
+        if(isIgnoringSslErrors())
+            reply->ignoreSslErrors();
+
         eventLoop.exec();
         if(reply->error()==QNetworkReply::NoError){
             break;
@@ -156,6 +164,12 @@ void NetworkManager::ignoreSslErrors(bool ignore)
 void NetworkManager::onSSLError(QNetworkReply *reply, const QList<QSslError> &errors)
 {
     reply->ignoreSslErrors();
+}
+
+void NetworkManager::connectToHostEncrypted(const QString &hostName, quint16 port, const QSslConfiguration &sslConfiguration)
+{
+    manager()->connectToHostEncrypted(hostName,port,sslConfiguration);
+    synchronousManager.connectToHostEncrypted(hostName,port,sslConfiguration);
 }
 
 QNetworkRequest NetworkManager::createRequest(const QString &url)
@@ -300,11 +314,24 @@ QByteArray NetworkManager::rawData(const QVariant &data)
     return QByteArray();
 }
 
+QNetworkReply *NetworkManager::lastReply() const
+{
+    return _lastReply;
+}
+
 void NetworkManager::onAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator)
 {
     Q_UNUSED(reply);
     authenticator->setUser(authenticationCredentials.first);
     authenticator->setPassword(authenticationCredentials.second);
+}
+
+void NetworkManager::setLastReply(QNetworkReply *reply)
+{
+    _lastReply=reply;
+
+    if(isIgnoringSslErrors())
+        _lastReply->ignoreSslErrors();
 }
 
 

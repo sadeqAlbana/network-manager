@@ -57,8 +57,14 @@ public:
 
     void onSSLError(QNetworkReply *reply, const QList<QSslError> &errors);
 
-protected:
+    void connectToHostEncrypted(const QString &hostName, quint16 port = 443, const QSslConfiguration &sslConfiguration = QSslConfiguration::defaultConfiguration());
+
+    QNetworkReply *lastReply() const;
+
+protected slots:
     virtual void routeReply(QNetworkReply *reply);
+
+protected:
 
     QNetworkRequest createRequest(const QString &url);
     QByteArray mapContentType(const QVariant::Type type);
@@ -77,7 +83,7 @@ private:
     bool _usingBaseUrl=false;
     bool _allowRedirect=false;
     void onAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
-    inline void setLastReply(QNetworkReply *reply){_lastReply=reply;}
+    void setLastReply(QNetworkReply *reply);
     HeadersMap & permanentRawHeaders(){return _permanentRawHeaders;}
     int _attempts;
     QPair<QString,QString> authenticationCredentials;

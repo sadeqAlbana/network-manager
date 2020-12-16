@@ -105,7 +105,7 @@ void NetworkResponse::processReply()
 
 NetworkResponse::operator bool()
 {
-    return !error();
+    return (error()==QNetworkReply::NoError);
 }
 
 QDebug operator <<(QDebug dbg, const NetworkResponse &res)
