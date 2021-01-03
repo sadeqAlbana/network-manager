@@ -59,6 +59,10 @@ public:
 
     void connectToHostEncrypted(const QString &hostName, quint16 port = 443, const QSslConfiguration &sslConfiguration = QSslConfiguration::defaultConfiguration());
 
+#if QT_VERSION >=QT_VERSION_CHECK(5,15,0)
+    void setTransferTimeout(int timeout = QNetworkRequest::DefaultTransferTimeoutConstant);
+#endif
+
     QNetworkReply *lastReply() const;
 
 protected slots:

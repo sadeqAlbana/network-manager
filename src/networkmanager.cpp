@@ -172,6 +172,14 @@ void NetworkManager::connectToHostEncrypted(const QString &hostName, quint16 por
     synchronousManager.connectToHostEncrypted(hostName,port,sslConfiguration);
 }
 
+#if QT_VERSION >=QT_VERSION_CHECK(5,15,0)
+void NetworkManager::setTransferTimeout(int timeout)
+{
+    m_manager.setTransferTimeout(timeout);
+    synchronousManager.setTransferTimeout(timeout);
+}
+#endif
+
 QNetworkRequest NetworkManager::createRequest(const QString &url)
 {
     QNetworkRequest req;
