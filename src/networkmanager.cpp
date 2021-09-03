@@ -8,7 +8,9 @@
 #include <QJsonValue>
 #include <QAuthenticator>
 #include <QNetworkProxy>
+#if QT_VERSION < 0x60000
 #include <QNetworkConfiguration>
+#endif
 NetworkManager::NetworkManager(QObject *parent) : QObject (parent),_attempts(1)
 {
     QObject::connect(&m_manager,&QNetworkAccessManager::finished,this,&NetworkManager::routeReply);
@@ -25,12 +27,15 @@ NetworkManager::NetworkManager(QObject *parent) : QObject (parent),_attempts(1)
 
 NetworkManager* NetworkManager::get(QString url)
 {
+    networkActivity(url);
     setLastReply(manager()->get(createRequest(url)));
     return this;
 }
 
 NetworkManager* NetworkManager::post(const QString url, const QVariant data, QByteArray contentType)
 {
+    networkActivity(url);
+
     QNetworkRequest request = createRequest(url);
     if(contentType.isNull())
         contentType=mapContentType(data.type());
@@ -42,6 +47,8 @@ NetworkManager* NetworkManager::post(const QString url, const QVariant data, QBy
 
 NetworkManager *NetworkManager::put(const QString url, const QVariant data, QByteArray contentType)
 {
+    networkActivity(url);
+
     QNetworkRequest request = createRequest(url);
 
     if(contentType.isNull())
@@ -287,6 +294,11 @@ void NetworkManager::onAuthenticationRequired(QNetworkReply *reply, QAuthenticat
     authenticator->setPassword(authenticationCredentials.second);
 }
 
+void NetworkManager::setLastReply(QNetworkReply *reply)
+{
+    _lastReply=reply;
+}
+
 int NetworkManager::attemptsCount() const
 {
     return _attempts;
@@ -305,6 +317,7 @@ void NetworkManager::setAuthenticationCredentails(const QString &user, const QSt
     authenticationCredentials.second=password;
 }
 
+#if QT_VERSION < 0x60000
 void NetworkManager::setConfiguration(const QNetworkConfiguration &config)
 {
     m_manager.setConfiguration(config);
@@ -315,6 +328,7 @@ QNetworkConfiguration NetworkManager::configuration() const
 {
     return m_manager.configuration();
 }
+#endif
 
 void NetworkManager::setProxy(const QNetworkProxy &proxy)
 {
@@ -336,6 +350,7 @@ void NetworkManager::onProxyAuthenticationRequired(const QNetworkProxy &proxy, Q
 
 void NetworkManager::routeReply(QNetworkReply *reply)
 {   
+    finishedNetworkActivity(reply->url().toString());
     NetworkResponse *response=new NetworkResponse(reply);
     router.route(response);
     reply->deleteLater();

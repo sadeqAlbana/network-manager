@@ -41,13 +41,19 @@ public:
     int attemptsCount() const;
     void setAttemptsCount(int attempts);
     void setAuthenticationCredentails(const QString &user, const QString &password);
-
+#if QT_VERSION < 0x60000
     void setConfiguration(const QNetworkConfiguration &config);
     QNetworkConfiguration configuration() const;
+#endif
     void setProxy(const QNetworkProxy &proxy);
     QNetworkProxy proxy() const;
 
     void onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
+
+
+signals:
+    void networkActivity(QString url);
+    void finishedNetworkActivity(QString url);
 
 protected:
     virtual void routeReply(QNetworkReply *reply);
@@ -70,7 +76,7 @@ private:
     bool _usingBaseUrl=false;
     bool _allowRedirect=false;
     void onAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
-    inline void setLastReply(QNetworkReply *reply){_lastReply=reply;}
+    inline void setLastReply(QNetworkReply *reply);
     HeadersMap & permanentRawHeaders(){return _permanentRawHeaders;}
     int _attempts;
     QPair<QString,QString> authenticationCredentials;
