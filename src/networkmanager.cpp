@@ -8,9 +8,7 @@
 #include <QJsonValue>
 #include <QAuthenticator>
 #include <QNetworkProxy>
-#if QT_VERSION < 0x60000
 #include <QNetworkConfiguration>
-#endif
 NetworkManager::NetworkManager(QObject *parent) : QObject (parent),_attempts(1)
 {
     QObject::connect(&m_manager,&QNetworkAccessManager::finished,this,&NetworkManager::routeReply);
@@ -27,15 +25,12 @@ NetworkManager::NetworkManager(QObject *parent) : QObject (parent),_attempts(1)
 
 NetworkManager* NetworkManager::get(QString url)
 {
-    networkActivity(url);
     setLastReply(manager()->get(createRequest(url)));
     return this;
 }
 
 NetworkManager* NetworkManager::post(const QString url, const QVariant data, QByteArray contentType)
 {
-    networkActivity(url);
-
     QNetworkRequest request = createRequest(url);
     if(contentType.isNull())
         contentType=mapContentType(data.type());
@@ -47,8 +42,6 @@ NetworkManager* NetworkManager::post(const QString url, const QVariant data, QBy
 
 NetworkManager *NetworkManager::put(const QString url, const QVariant data, QByteArray contentType)
 {
-    networkActivity(url);
-
     QNetworkRequest request = createRequest(url);
 
     if(contentType.isNull())
@@ -56,6 +49,7 @@ NetworkManager *NetworkManager::put(const QString url, const QVariant data, QByt
 
     request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
     setLastReply(manager()->put(request,rawData(data)));
+
     return this;
 }
 
@@ -65,6 +59,10 @@ NetworkResponse NetworkManager::getSynch(QString url)
     int attemps=1;
     do{
         reply= synchronousManager.get(createRequest(url));
+
+        if(isIgnoringSslErrors())
+            reply->ignoreSslErrors();
+
         eventLoop.exec();
         if(reply->error()==QNetworkReply::NoError){
             break;
@@ -90,6 +88,9 @@ NetworkResponse NetworkManager::postSynch(const QString url, const QVariant data
     int attemps=1;
     do{
         reply= synchronousManager.post(request,rawData(data));
+        if(isIgnoringSslErrors())
+            reply->ignoreSslErrors();
+
         eventLoop.exec();
         if(reply->error()==QNetworkReply::NoError){
             break;
@@ -115,6 +116,10 @@ NetworkResponse NetworkManager::putSynch(const QString url, const QVariant data,
     int attemps=1;
     do{
         reply= synchronousManager.put(request,rawData(data));
+
+        if(isIgnoringSslErrors())
+            reply->ignoreSslErrors();
+
         eventLoop.exec();
         if(reply->error()==QNetworkReply::NoError){
             break;
@@ -144,6 +149,36 @@ void NetworkManager::removeRawHeader(const QByteArray &headerName)
 {
     permanentRawHeaders().remove(headerName);
 }
+
+bool NetworkManager::isIgnoringSslErrors() const
+{
+    return _ignoreSslErrors;
+
+}
+
+void NetworkManager::ignoreSslErrors(bool ignore)
+{
+    _ignoreSslErrors = ignore;
+}
+
+void NetworkManager::onSSLError(QNetworkReply *reply, const QList<QSslError> &errors)
+{
+    reply->ignoreSslErrors();
+}
+
+void NetworkManager::connectToHostEncrypted(const QString &hostName, quint16 port, const QSslConfiguration &sslConfiguration)
+{
+    manager()->connectToHostEncrypted(hostName,port,sslConfiguration);
+    synchronousManager.connectToHostEncrypted(hostName,port,sslConfiguration);
+}
+
+#if QT_VERSION >=QT_VERSION_CHECK(5,15,0)
+void NetworkManager::setTransferTimeout(int timeout)
+{
+    m_manager.setTransferTimeout(timeout);
+    synchronousManager.setTransferTimeout(timeout);
+}
+#endif
 
 QNetworkRequest NetworkManager::createRequest(const QString &url)
 {
@@ -287,6 +322,11 @@ QByteArray NetworkManager::rawData(const QVariant &data)
     return QByteArray();
 }
 
+QNetworkReply *NetworkManager::lastReply() const
+{
+    return _lastReply;
+}
+
 void NetworkManager::onAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator)
 {
     Q_UNUSED(reply);
@@ -297,7 +337,11 @@ void NetworkManager::onAuthenticationRequired(QNetworkReply *reply, QAuthenticat
 void NetworkManager::setLastReply(QNetworkReply *reply)
 {
     _lastReply=reply;
+
+    if(isIgnoringSslErrors())
+        _lastReply->ignoreSslErrors();
 }
+
 
 int NetworkManager::attemptsCount() const
 {
@@ -317,7 +361,6 @@ void NetworkManager::setAuthenticationCredentails(const QString &user, const QSt
     authenticationCredentials.second=password;
 }
 
-#if QT_VERSION < 0x60000
 void NetworkManager::setConfiguration(const QNetworkConfiguration &config)
 {
     m_manager.setConfiguration(config);
@@ -328,7 +371,6 @@ QNetworkConfiguration NetworkManager::configuration() const
 {
     return m_manager.configuration();
 }
-#endif
 
 void NetworkManager::setProxy(const QNetworkProxy &proxy)
 {
@@ -350,7 +392,7 @@ void NetworkManager::onProxyAuthenticationRequired(const QNetworkProxy &proxy, Q
 
 void NetworkManager::routeReply(QNetworkReply *reply)
 {   
-    finishedNetworkActivity(reply->url().toString());
+    emit finishedNetworkActivity(reply->url().toString());
     NetworkResponse *response=new NetworkResponse(reply);
     router.route(response);
     reply->deleteLater();

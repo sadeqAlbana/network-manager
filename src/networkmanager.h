@@ -41,24 +41,38 @@ public:
     int attemptsCount() const;
     void setAttemptsCount(int attempts);
     void setAuthenticationCredentails(const QString &user, const QString &password);
-#if QT_VERSION < 0x60000
+
     void setConfiguration(const QNetworkConfiguration &config);
     QNetworkConfiguration configuration() const;
-#endif
     void setProxy(const QNetworkProxy &proxy);
     QNetworkProxy proxy() const;
 
     void onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
 
-
-signals:
-    void networkActivity(QString url);
-    void finishedNetworkActivity(QString url);
-
-protected:
-    virtual void routeReply(QNetworkReply *reply);
     void setRawHeader(const QByteArray &headerName, const QByteArray &headerValue);
     void removeRawHeader(const QByteArray &headerName);
+
+    bool isIgnoringSslErrors() const;
+    void ignoreSslErrors(bool ignore);
+
+    void onSSLError(QNetworkReply *reply, const QList<QSslError> &errors);
+
+    void connectToHostEncrypted(const QString &hostName, quint16 port = 443, const QSslConfiguration &sslConfiguration = QSslConfiguration::defaultConfiguration());
+
+#if QT_VERSION >=QT_VERSION_CHECK(5,15,0)
+    void setTransferTimeout(int timeout = QNetworkRequest::DefaultTransferTimeoutConstant);
+#endif
+
+    QNetworkReply *lastReply() const;
+
+signals:
+    void finishedNetworkActivity(QString url);
+
+protected slots:
+    virtual void routeReply(QNetworkReply *reply);
+
+protected:
+
     QNetworkRequest createRequest(const QString &url);
     QByteArray mapContentType(const QVariant::Type type);
     QByteArray rawData(const QVariant &data);
@@ -76,11 +90,13 @@ private:
     bool _usingBaseUrl=false;
     bool _allowRedirect=false;
     void onAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
-    inline void setLastReply(QNetworkReply *reply);
+    void setLastReply(QNetworkReply *reply);
     HeadersMap & permanentRawHeaders(){return _permanentRawHeaders;}
     int _attempts;
     QPair<QString,QString> authenticationCredentials;
     QPair<QString,QString> proxyAuthenticationCredentials;
+
+    bool _ignoreSslErrors;
 };
 
 #endif // NETWORKMANAGER_H

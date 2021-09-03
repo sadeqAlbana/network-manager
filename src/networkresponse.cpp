@@ -6,8 +6,11 @@
 #include <QDebug>
 NetworkResponse::NetworkResponse(QNetworkReply *reply):_reply(reply)
 {
-    _binaryData=reply->readAll();
-    processReply();
+    if(reply->error()!=QNetworkReply::OperationCanceledError && reply->error()!=QNetworkReply::TimeoutError)
+    {
+        _binaryData=reply->readAll();
+        processReply();
+    }
 }
 
 NetworkResponse::~NetworkResponse()
@@ -105,7 +108,7 @@ void NetworkResponse::processReply()
 
 NetworkResponse::operator bool()
 {
-    return !error();
+    return (error()==QNetworkReply::NoError);
 }
 
 QDebug operator <<(QDebug dbg, const NetworkResponse &res)
