@@ -66,6 +66,7 @@ public:
     QNetworkReply *lastReply() const;
 
 signals:
+    void networkActivity(QString url);
     void finishedNetworkActivity(QString url);
 
 protected slots:

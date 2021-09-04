@@ -196,6 +196,8 @@ QNetworkRequest NetworkManager::createRequest(const QString &url)
         req.setRawHeader(headerName,permanentRawHeaders()[headerName]);
     }
 
+    emit networkActivity(url);
+
     return  req;
 }
 
