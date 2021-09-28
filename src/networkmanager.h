@@ -42,8 +42,10 @@ public:
     void setAttemptsCount(int attempts);
     void setAuthenticationCredentails(const QString &user, const QString &password);
 
+#if !defined(QT_NO_BEARERMANAGEMENT)
     void setConfiguration(const QNetworkConfiguration &config);
     QNetworkConfiguration configuration() const;
+#endif
     void setProxy(const QNetworkProxy &proxy);
     QNetworkProxy proxy() const;
 
@@ -57,7 +59,9 @@ public:
 
     void onSSLError(QNetworkReply *reply, const QList<QSslError> &errors);
 
+#ifndef QT_NO_SSL
     void connectToHostEncrypted(const QString &hostName, quint16 port = 443, const QSslConfiguration &sslConfiguration = QSslConfiguration::defaultConfiguration());
+#endif
 
 #if QT_VERSION >=QT_VERSION_CHECK(5,15,0)
     void setTransferTimeout(int timeout = QNetworkRequest::DefaultTransferTimeoutConstant);

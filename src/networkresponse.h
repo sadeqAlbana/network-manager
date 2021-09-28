@@ -31,7 +31,9 @@ public:
     friend QDebug operator <<(QDebug dbg, const NetworkResponse &res);
     const QJsonObject jsonObject() const;
     const QJsonArray jsonArray() const;
+#ifdef QT_HAVE_GUI
     QImage image() const;
+#endif
 
     operator bool();
 

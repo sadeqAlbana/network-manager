@@ -165,12 +165,13 @@ void NetworkManager::onSSLError(QNetworkReply *reply, const QList<QSslError> &er
 {
     reply->ignoreSslErrors();
 }
-
+#ifndef QT_NO_SSL
 void NetworkManager::connectToHostEncrypted(const QString &hostName, quint16 port, const QSslConfiguration &sslConfiguration)
 {
     manager()->connectToHostEncrypted(hostName,port,sslConfiguration);
     synchronousManager.connectToHostEncrypted(hostName,port,sslConfiguration);
 }
+#endif
 
 #if QT_VERSION >=QT_VERSION_CHECK(5,15,0)
 void NetworkManager::setTransferTimeout(int timeout)
@@ -362,7 +363,7 @@ void NetworkManager::setAuthenticationCredentails(const QString &user, const QSt
     authenticationCredentials.first=user;
     authenticationCredentials.second=password;
 }
-
+#if !defined(QT_NO_BEARERMANAGEMENT)
 void NetworkManager::setConfiguration(const QNetworkConfiguration &config)
 {
     m_manager.setConfiguration(config);
@@ -373,7 +374,7 @@ QNetworkConfiguration NetworkManager::configuration() const
 {
     return m_manager.configuration();
 }
-
+#endif
 void NetworkManager::setProxy(const QNetworkProxy &proxy)
 {
     m_manager.setProxy(proxy);

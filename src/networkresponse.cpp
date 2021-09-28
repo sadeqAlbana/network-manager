@@ -2,7 +2,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#ifdef QT_HAVE_GUI
 #include <QImage>
+#endif
 #include <QDebug>
 NetworkResponse::NetworkResponse(QNetworkReply *reply):_reply(reply)
 {
@@ -72,11 +74,12 @@ const QJsonArray NetworkResponse::jsonArray() const
 {
     return _replyData.toJsonArray();
 }
-
+#ifdef QT_HAVE_GUI
 QImage NetworkResponse::image() const
 {
     return _replyData.value<QImage>();
 }
+#endif
 
 void NetworkResponse::processReply()
 {

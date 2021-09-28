@@ -1,5 +1,11 @@
 TEMPLATE = lib
-QT += network gui
+QT += network
+qtHaveModule(gui){
+    QT += gui
+    DEFINES += QT_HAVE_GUI
+}else{
+QT -= gui
+}
 CONFIG += staticlib
 SOURCES += \
     $$PWD/src/networkmanager.cpp \
