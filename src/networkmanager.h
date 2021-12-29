@@ -84,7 +84,6 @@ protected:
 
 protected:
     Router router;
-private:
     QNetworkAccessManager m_manager;
     QNetworkAccessManager synchronousManager;
     QEventLoop eventLoop;
