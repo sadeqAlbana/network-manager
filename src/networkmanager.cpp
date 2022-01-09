@@ -163,6 +163,7 @@ void NetworkManager::ignoreSslErrors(bool ignore)
 
 void NetworkManager::onSSLError(QNetworkReply *reply, const QList<QSslError> &errors)
 {
+    Q_UNUSED(errors)
     reply->ignoreSslErrors();
 }
 #ifndef QT_NO_SSL

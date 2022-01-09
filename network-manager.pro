@@ -1,13 +1,15 @@
 TEMPLATE = lib
 QT += network
-#CONFIG += have_gui
-contains(CONFIG,cd have_gui){
+
+contains(CONFIG,have_gui){
     QT += gui
     DEFINES += QT_HAVE_GUI
 }else{
 QT -= gui
 }
+
 CONFIG += staticlib
+
 SOURCES += \
     $$PWD/src/networkmanager.cpp \
     $$PWD/src/networkresponse.cpp \
