@@ -310,7 +310,7 @@ QByteArray NetworkManager::rawData(const QVariant &data)
 
     if(type==QMetaType::QByteArray)
         return data.toByteArray();
-
+#ifdef QT_HAVE_GUI
     if(type==QMetaType::QImage)
     {
         QImage image=data.value<QImage>();
@@ -321,6 +321,7 @@ QByteArray NetworkManager::rawData(const QVariant &data)
         buffer.close();
         return imageData;
     }
+#endif
 
 
     qDebug()<<"NetworkManager::rawData : unsupported QVariant type";
