@@ -3,7 +3,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QBuffer>
+#ifdef QT_HAVE_GUI
 #include <QImage>
+#endif
 #include <QJsonArray>
 #include <QJsonValue>
 #include <QAuthenticator>
