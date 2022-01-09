@@ -1,6 +1,7 @@
 TEMPLATE = lib
 QT += network
-qtHaveModule(gui){
+#CONFIG += have_gui
+contains(CONFIG,have_gui){
     QT += gui
     DEFINES += QT_HAVE_GUI
 }else{

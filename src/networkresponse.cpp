@@ -96,12 +96,14 @@ void NetworkResponse::processReply()
         }
         return;
     }
+#ifdef QT_HAVE_GUI
     if(contentType.contains("image/"))
     {
         QImage img=QImage::fromData(binaryData());
         if(!img.isNull())
             _replyData=img;
     }
+#endif
     if(contentType.contains("text/"))
     {
         _replyData=QString(binaryData());
