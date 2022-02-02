@@ -73,7 +73,7 @@ NetworkResponse NetworkManager::getSynch(QString url)
             reply->ignoreSslErrors();
 
         eventLoop.exec();
-        if(reply->error()==QNetworkReply::NoError){
+        if(reply->error()==QNetworkReply::NoError || !isConnectionError(reply->error())){
             break;
         }
         else{
@@ -81,6 +81,8 @@ NetworkResponse NetworkManager::getSynch(QString url)
         }
     }
     while(attemps<=attemptsCount());
+
+    emit finishedNetworkActivity(reply->url().toString());
 
     return NetworkResponse(reply);
 }
@@ -101,7 +103,7 @@ NetworkResponse NetworkManager::postSynch(const QString url, const QVariant data
             reply->ignoreSslErrors();
 
         eventLoop.exec();
-        if(reply->error()==QNetworkReply::NoError){
+        if(reply->error()==QNetworkReply::NoError || !isConnectionError(reply->error())){
             break;
         }
         else{
@@ -109,6 +111,8 @@ NetworkResponse NetworkManager::postSynch(const QString url, const QVariant data
         }
     }
     while(attemps<=attemptsCount());
+
+    emit finishedNetworkActivity(reply->url().toString());
 
     return NetworkResponse(reply);
 }
@@ -125,8 +129,7 @@ NetworkResponse NetworkManager::putSynch(const QString url, const QVariant data,
     int attemps=1;
     do{
         reply= synchronousManager.put(request,rawData(data));
-
-        if(isIgnoringSslErrors())
+        if(isIgnoringSslErrors() || !isConnectionError(reply->error()))
             reply->ignoreSslErrors();
 
         eventLoop.exec();
@@ -139,7 +142,20 @@ NetworkResponse NetworkManager::putSynch(const QString url, const QVariant data,
     }
     while(attemps<=attemptsCount());
 
+    emit finishedNetworkActivity(reply->url().toString());
     return NetworkResponse(reply);
+}
+
+bool NetworkManager::isConnectionError(QNetworkReply::NetworkError error)
+{
+    switch (error) {
+    case QNetworkReply::ConnectionRefusedError: return true;
+    case QNetworkReply::RemoteHostClosedError: return true;
+    case QNetworkReply::HostNotFoundError: return true;
+    case QNetworkReply::TimeoutError: return true;
+    case QNetworkReply::NetworkSessionFailedError: return true;
+    default: return false;
+    }
 }
 
 

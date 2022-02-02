@@ -31,6 +31,8 @@ public:
     NetworkResponse postSynch(const QString url, const QVariant data, QByteArray contentType=QByteArray());
     NetworkResponse putSynch(const QString url, const QVariant data, QByteArray contentType=QByteArray());
 
+    bool isConnectionError(QNetworkReply::NetworkError error);
+
 
     void subcribe(Callback cb);
     template <class T>
