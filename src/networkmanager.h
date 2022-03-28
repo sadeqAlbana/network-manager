@@ -32,19 +32,20 @@ public:
     NetworkResponse putSynch(const QString url, const QVariant data, QByteArray contentType=QByteArray());
 
     bool isConnectionError(QNetworkReply::NetworkError error);
+    HeadersMap  permanentRawHeaders(){return m_permanentRawHeaders;} //chaning this methods signiture will cause a disaster to apps using this library, it's changed !
 
 
     void subcribe(Callback cb);
     template <class T>
     void subcribe(T *instance,void (T::*ptr)(NetworkResponse *))
     {
-        router.registerRoute(_lastReply,instance,ptr);
+        m_router.registerRoute(m_lastReply,instance,ptr);
     }
 
-    void setBaseUrl(QString url){baseUrl=url; _usingBaseUrl=true;}
-    bool usingBaseUrl(){return _usingBaseUrl;}
-    void allowRedirect(bool allow){_allowRedirect=allow;}
-    inline bool redirectAllowed() const{return _allowRedirect;}
+    void setBaseUrl(QString url){m_baseUrl=url;}
+    bool usingBaseUrl(){return !m_baseUrl.isEmpty();}
+    void allowRedirect(bool allow){m_allowRedirect=allow;}
+    inline bool redirectAllowed() const{return m_allowRedirect;}
     inline QNetworkAccessManager* manager(){return &m_manager;}
 
     int attemptsCount() const;
@@ -92,24 +93,22 @@ protected:
     QByteArray rawData(const QVariant &data);
 
 protected:
-    Router router;
+    Router m_router;
     QNetworkAccessManager m_manager;
-    QNetworkAccessManager synchronousManager;
-    QEventLoop eventLoop;
-    QString baseUrl;
-    QNetworkReply* _lastReply;
-    HeadersMap _permanentRawHeaders;
+    QNetworkAccessManager m_synchronousManager;
+    QEventLoop m_eventLoop;
+    QString m_baseUrl;
+    QNetworkReply* m_lastReply;
+    HeadersMap m_permanentRawHeaders;
 
-    bool _usingBaseUrl=false;
-    bool _allowRedirect=false;
+    bool m_allowRedirect=false;
     void onAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
     void setLastReply(QNetworkReply *reply);
-    HeadersMap & permanentRawHeaders(){return _permanentRawHeaders;}
-    int _attempts;
+    int m_attempts;
     QPair<QString,QString> authenticationCredentials;
     QPair<QString,QString> proxyAuthenticationCredentials;
 
-    bool _ignoreSslErrors;
+    bool m_ignoreSslErrors;
 };
 
 #endif // NETWORKMANAGER_H

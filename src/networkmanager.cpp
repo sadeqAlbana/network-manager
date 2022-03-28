@@ -18,16 +18,16 @@
 #include <QAuthenticator>
 #include <QNetworkProxy>
 #include <QNetworkConfiguration>
-NetworkManager::NetworkManager(QObject *parent) : QObject (parent),_attempts(1)
+NetworkManager::NetworkManager(QObject *parent) : QObject (parent),m_attempts(1)
 {
     QObject::connect(&m_manager,&QNetworkAccessManager::finished,this,&NetworkManager::routeReply);
-    QObject::connect(&synchronousManager,&QNetworkAccessManager::finished,&eventLoop,&QEventLoop::quit);
+    QObject::connect(&m_synchronousManager,&QNetworkAccessManager::finished,&m_eventLoop,&QEventLoop::quit);
 
     QObject::connect(&m_manager,&QNetworkAccessManager::authenticationRequired,this,&NetworkManager::onAuthenticationRequired);
-    QObject::connect(&synchronousManager,&QNetworkAccessManager::authenticationRequired,this,&NetworkManager::onAuthenticationRequired);
+    QObject::connect(&m_synchronousManager,&QNetworkAccessManager::authenticationRequired,this,&NetworkManager::onAuthenticationRequired);
 
     QObject::connect(&m_manager,&QNetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
-    QObject::connect(&synchronousManager,&QNetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
+    QObject::connect(&m_synchronousManager,&QNetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
 
 }
 
@@ -67,12 +67,12 @@ NetworkResponse NetworkManager::getSynch(QString url)
     QNetworkReply *reply;
     int attemps=1;
     do{
-        reply= synchronousManager.get(createRequest(url));
+        reply= m_synchronousManager.get(createRequest(url));
 
         if(isIgnoringSslErrors())
             reply->ignoreSslErrors();
 
-        eventLoop.exec();
+        m_eventLoop.exec();
         if(reply->error()==QNetworkReply::NoError || !isConnectionError(reply->error())){
             break;
         }
@@ -98,11 +98,11 @@ NetworkResponse NetworkManager::postSynch(const QString url, const QVariant data
     QNetworkReply *reply;
     int attemps=1;
     do{
-        reply= synchronousManager.post(request,rawData(data));
+        reply= m_synchronousManager.post(request,rawData(data));
         if(isIgnoringSslErrors())
             reply->ignoreSslErrors();
 
-        eventLoop.exec();
+        m_eventLoop.exec();
         if(reply->error()==QNetworkReply::NoError || !isConnectionError(reply->error())){
             break;
         }
@@ -128,11 +128,11 @@ NetworkResponse NetworkManager::putSynch(const QString url, const QVariant data,
     QNetworkReply *reply;
     int attemps=1;
     do{
-        reply= synchronousManager.put(request,rawData(data));
+        reply= m_synchronousManager.put(request,rawData(data));
         if(isIgnoringSslErrors() || !isConnectionError(reply->error()))
             reply->ignoreSslErrors();
 
-        eventLoop.exec();
+        m_eventLoop.exec();
         if(reply->error()==QNetworkReply::NoError){
             break;
         }
@@ -162,28 +162,28 @@ bool NetworkManager::isConnectionError(QNetworkReply::NetworkError error)
 
 void NetworkManager::subcribe(Callback cb)
 {
-    router.registerRoute(_lastReply,cb);
+    m_router.registerRoute(m_lastReply,cb);
 }
 
 void NetworkManager::setRawHeader(const QByteArray &headerName, const QByteArray &headerValue)
 {
-    permanentRawHeaders()[headerName]=headerValue;
+    m_permanentRawHeaders[headerName]=headerValue;
 }
 
 void NetworkManager::removeRawHeader(const QByteArray &headerName)
 {
-    permanentRawHeaders().remove(headerName);
+    m_permanentRawHeaders.remove(headerName);
 }
 
 bool NetworkManager::isIgnoringSslErrors() const
 {
-    return _ignoreSslErrors;
+    return m_ignoreSslErrors;
 
 }
 
 void NetworkManager::ignoreSslErrors(bool ignore)
 {
-    _ignoreSslErrors = ignore;
+    m_ignoreSslErrors = ignore;
 }
 
 void NetworkManager::onSSLError(QNetworkReply *reply, const QList<QSslError> &errors)
@@ -195,7 +195,7 @@ void NetworkManager::onSSLError(QNetworkReply *reply, const QList<QSslError> &er
 void NetworkManager::connectToHostEncrypted(const QString &hostName, quint16 port, const QSslConfiguration &sslConfiguration)
 {
     manager()->connectToHostEncrypted(hostName,port,sslConfiguration);
-    synchronousManager.connectToHostEncrypted(hostName,port,sslConfiguration);
+    m_synchronousManager.connectToHostEncrypted(hostName,port,sslConfiguration);
 }
 #endif
 
@@ -203,7 +203,7 @@ void NetworkManager::connectToHostEncrypted(const QString &hostName, quint16 por
 void NetworkManager::setTransferTimeout(int timeout)
 {
     m_manager.setTransferTimeout(timeout);
-    synchronousManager.setTransferTimeout(timeout);
+    m_synchronousManager.setTransferTimeout(timeout);
 }
 #endif
 
@@ -216,11 +216,11 @@ QNetworkRequest NetworkManager::createRequest(const QString &url)
         req.setAttribute(QNetworkRequest::RedirectPolicyAttribute,QNetworkRequest::SameOriginRedirectPolicy);
     }
 
-    QString requestUrl= usingBaseUrl() ? baseUrl+url : url;
+    QString requestUrl= usingBaseUrl() ? m_baseUrl+url : url;
     req.setUrl(requestUrl);
 
-    for (const QByteArray & headerName : permanentRawHeaders().keys()) {
-        req.setRawHeader(headerName,permanentRawHeaders()[headerName]);
+    for (const QByteArray & headerName : m_permanentRawHeaders.keys()) {
+        req.setRawHeader(headerName,m_permanentRawHeaders[headerName]);
     }
 
     emit networkActivity(url);
@@ -230,8 +230,8 @@ QNetworkRequest NetworkManager::createRequest(const QString &url)
 
 QByteArray NetworkManager::mapContentType(const QVariant::Type type)
 {
-    if(permanentRawHeaders().contains("content-type")) //if this header already exists then return it to avoid conflicts
-        return permanentRawHeaders()["content-type"];
+    if(m_permanentRawHeaders.contains("content-type")) //if this header already exists then return it to avoid conflicts
+        return m_permanentRawHeaders["content-type"];
 
     QByteArray contentType;
     //QMetaType::Type type=static_cast<QMetaType::Type>(data.type());
@@ -354,7 +354,7 @@ QByteArray NetworkManager::rawData(const QVariant &data)
 
 QNetworkReply *NetworkManager::lastReply() const
 {
-    return _lastReply;
+    return m_lastReply;
 }
 
 void NetworkManager::onAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator)
@@ -366,23 +366,23 @@ void NetworkManager::onAuthenticationRequired(QNetworkReply *reply, QAuthenticat
 
 void NetworkManager::setLastReply(QNetworkReply *reply)
 {
-    _lastReply=reply;
+    m_lastReply=reply;
 
     if(isIgnoringSslErrors())
-        _lastReply->ignoreSslErrors();
+        m_lastReply->ignoreSslErrors();
 }
 
 
 int NetworkManager::attemptsCount() const
 {
-    return _attempts;
+    return m_attempts;
 }
 
 void NetworkManager::setAttemptsCount(int attempts)
 {
     if(attempts<1)
         return;
-    _attempts = attempts;
+    m_attempts = attempts;
 }
 
 void NetworkManager::setAuthenticationCredentails(const QString &user, const QString &password)
@@ -394,7 +394,7 @@ void NetworkManager::setAuthenticationCredentails(const QString &user, const QSt
 void NetworkManager::setConfiguration(const QNetworkConfiguration &config)
 {
     m_manager.setConfiguration(config);
-    synchronousManager.setConfiguration(config);
+    m_synchronousManager.setConfiguration(config);
 }
 
 QNetworkConfiguration NetworkManager::configuration() const
@@ -405,7 +405,7 @@ QNetworkConfiguration NetworkManager::configuration() const
 void NetworkManager::setProxy(const QNetworkProxy &proxy)
 {
     m_manager.setProxy(proxy);
-    synchronousManager.setProxy(proxy);
+    m_synchronousManager.setProxy(proxy);
 }
 
 QNetworkProxy NetworkManager::proxy() const
@@ -424,7 +424,7 @@ void NetworkManager::routeReply(QNetworkReply *reply)
 {   
     emit finishedNetworkActivity(reply->url().toString());
     NetworkResponse *response=new NetworkResponse(reply);
-    router.route(response);
+    m_router.route(response);
     reply->deleteLater();
     delete response;
 }
