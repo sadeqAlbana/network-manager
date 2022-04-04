@@ -33,7 +33,7 @@ public:
 
     bool isConnectionError(QNetworkReply::NetworkError error);
     HeadersMap  permanentRawHeaders(){return m_permanentRawHeaders;} //chaning this methods signiture will cause a disaster to apps using this library, it's changed !
-
+    QByteArray rawHeader(const QByteArray &header)const {return m_permanentRawHeaders.value(header);}
 
     void subcribe(Callback cb);
     template <class T>
