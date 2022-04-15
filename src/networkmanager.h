@@ -68,6 +68,7 @@ public:
 #endif
 
     QNetworkReply *lastReply() const;
+    static QByteArray rawData(const QVariant &data);
 
 signals:
     void networkActivity(QString url);
@@ -80,7 +81,6 @@ protected:
 
     QNetworkRequest createRequest(const QString &url);
     QByteArray mapContentType(const QVariant::Type type);
-    QByteArray rawData(const QVariant &data);
 
 protected:
     Router router;

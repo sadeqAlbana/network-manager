@@ -211,14 +211,14 @@ QByteArray NetworkManager::mapContentType(const QVariant::Type type)
         return permanentRawHeaders()["content-type"];
 
     QByteArray contentType;
-    //QMetaType::Type type=static_cast<QMetaType::Type>(data.type());
+    //QMetaType::Type::Type type=static_cast<QMetaType::Type::Type>(data.type());
     switch (type) {
-    case QMetaType::QJsonObject  :
-    case QMetaType::QJsonValue   :
-    case QMetaType::QJsonArray   :
-    case QMetaType::QJsonDocument: contentType = "application/json"; break;
-    case QMetaType::QImage       : contentType = "image/png";        break;
-    case QMetaType::QString      : contentType = "text/plain";       break;
+    case QMetaType::Type::QJsonObject  :
+    case QMetaType::Type::QJsonValue   :
+    case QMetaType::Type::QJsonArray   :
+    case QMetaType::Type::QJsonDocument: contentType = "application/json"; break;
+    case QMetaType::Type::QImage       : contentType = "image/png";        break;
+    case QMetaType::Type::QString      : contentType = "text/plain";       break;
 
     default                      :                                   break;
     }
@@ -227,10 +227,10 @@ QByteArray NetworkManager::mapContentType(const QVariant::Type type)
 
 QByteArray NetworkManager::rawData(const QVariant &data)
 {
-    QMetaType::Type type=static_cast<QMetaType::Type>(data.type());
+    QMetaType::Type type=(QMetaType::Type)data.type();
 
     /**************************json**************************/
-    if(type==QMetaType::QJsonObject)
+    if(type==QMetaType::Type::QJsonObject)
     {
         QJsonObject object=data.toJsonObject();
         QJsonDocument document;
@@ -238,7 +238,7 @@ QByteArray NetworkManager::rawData(const QVariant &data)
         return document.toJson(QJsonDocument::Compact);
     }
 
-    if(type==QMetaType::QJsonArray)
+    if(type==QMetaType::Type::QJsonArray)
     {
         QJsonArray array=data.toJsonArray();
         QJsonDocument document;
@@ -246,16 +246,16 @@ QByteArray NetworkManager::rawData(const QVariant &data)
         return document.toJson(QJsonDocument::Compact);
     }
 
-    if(type==QMetaType::QJsonDocument)
+    if(type==QMetaType::Type::QJsonDocument)
     {
         return data.toJsonDocument().toJson(QJsonDocument::Compact);
     }
 
-    if(type==QMetaType::QJsonValue)
+    if(type==QMetaType::Type::QJsonValue)
     {
-        QJsonValue jsonValue=data.toJsonValue();
+        QJsonValue jsonValue=data.value<QJsonValue>();
 
-        if(jsonValue.type()==QJsonValue::Array)
+        if(jsonValue.type()==QJsonValue::Type::Array)
         {
             QJsonArray array=jsonValue.toArray();
             QJsonDocument document;
@@ -263,55 +263,61 @@ QByteArray NetworkManager::rawData(const QVariant &data)
             return document.toJson(QJsonDocument::Compact);
         }
 
-        if(jsonValue.type()==QJsonValue::Object)
+        if(jsonValue.type()==QJsonValue::Type::Object)
         {
             QJsonObject object=jsonValue.toObject();
             QJsonDocument document;
             document.setObject(object);
             return document.toJson(QJsonDocument::Compact);
         }
-        if(jsonValue.type()==QJsonValue::String)
+        if(jsonValue.type()==QJsonValue::Type::String)
         {
             return jsonValue.toString().toUtf8();
         }
-        if(jsonValue==QJsonValue::Double)
+        if(jsonValue.type()==QJsonValue::Type::Double)
         {
             return QString::number(jsonValue.toDouble()).toUtf8();
         }
-        if(jsonValue.type()==QJsonValue::Bool)
+        if(jsonValue.type()==QJsonValue::Type::Bool)
         {
             return jsonValue.toBool() ? QByteArray("1") : QByteArray("0");
+        }
+        if(jsonValue.type()==QJsonValue::Type::Null){
+            return QByteArray("");
+        }
+        if(jsonValue.type()==QJsonValue::Type::Undefined){
+            return QByteArray();
         }
 
     }
 
     /**********************end json**************************/
 
-    if(type==QMetaType::QString)
+    if(type==QMetaType::Type::QString)
         return data.toString().toUtf8();
 
-    if(type==QMetaType::Int)
+    if(type==QMetaType::Type::Int)
         return QString::number(data.toInt()).toUtf8();
 
-    if(type==QMetaType::Double)
+    if(type==QMetaType::Type::Double)
         return QString::number(data.toDouble()).toUtf8();
 
-    if(type==QMetaType::Float)
+    if(type==QMetaType::Type::Float)
         return QString::number(data.toFloat()).toUtf8();
 
-    if(type==QMetaType::Long || type==QMetaType::LongLong)
+    if(type==QMetaType::Type::Long || type==QMetaType::Type::LongLong)
         return QString::number(data.toLongLong()).toUtf8();
 
-    if(type==QMetaType::UInt)
+    if(type==QMetaType::Type::UInt)
         return QString::number(data.toUInt()).toUtf8();
 
-    if(type==QMetaType::ULongLong)
+    if(type==QMetaType::Type::ULongLong)
         return QString::number(data.toULongLong()).toUtf8();
 
-    if(type==QMetaType::QByteArray)
+    if(type==QMetaType::Type::QByteArray)
         return data.toByteArray();
 #ifdef QT_HAVE_GUI
-    if(type==QMetaType::QImage)
+    if(type==QMetaType::Type::QImage)
     {
         QImage image=data.value<QImage>();
         QByteArray imageData;
@@ -324,7 +330,10 @@ QByteArray NetworkManager::rawData(const QVariant &data)
 #endif
 
 
-    qDebug()<<"NetworkManager::rawData : unsupported QVariant type";
+    if(type==QMetaType::Type::UnknownType)
+        return QByteArray();
+
+    qDebug()<<"NetworkManager::rawData : unsupported QVariant type: " << data.type();
 
     return QByteArray();
 }
