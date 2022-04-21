@@ -52,7 +52,7 @@ public:
     void setAttemptsCount(int attempts);
     void setAuthenticationCredentails(const QString &user, const QString &password);
 
-#if !defined(QT_NO_BEARERMANAGEMENT)
+#if !defined(QT_NO_BEARERMANAGEMENT) && QT_VERSION <QT_VERSION_CHECK(6,0,0)
     void setConfiguration(const QNetworkConfiguration &config);
     QNetworkConfiguration configuration() const;
 #endif

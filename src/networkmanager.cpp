@@ -17,7 +17,9 @@
 #include <QJsonValue>
 #include <QAuthenticator>
 #include <QNetworkProxy>
+#if !defined(QT_NO_BEARERMANAGEMENT) && QT_VERSION <QT_VERSION_CHECK(6,0,0)
 #include <QNetworkConfiguration>
+#endif
 NetworkManager::NetworkManager(QObject *parent) : QObject (parent),m_attempts(1)
 {
     QObject::connect(&m_manager,&QNetworkAccessManager::finished,this,&NetworkManager::routeReply);
@@ -399,7 +401,7 @@ void NetworkManager::setAuthenticationCredentails(const QString &user, const QSt
     authenticationCredentials.first=user;
     authenticationCredentials.second=password;
 }
-#if !defined(QT_NO_BEARERMANAGEMENT)
+#if !defined(QT_NO_BEARERMANAGEMENT) && QT_VERSION <QT_VERSION_CHECK(6,0,0)
 void NetworkManager::setConfiguration(const QNetworkConfiguration &config)
 {
     m_manager.setConfiguration(config);
