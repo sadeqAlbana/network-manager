@@ -30,7 +30,8 @@ NetworkManager::NetworkManager(QObject *parent) : QObject (parent),m_attempts(1)
 
     QObject::connect(&m_manager,&QNetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
     QObject::connect(&m_synchronousManager,&QNetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
-
+    QObject::connect(&m_manager,&NetworkAccessManager::networkActivity,this,&NetworkManager::networkActivity);
+        QObject::connect(&m_synchronousManager,&NetworkAccessManager::finishedNetworkActivity,this,&NetworkManager::finishedNetworkActivity);
 }
 
 
@@ -84,7 +85,7 @@ NetworkResponse NetworkManager::getSynch(QString url)
     }
     while(attemps<=attemptsCount());
 
-    emit finishedNetworkActivity(reply->url().toString());
+    emit finishedNetworkActivity(reply->url());
 
     return NetworkResponse(reply);
 }
@@ -114,7 +115,7 @@ NetworkResponse NetworkManager::postSynch(const QString url, const QVariant data
     }
     while(attemps<=attemptsCount());
 
-    emit finishedNetworkActivity(reply->url().toString());
+    emit finishedNetworkActivity(reply->url());
 
     return NetworkResponse(reply);
 }
@@ -144,7 +145,7 @@ NetworkResponse NetworkManager::putSynch(const QString url, const QVariant data,
     }
     while(attemps<=attemptsCount());
 
-    emit finishedNetworkActivity(reply->url().toString());
+    emit finishedNetworkActivity(reply->url());
     return NetworkResponse(reply);
 }
 
@@ -193,6 +194,12 @@ void NetworkManager::onSSLError(QNetworkReply *reply, const QList<QSslError> &er
     Q_UNUSED(errors)
     reply->ignoreSslErrors();
 }
+
+void NetworkManager::abortAllRequests()
+{
+    m_manager.abortAllRequets();
+    m_synchronousManager.abortAllRequets();
+}
 #ifndef QT_NO_SSL
 void NetworkManager::connectToHostEncrypted(const QString &hostName, quint16 port, const QSslConfiguration &sslConfiguration)
 {
@@ -225,7 +232,7 @@ QNetworkRequest NetworkManager::createRequest(const QString &url)
         req.setRawHeader(headerName,m_permanentRawHeaders[headerName]);
     }
 
-    emit networkActivity(url);
+    //emit networkActivity(url);
 
     return  req;
 }
@@ -433,7 +440,7 @@ void NetworkManager::onProxyAuthenticationRequired(const QNetworkProxy &proxy, Q
 
 void NetworkManager::routeReply(QNetworkReply *reply)
 {   
-    emit finishedNetworkActivity(reply->url().toString());
+    emit finishedNetworkActivity(reply->url());
     NetworkResponse *response=new NetworkResponse(reply);
     m_router.route(response);
     reply->deleteLater();
