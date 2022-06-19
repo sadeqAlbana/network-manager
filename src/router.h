@@ -24,7 +24,7 @@ struct MemberCallbackInfo
 };
 
 typedef QMap<QNetworkReply *,MemberCallbackInfo> MemberCallbacks;
-
+namespace SNetworkManager{
 class Router
 {
 public:
@@ -56,6 +56,7 @@ private:
     MemberCallbacks callbacks;
 };
 
-typedef Router Route;
+}
+
 
 #endif // ROUTER_H

@@ -83,7 +83,7 @@ protected:
     QByteArray rawData(const QVariant &data);
 
 protected:
-    Router router;
+    SNetworkManager::Router router;
     QNetworkAccessManager m_manager;
     QNetworkAccessManager synchronousManager;
     QEventLoop eventLoop;
