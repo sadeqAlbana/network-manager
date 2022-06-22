@@ -20,16 +20,19 @@
 #if !defined(QT_NO_BEARERMANAGEMENT) && QT_VERSION <QT_VERSION_CHECK(6,0,0)
 #include <QNetworkConfiguration>
 #endif
-NetworkManager::NetworkManager(QObject *parent) : QObject (parent),m_attempts(1)
+NetworkManager::NetworkManager(QObject *parent) : QObject (parent),m_manager(new QNetworkAccessManager(this)),m_synchronousManager(new QNetworkAccessManager(this)),
+    m_eventLoop(new QEventLoop(this)),
+    m_attempts(1)
+
 {
-    QObject::connect(&m_manager,&QNetworkAccessManager::finished,this,&NetworkManager::routeReply);
-    QObject::connect(&m_synchronousManager,&QNetworkAccessManager::finished,&m_eventLoop,&QEventLoop::quit);
+    QObject::connect(m_manager,&QNetworkAccessManager::finished,this,&NetworkManager::routeReply);
+    QObject::connect(m_synchronousManager,&QNetworkAccessManager::finished,m_eventLoop,&QEventLoop::quit);
 
-    QObject::connect(&m_manager,&QNetworkAccessManager::authenticationRequired,this,&NetworkManager::onAuthenticationRequired);
-    QObject::connect(&m_synchronousManager,&QNetworkAccessManager::authenticationRequired,this,&NetworkManager::onAuthenticationRequired);
+    QObject::connect(m_manager,&QNetworkAccessManager::authenticationRequired,this,&NetworkManager::onAuthenticationRequired);
+    QObject::connect(m_synchronousManager,&QNetworkAccessManager::authenticationRequired,this,&NetworkManager::onAuthenticationRequired);
 
-    QObject::connect(&m_manager,&QNetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
-    QObject::connect(&m_synchronousManager,&QNetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
+    QObject::connect(m_manager,&QNetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
+    QObject::connect(m_synchronousManager,&QNetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
 
 }
 
@@ -69,12 +72,12 @@ NetworkResponse NetworkManager::getSynch(QString url)
     QNetworkReply *reply;
     int attemps=1;
     do{
-        reply= m_synchronousManager.get(createRequest(url));
+        reply= m_synchronousManager->get(createRequest(url));
 
         if(isIgnoringSslErrors())
             reply->ignoreSslErrors();
 
-        m_eventLoop.exec();
+        m_eventLoop->exec();
         if(reply->error()==QNetworkReply::NoError || !isConnectionError(reply->error())){
             break;
         }
@@ -100,11 +103,11 @@ NetworkResponse NetworkManager::postSynch(const QString url, const QVariant data
     QNetworkReply *reply;
     int attemps=1;
     do{
-        reply= m_synchronousManager.post(request,rawData(data));
+        reply= m_synchronousManager->post(request,rawData(data));
         if(isIgnoringSslErrors())
             reply->ignoreSslErrors();
 
-        m_eventLoop.exec();
+        m_eventLoop->exec();
         if(reply->error()==QNetworkReply::NoError || !isConnectionError(reply->error())){
             break;
         }
@@ -130,11 +133,11 @@ NetworkResponse NetworkManager::putSynch(const QString url, const QVariant data,
     QNetworkReply *reply;
     int attemps=1;
     do{
-        reply= m_synchronousManager.put(request,rawData(data));
+        reply= m_synchronousManager->put(request,rawData(data));
         if(isIgnoringSslErrors() || !isConnectionError(reply->error()))
             reply->ignoreSslErrors();
 
-        m_eventLoop.exec();
+        m_eventLoop->exec();
         if(reply->error()==QNetworkReply::NoError){
             break;
         }
@@ -197,15 +200,15 @@ void NetworkManager::onSSLError(QNetworkReply *reply, const QList<QSslError> &er
 void NetworkManager::connectToHostEncrypted(const QString &hostName, quint16 port, const QSslConfiguration &sslConfiguration)
 {
     manager()->connectToHostEncrypted(hostName,port,sslConfiguration);
-    m_synchronousManager.connectToHostEncrypted(hostName,port,sslConfiguration);
+    m_synchronousManager->connectToHostEncrypted(hostName,port,sslConfiguration);
 }
 #endif
 
 #if QT_VERSION >=QT_VERSION_CHECK(5,15,0)
 void NetworkManager::setTransferTimeout(int timeout)
 {
-    m_manager.setTransferTimeout(timeout);
-    m_synchronousManager.setTransferTimeout(timeout);
+    m_manager->setTransferTimeout(timeout);
+    m_synchronousManager->setTransferTimeout(timeout);
 }
 #endif
 
@@ -404,24 +407,24 @@ void NetworkManager::setAuthenticationCredentails(const QString &user, const QSt
 #if !defined(QT_NO_BEARERMANAGEMENT) && QT_VERSION <QT_VERSION_CHECK(6,0,0)
 void NetworkManager::setConfiguration(const QNetworkConfiguration &config)
 {
-    m_manager.setConfiguration(config);
-    m_synchronousManager.setConfiguration(config);
+    m_manager->setConfiguration(config);
+    m_synchronousManager->setConfiguration(config);
 }
 
 QNetworkConfiguration NetworkManager::configuration() const
 {
-    return m_manager.configuration();
+    return m_manager->configuration();
 }
 #endif
 void NetworkManager::setProxy(const QNetworkProxy &proxy)
 {
-    m_manager.setProxy(proxy);
-    m_synchronousManager.setProxy(proxy);
+    m_manager->setProxy(proxy);
+    m_synchronousManager->setProxy(proxy);
 }
 
 QNetworkProxy NetworkManager::proxy() const
 {
-    return m_manager.proxy();
+    return m_manager->proxy();
 }
 
 void NetworkManager::onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator)

@@ -46,7 +46,7 @@ public:
     bool usingBaseUrl(){return !m_baseUrl.isEmpty();}
     void allowRedirect(bool allow){m_allowRedirect=allow;}
     inline bool redirectAllowed() const{return m_allowRedirect;}
-    inline QNetworkAccessManager* manager(){return &m_manager;}
+    inline QNetworkAccessManager* manager(){return m_manager;}
 
     int attemptsCount() const;
     void setAttemptsCount(int attempts);
@@ -94,9 +94,9 @@ protected:
 
 protected:
     SNetworkManager::Router m_router;
-    QNetworkAccessManager m_manager;
-    QNetworkAccessManager m_synchronousManager;
-    QEventLoop m_eventLoop;
+    QNetworkAccessManager *m_manager;
+    QNetworkAccessManager *m_synchronousManager;
+    QEventLoop *m_eventLoop;
     QString m_baseUrl;
     QNetworkReply* m_lastReply;
     HeadersMap m_permanentRawHeaders;
