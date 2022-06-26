@@ -14,7 +14,7 @@
 #include "router.h"
 #include <QNetworkReply>
 #include <QEventLoop>
-
+#include "networkaccessmanager.h"
 using HeadersMap= QMap<QByteArray,QByteArray>;
 
 class NetworkManager : public QObject
@@ -68,7 +68,7 @@ public:
     void ignoreSslErrors(bool ignore);
 
     void onSSLError(QNetworkReply *reply, const QList<QSslError> &errors);
-
+    void abortAllRequests();
 #ifndef QT_NO_SSL
     void connectToHostEncrypted(const QString &hostName, quint16 port = 443, const QSslConfiguration &sslConfiguration = QSslConfiguration::defaultConfiguration());
 #endif
@@ -81,8 +81,8 @@ public:
     static QByteArray rawData(const QVariant &data);
 
 signals:
-    void networkActivity(QString url);
-    void finishedNetworkActivity(QString url);
+    void networkActivity(QUrl url);
+    void finishedNetworkActivity(QUrl url);
 
 protected slots:
     virtual void routeReply(QNetworkReply *reply);
@@ -94,8 +94,8 @@ protected:
 
 protected:
     SNetworkManager::Router m_router;
-    QNetworkAccessManager *m_manager;
-    QNetworkAccessManager *m_synchronousManager;
+    NetworkAccessManager *m_manager;
+    NetworkAccessManager *m_synchronousManager;
     QEventLoop *m_eventLoop;
     QString m_baseUrl;
     QNetworkReply* m_lastReply;

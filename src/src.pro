@@ -13,10 +13,12 @@ CONFIG += staticlib
 SOURCES += \
     networkmanager.cpp \
     networkresponse.cpp \
+    networkaccessmanager.h
 
 HEADERS += \
     networkmanager.h \
     networkresponse.h \
+    networkaccessmanager.h \
     router.h
 
 
