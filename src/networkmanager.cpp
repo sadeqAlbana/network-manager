@@ -25,15 +25,19 @@ NetworkManager::NetworkManager(QObject *parent) : QObject (parent),m_manager(new
     m_attempts(1)
 
 {
-    QObject::connect(m_manager,&QNetworkAccessManager::finished,this,&NetworkManager::routeReply);
+    QObject::connect(m_manager,&NetworkAccessManager::finished,this,&NetworkManager::routeReply);
     QObject::connect(m_synchronousManager,&QNetworkAccessManager::finished,m_eventLoop,&QEventLoop::quit);
 
-    QObject::connect(m_manager,&QNetworkAccessManager::authenticationRequired,this,&NetworkManager::onAuthenticationRequired);
+    QObject::connect(m_manager,&NetworkAccessManager::authenticationRequired,this,&NetworkManager::onAuthenticationRequired);
     QObject::connect(m_synchronousManager,&QNetworkAccessManager::authenticationRequired,this,&NetworkManager::onAuthenticationRequired);
 
 
-    QObject::connect(m_manager,&QNetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
+    QObject::connect(m_manager,&NetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
     QObject::connect(m_synchronousManager,&QNetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
+
+
+    QObject::connect(m_manager,&NetworkAccessManager::networkActivity,this,&NetworkManager::networkActivity);
+   QObject::connect(m_synchronousManager,&NetworkAccessManager::networkActivity,this,&NetworkManager::networkActivity);
 
 }
 
