@@ -20,7 +20,9 @@
 #if !defined(QT_NO_BEARERMANAGEMENT) && QT_VERSION <QT_VERSION_CHECK(6,0,0)
 #include <QNetworkConfiguration>
 #endif
-NetworkManager::NetworkManager(QObject *parent) : QObject (parent),m_manager(new NetworkAccessManager(this)),m_synchronousManager(new NetworkAccessManager(this)),
+NetworkManager::NetworkManager(QObject *parent) : QObject (parent),
+    m_manager(new NetworkAccessManager(this)),
+    m_synchronousManager(new NetworkAccessManager(this)),
     m_eventLoop(new QEventLoop(this)),
     m_attempts(1)
 
@@ -204,8 +206,14 @@ void NetworkManager::onSSLError(QNetworkReply *reply, const QList<QSslError> &er
 
 void NetworkManager::abortAllRequests()
 {
-    m_manager->abortAllRequets();
-    m_synchronousManager->abortAllRequets();
+    m_manager->abortAllRequests();
+    m_synchronousManager->abortAllRequests();
+}
+
+void NetworkManager::setCache(QAbstractNetworkCache *cache)
+{
+    m_manager->setCache(cache);
+    m_synchronousManager->setCache(cache);
 }
 #ifndef QT_NO_SSL
 void NetworkManager::connectToHostEncrypted(const QString &hostName, quint16 port, const QSslConfiguration &sslConfiguration)

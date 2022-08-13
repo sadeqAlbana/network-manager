@@ -69,6 +69,7 @@ public:
 
     void onSSLError(QNetworkReply *reply, const QList<QSslError> &errors);
     void abortAllRequests();
+    void setCache(QAbstractNetworkCache *cache);
 #ifndef QT_NO_SSL
     void connectToHostEncrypted(const QString &hostName, quint16 port = 443, const QSslConfiguration &sslConfiguration = QSslConfiguration::defaultConfiguration());
 #endif

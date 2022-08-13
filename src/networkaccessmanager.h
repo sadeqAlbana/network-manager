@@ -2,18 +2,21 @@
 #define NETWORKACCESSMANAGER_H
 
 #include <QNetworkAccessManager>
-#include <QObject>
+#include <QNetworkReply>
 class NetworkAccessManager : public QNetworkAccessManager
 {
     Q_OBJECT
 public:
     explicit NetworkAccessManager(QObject *parent = nullptr);
-    void abortAllRequets();
-protected:
-    QNetworkReply *createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr);
+    void abortAllRequests();
+
 signals:
     void networkActivity(QUrl url);
     void finishedNetworkActivity(QUrl url);
+
+
+protected:
+    QNetworkReply *createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr);
 
 private:
     QList<QNetworkReply *> m_replies;

@@ -6,7 +6,7 @@ NetworkAccessManager::NetworkAccessManager(QObject *parent)
 
 }
 
-void NetworkAccessManager::abortAllRequets()
+void NetworkAccessManager::abortAllRequests()
 {
     for(QNetworkReply *reply : m_replies){
         reply->abort();
