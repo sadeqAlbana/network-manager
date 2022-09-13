@@ -91,7 +91,7 @@ protected slots:
 protected:
 
     QNetworkRequest createRequest(const QString &url);
-    QByteArray mapContentType(const QVariant::Type type);
+    QByteArray mapContentType(const QMetaType::Type type);
 
 protected:
     SNetworkManager::Router m_router;

@@ -44,9 +44,11 @@ QJsonValue NetworkResponse::json(QString key)
 
 QJsonValue NetworkResponse::json()
 {
-    if(_replyData.type()==QMetaType::QJsonObject)
+
+    QMetaType::Type type=static_cast<QMetaType::Type>(_replyData.typeId());
+    if(type==QMetaType::QJsonObject)
         return _replyData.toJsonObject();
-    else if(_replyData.type()==QMetaType::QJsonArray)
+    else if(type==QMetaType::QJsonArray)
         return _replyData.toJsonArray();
     else
         return QJsonValue();
@@ -128,7 +130,7 @@ QDebug operator <<(QDebug dbg, const NetworkResponse &res)
         QDebugStateSaver saver(dbg);
         dbg.noquote() <<"Network response: \n";
         dbg.noquote() << "Headers: \n";
-        for (auto pair : res.networkReply()->rawHeaderPairs())
+        for (const auto &pair : res.networkReply()->rawHeaderPairs())
         {
             dbg.noquote() << pair.first <<" : " << pair.second << "\n";
         }
