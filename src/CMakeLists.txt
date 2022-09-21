@@ -1,17 +1,19 @@
 cmake_minimum_required(VERSION 3.16)
 
-find_package(Qt6  COMPONENTS Core REQUIRED)
-find_package(Qt6  COMPONENTS Network REQUIRED)
-find_package(Qt6  COMPONENTS Gui REQUIRED)
-add_library(network-manager STATIC
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Network Gui)
+
+add_library(SNetworkManager STATIC
     router.h
     networkmanager.cpp networkmanager.h
     networkaccessmanager.cpp networkaccessmanager.h
     networkresponse.cpp networkresponse.h
 )
 
-target_link_libraries(network-manager PRIVATE Qt6::Core)
-target_link_libraries(network-manager PRIVATE Qt6::Network)
-target_link_libraries(network-manager PRIVATE Qt6::Gui)
+target_link_libraries(SNetworkManager PRIVATE
+Qt${QT_VERSION_MAJOR}::Core
+Qt${QT_VERSION_MAJOR}::Network
+Qt${QT_VERSION_MAJOR}::Gui)
 
-target_include_directories(network-manager INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_include_directories(SNetworkManager INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
