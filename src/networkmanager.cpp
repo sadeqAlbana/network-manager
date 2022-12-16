@@ -50,6 +50,12 @@ NetworkManager* NetworkManager::get(QString url)
     return this;
 }
 
+NetworkManager *NetworkManager::get(const QNetworkRequest &request)
+{
+    setLastReply(manager()->get(request));
+    return this;
+}
+
 NetworkManager* NetworkManager::post(const QString url, const QVariant data, QByteArray contentType)
 {
     QNetworkRequest request = createRequest(url);

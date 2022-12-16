@@ -24,6 +24,8 @@ public:
     NetworkManager(QObject *parent=nullptr);
 
     NetworkManager *get(QString url);
+    NetworkManager *get(const QNetworkRequest &request);
+
     NetworkManager *post(const QString url, const QVariant data, QByteArray contentType=QByteArray());
     NetworkManager * put (const QString url, const QVariant data, QByteArray contentType=QByteArray());
 
@@ -80,6 +82,7 @@ public:
 
     QNetworkReply *lastReply() const;
     static QByteArray rawData(const QVariant &data);
+    QNetworkRequest createRequest(const QString &url);
 
 signals:
     void networkActivity(QUrl url);
@@ -90,7 +93,6 @@ protected slots:
 
 protected:
 
-    QNetworkRequest createRequest(const QString &url);
     QByteArray mapContentType(const QMetaType::Type type);
 
 protected:
