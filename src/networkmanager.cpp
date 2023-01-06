@@ -241,6 +241,7 @@ QNetworkRequest NetworkManager::createRequest(const QString &url)
 {
     QNetworkRequest req;
 
+    qDebug()<<"creating request: " << url;
     if(redirectAllowed()){
         req.setAttribute(QNetworkRequest::RedirectionTargetAttribute,true);
         req.setAttribute(QNetworkRequest::RedirectPolicyAttribute,QNetworkRequest::SameOriginRedirectPolicy);
