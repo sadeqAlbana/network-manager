@@ -23,8 +23,8 @@ class NetworkManager : public QObject
 public:
     NetworkManager(QObject *parent=nullptr);
 
-    NetworkManager *get(QString url);
-    NetworkManager *get(const QNetworkRequest &request);
+    NetworkManager *get(QString url, const bool monitorProgress=false);
+    NetworkManager *get(const QNetworkRequest &request, const bool monitorProgress=false);
 
     NetworkManager *post(const QString url, const QVariant data, QByteArray contentType=QByteArray());
     NetworkManager * put (const QString url, const QVariant data, QByteArray contentType=QByteArray());
@@ -82,11 +82,13 @@ public:
 
     QNetworkReply *lastReply() const;
     static QByteArray rawData(const QVariant &data);
-    QNetworkRequest createRequest(const QString &url);
+    QNetworkRequest createNetworkRequest(const QString &url);
 
 signals:
     void networkActivity(QUrl url);
     void finishedNetworkActivity(QUrl url);
+    void downloadProgress(QUrl url, qint64 bytesReceived, qint64 bytesTotal);
+
 
 protected slots:
     virtual void routeReply(QNetworkReply *reply);
@@ -94,6 +96,8 @@ protected slots:
 protected:
 
     QByteArray mapContentType(const QMetaType::Type type);
+    QNetworkReply *createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, const QByteArray &data = QByteArray(), const QByteArray &verb = QByteArray(), const bool monitorProgress=false);
+
 
 protected:
     SNetworkManager::Router m_router;

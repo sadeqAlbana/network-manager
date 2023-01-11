@@ -24,7 +24,7 @@ NetworkManager::NetworkManager(QObject *parent) : QObject (parent),
     m_manager(new NetworkAccessManager(this)),
     m_synchronousManager(new NetworkAccessManager(this)),
     m_eventLoop(new QEventLoop(this)),
-    m_attempts(1)
+    m_attempts(3)
 
 {
     QObject::connect(m_manager,&NetworkAccessManager::finished,this,&NetworkManager::routeReply);
@@ -44,21 +44,21 @@ NetworkManager::NetworkManager(QObject *parent) : QObject (parent),
 }
 
 
-NetworkManager* NetworkManager::get(QString url)
+NetworkManager* NetworkManager::get(QString url, const bool monitorProgress)
 {
-    setLastReply(manager()->get(createRequest(url)));
+    this->get(createNetworkRequest(url),monitorProgress);
     return this;
 }
 
-NetworkManager *NetworkManager::get(const QNetworkRequest &request)
+NetworkManager *NetworkManager::get(const QNetworkRequest &request, const bool monitorProgress)
 {
-    setLastReply(manager()->get(request));
+    this->createRequest(QNetworkAccessManager::GetOperation,request,QByteArray(),QByteArray(),monitorProgress);
     return this;
 }
 
 NetworkManager* NetworkManager::post(const QString url, const QVariant data, QByteArray contentType)
 {
-    QNetworkRequest request = createRequest(url);
+    QNetworkRequest request = createNetworkRequest(url);
     if(contentType.isNull())
         contentType=mapContentType(static_cast<QMetaType::Type>(data.typeId()));
 
@@ -69,7 +69,7 @@ NetworkManager* NetworkManager::post(const QString url, const QVariant data, QBy
 
 NetworkManager *NetworkManager::put(const QString url, const QVariant data, QByteArray contentType)
 {
-    QNetworkRequest request = createRequest(url);
+    QNetworkRequest request = createNetworkRequest(url);
 
     if(contentType.isNull())
         contentType=mapContentType(static_cast<QMetaType::Type>(data.typeId()));
@@ -85,7 +85,7 @@ NetworkResponse NetworkManager::getSynch(QString url)
     QNetworkReply *reply;
     int attemps=1;
     do{
-        reply= m_synchronousManager->get(createRequest(url));
+        reply= m_synchronousManager->get(createNetworkRequest(url));
 
         if(isIgnoringSslErrors())
             reply->ignoreSslErrors();
@@ -107,7 +107,7 @@ NetworkResponse NetworkManager::getSynch(QString url)
 
 NetworkResponse NetworkManager::postSynch(const QString url, const QVariant data, QByteArray contentType)
 {
-    QNetworkRequest request=createRequest(url);
+    QNetworkRequest request=createNetworkRequest(url);
 
     if(contentType.isNull())
         contentType=mapContentType(static_cast<QMetaType::Type>(data.typeId()));
@@ -137,7 +137,7 @@ NetworkResponse NetworkManager::postSynch(const QString url, const QVariant data
 
 NetworkResponse NetworkManager::putSynch(const QString url, const QVariant data, QByteArray contentType)
 {
-    QNetworkRequest request=createRequest(url);
+    QNetworkRequest request=createNetworkRequest(url);
 
     if(contentType.isNull())
         contentType=mapContentType(static_cast<QMetaType::Type>(data.typeId()));
@@ -237,7 +237,7 @@ void NetworkManager::setTransferTimeout(int timeout)
 }
 #endif
 
-QNetworkRequest NetworkManager::createRequest(const QString &url)
+QNetworkRequest NetworkManager::createNetworkRequest(const QString &url)
 {
     QNetworkRequest req;
 
@@ -277,6 +277,32 @@ QByteArray NetworkManager::mapContentType(const QMetaType::Type type)
     default                      :                                   break;
     }
     return contentType;
+}
+
+QNetworkReply *NetworkManager::createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, const QByteArray &data, const QByteArray &verb, const bool monitorProgress)
+{
+    QNetworkReply *reply=nullptr;
+    switch(op){
+
+    case QNetworkAccessManager::GetOperation: reply=m_manager->get(originalReq);  break;
+    case QNetworkAccessManager::PostOperation: reply= m_manager->post(originalReq,data);  break;
+    case QNetworkAccessManager::PutOperation: reply= m_manager->put(originalReq,data);  break;
+    case QNetworkAccessManager::DeleteOperation: reply= m_manager->deleteResource(originalReq);  break;
+    case QNetworkAccessManager::HeadOperation: reply= m_manager->head(originalReq); break;
+    case QNetworkAccessManager::CustomOperation: reply= m_manager->sendCustomRequest(originalReq,verb,data); break;
+    case QNetworkAccessManager::UnknownOperation: return nullptr;;
+    }
+
+    if(monitorProgress){
+        connect(reply,&QNetworkReply::downloadProgress,this,[this,reply](qint64 bytesReceived, qint64 bytesTotal){
+            emit downloadProgress(reply->request().url(),bytesReceived,bytesTotal);
+        });
+    }
+
+    setLastReply(reply);
+
+    return reply;
+
 }
 
 QByteArray NetworkManager::rawData(const QVariant &data)
