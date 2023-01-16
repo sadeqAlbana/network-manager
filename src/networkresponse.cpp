@@ -13,18 +13,19 @@
 #include <QImage>
 #endif
 #include <QDebug>
-NetworkResponse::NetworkResponse(QNetworkReply *reply):_reply(reply)
+NetworkResponse::NetworkResponse(QNetworkReply *reply, QObject *parent): QObject(parent),
+    m_reply(reply)
 {
-    if(reply->error()!=QNetworkReply::OperationCanceledError && reply->error()!=QNetworkReply::TimeoutError)
-    {
-        _binaryData=reply->readAll();
-        processReply();
-    }
+
+    if(!reply)
+        return;
+
+    QObject::connect(reply,&QNetworkReply::finished,this,&NetworkResponse::onReplyFinished);
 }
 
 NetworkResponse::~NetworkResponse()
 {
-    _reply->deleteLater();
+    m_reply->deleteLater();
 }
 
 QNetworkReply::NetworkError NetworkResponse::error() const
@@ -34,7 +35,7 @@ QNetworkReply::NetworkError NetworkResponse::error() const
 
 QString NetworkResponse::errorString() const
 {
-    return _reply->errorString();
+    return m_reply->errorString();
 }
 
 QJsonValue NetworkResponse::json(QString key)
@@ -45,11 +46,11 @@ QJsonValue NetworkResponse::json(QString key)
 QJsonValue NetworkResponse::json()
 {
 
-    QMetaType::Type type=static_cast<QMetaType::Type>(_replyData.typeId());
+    QMetaType::Type type=static_cast<QMetaType::Type>(m_replyData.typeId());
     if(type==QMetaType::QJsonObject)
-        return _replyData.toJsonObject();
+        return m_replyData.toJsonObject();
     else if(type==QMetaType::QJsonArray)
-        return _replyData.toJsonArray();
+        return m_replyData.toJsonArray();
     else
         return QJsonValue();
 }
@@ -76,17 +77,17 @@ QByteArray NetworkResponse::contentTypeHeader() const
 
 const QJsonObject NetworkResponse::jsonObject() const
 {
-    return _replyData.toJsonObject();
+    return m_replyData.toJsonObject();
 }
 
 const QJsonArray NetworkResponse::jsonArray() const
 {
-    return _replyData.toJsonArray();
+    return m_replyData.toJsonArray();
 }
 #ifdef QT_HAVE_GUI
 QImage NetworkResponse::image() const
 {
-    return _replyData.value<QImage>();
+    return m_replyData.value<QImage>();
 }
 #endif
 
@@ -99,9 +100,9 @@ void NetworkResponse::processReply()
         if(!doc.isNull())
         {
             if(doc.isArray())
-                _replyData=doc.array();
+                m_replyData=doc.array();
             if(doc.isObject())
-                _replyData=doc.object();
+                m_replyData=doc.object();
         }
         return;
     }
@@ -110,12 +111,21 @@ void NetworkResponse::processReply()
     {
         QImage img=QImage::fromData(binaryData());
         if(!img.isNull())
-            _replyData=img;
+            m_replyData=img;
     }
 #endif
     if(contentType.contains("text/"))
     {
-        _replyData=QString(binaryData());
+        m_replyData=QString(binaryData());
+    }
+}
+
+void NetworkResponse::onReplyFinished()
+{
+    if(this->m_reply->error()!=QNetworkReply::OperationCanceledError && this->m_reply->error()!=QNetworkReply::TimeoutError)
+    {
+        m_binaryData=this->m_reply->readAll();
+        processReply();
     }
 }
 

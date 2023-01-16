@@ -15,6 +15,8 @@
 #include <QNetworkReply>
 #include <QEventLoop>
 #include "networkaccessmanager.h"
+
+
 using HeadersMap= QMap<QByteArray,QByteArray>;
 
 class NetworkManager : public QObject
