@@ -52,8 +52,6 @@ public:
     inline bool redirectAllowed() const{return m_allowRedirect;}
     inline QNetworkAccessManager* manager(){return m_manager;}
 
-    int attemptsCount() const;
-    void setAttemptsCount(int attempts);
     void setAuthenticationCredentails(const QString &user, const QString &password);
 
 #if !defined(QT_NO_BEARERMANAGEMENT) && QT_VERSION <QT_VERSION_CHECK(6,0,0)
@@ -65,25 +63,17 @@ public:
 
     void onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
 
-    void setRawHeader(const QByteArray &headerName, const QByteArray &headerValue);
-    void removeRawHeader(const QByteArray &headerName);
 
     bool isIgnoringSslErrors() const;
     void ignoreSslErrors(bool ignore);
 
     void onSSLError(QNetworkReply *reply, const QList<QSslError> &errors);
-    void abortAllRequests();
-    void setCache(QAbstractNetworkCache *cache);
 #ifndef QT_NO_SSL
     void connectToHostEncrypted(const QString &hostName, quint16 port = 443, const QSslConfiguration &sslConfiguration = QSslConfiguration::defaultConfiguration());
 #endif
 
-#if QT_VERSION >=QT_VERSION_CHECK(5,15,0)
-    void setTransferTimeout(int timeout = QNetworkRequest::DefaultTransferTimeoutConstant);
-#endif
 
     QNetworkReply *lastReply() const;
-    static QByteArray rawData(const QVariant &data);
     QNetworkRequest createNetworkRequest(const QString &url);
 
 signals:
@@ -103,8 +93,8 @@ protected:
 
 protected:
     SNetworkManager::Router m_router;
-    NetworkAccessManager *m_manager;
-    NetworkAccessManager *m_synchronousManager;
+    QNetworkAccessManager *m_manager;
+    QNetworkAccessManager *m_synchronousManager;
     QEventLoop *m_eventLoop;
     QString m_baseUrl;
     QNetworkReply* m_lastReply;

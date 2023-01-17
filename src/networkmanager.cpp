@@ -38,8 +38,7 @@
 //    QObject::connect(m_synchronousManager,&QNetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
 
 
-//    QObject::connect(m_manager,&NetworkAccessManager::networkActivity,this,&NetworkManager::networkActivity);
-//   QObject::connect(m_synchronousManager,&NetworkAccessManager::networkActivity,this,&NetworkManager::networkActivity);
+//    ;
 
 //}
 
@@ -183,16 +182,6 @@
 //    m_router.registerRoute(m_lastReply,cb);
 //}
 
-//void NetworkManager::setRawHeader(const QByteArray &headerName, const QByteArray &headerValue)
-//{
-//    m_permanentRawHeaders[headerName]=headerValue;
-//}
-
-//void NetworkManager::removeRawHeader(const QByteArray &headerName)
-//{
-//    m_permanentRawHeaders.remove(headerName);
-//}
-
 //bool NetworkManager::isIgnoringSslErrors() const
 //{
 //    return m_ignoreSslErrors;
@@ -210,17 +199,9 @@
 //    reply->ignoreSslErrors();
 //}
 
-//void NetworkManager::abortAllRequests()
-//{
-//    m_manager->abortAllRequests();
-//    m_synchronousManager->abortAllRequests();
-//}
 
-//void NetworkManager::setCache(QAbstractNetworkCache *cache)
-//{
-//    m_manager->setCache(cache);
-//    m_synchronousManager->setCache(cache);
-//}
+
+
 //#ifndef QT_NO_SSL
 //void NetworkManager::connectToHostEncrypted(const QString &hostName, quint16 port, const QSslConfiguration &sslConfiguration)
 //{
@@ -229,13 +210,6 @@
 //}
 //#endif
 
-//#if QT_VERSION >=QT_VERSION_CHECK(5,15,0)
-//void NetworkManager::setTransferTimeout(int timeout)
-//{
-//    m_manager->setTransferTimeout(timeout);
-//    m_synchronousManager->setTransferTimeout(timeout);
-//}
-//#endif
 
 //QNetworkRequest NetworkManager::createNetworkRequest(const QString &url)
 //{
@@ -259,25 +233,6 @@
 //    return  req;
 //}
 
-//QByteArray NetworkManager::mapContentType(const QMetaType::Type type)
-//{
-//    if(m_permanentRawHeaders.contains("content-type")) //if this header already exists then return it to avoid conflicts
-//        return m_permanentRawHeaders["content-type"];
-
-//    QByteArray contentType;
-//    //QMetaType::Type::Type type=static_cast<QMetaType::Type::Type>(data.type());
-//    switch ((type)) {
-//    case QMetaType::Type::QJsonObject  :
-//    case QMetaType::Type::QJsonValue   :
-//    case QMetaType::Type::QJsonArray   :
-//    case QMetaType::Type::QJsonDocument: contentType = "application/json"; break;
-//    case QMetaType::Type::QImage       : contentType = "image/png";        break;
-//    case QMetaType::Type::QString      : contentType = "text/plain";       break;
-
-//    default                      :                                   break;
-//    }
-//    return contentType;
-//}
 
 //QNetworkReply *NetworkManager::createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, const QByteArray &data, const QByteArray &verb, const bool monitorProgress)
 //{
@@ -305,119 +260,6 @@
 
 //}
 
-//QByteArray NetworkManager::rawData(const QVariant &data)
-//{
-//    QMetaType::Type type=static_cast<QMetaType::Type>(data.typeId());
-
-//    /**************************json**************************/
-//    if(type==QMetaType::Type::QJsonObject)
-//    {
-//        QJsonObject object=data.toJsonObject();
-//        QJsonDocument document;
-//        document.setObject(object);
-//        return document.toJson(QJsonDocument::Compact);
-//    }
-
-//    if(type==QMetaType::Type::QJsonArray)
-//    {
-//        QJsonArray array=data.toJsonArray();
-//        QJsonDocument document;
-//        document.setArray(array);
-//        return document.toJson(QJsonDocument::Compact);
-//    }
-
-//    if(type==QMetaType::Type::QJsonDocument)
-//    {
-//        return data.toJsonDocument().toJson(QJsonDocument::Compact);
-//    }
-
-//    if(type==QMetaType::Type::QJsonValue)
-//    {
-//        QJsonValue jsonValue=data.value<QJsonValue>();
-
-//        if(jsonValue.type()==QJsonValue::Type::Array)
-//        {
-//            QJsonArray array=jsonValue.toArray();
-//            QJsonDocument document;
-//            document.setArray(array);
-//            return document.toJson(QJsonDocument::Compact);
-//        }
-
-//        if(jsonValue.type()==QJsonValue::Type::Object)
-//        {
-//            QJsonObject object=jsonValue.toObject();
-//            QJsonDocument document;
-//            document.setObject(object);
-//            return document.toJson(QJsonDocument::Compact);
-//        }
-//        if(jsonValue.type()==QJsonValue::Type::String)
-//        {
-//            return jsonValue.toString().toUtf8();
-//        }
-//        if(jsonValue.type()==QJsonValue::Type::Double)
-//        {
-//            return QString::number(jsonValue.toDouble()).toUtf8();
-//        }
-//        if(jsonValue.type()==QJsonValue::Type::Bool)
-//        {
-//            return jsonValue.toBool() ? QByteArray("1") : QByteArray("0");
-//        }
-//        if(jsonValue.type()==QJsonValue::Type::Null){
-//            return QByteArray("");
-//        }
-//        if(jsonValue.type()==QJsonValue::Type::Undefined){
-//            return QByteArray();
-//        }
-
-//    }
-
-//    /**********************end json**************************/
-
-//    if(type==QMetaType::Type::QString)
-//        return data.toString().toUtf8();
-
-//    if(type==QMetaType::Type::Int)
-//        return QString::number(data.toInt()).toUtf8();
-
-//    if(type==QMetaType::Type::Double)
-//        return QString::number(data.toDouble()).toUtf8();
-
-//    if(type==QMetaType::Type::Float)
-//        return QString::number(data.toFloat()).toUtf8();
-
-//    if(type==QMetaType::Type::Long || type==QMetaType::Type::LongLong)
-//        return QString::number(data.toLongLong()).toUtf8();
-
-//    if(type==QMetaType::Type::UInt)
-//        return QString::number(data.toUInt()).toUtf8();
-
-//    if(type==QMetaType::Type::ULongLong)
-//        return QString::number(data.toULongLong()).toUtf8();
-
-//    if(type==QMetaType::Type::QByteArray)
-//        return data.toByteArray();
-//#ifdef QT_HAVE_GUI
-//    if(type==QMetaType::Type::QImage)
-//    {
-//        QImage image=data.value<QImage>();
-//        QByteArray imageData;
-//        QBuffer buffer(&imageData);
-//        buffer.open(QIODevice::WriteOnly);
-//        image.save(&buffer,"PNG");
-//        buffer.close();
-//        return imageData;
-//    }
-//#endif
-
-
-//    if(type==QMetaType::Type::UnknownType)
-//        return QByteArray();
-
-//    qDebug()<<"NetworkManager::rawData : unsupported QVariant type: " << static_cast<QMetaType::Type>(data.typeId());
-
-//    return QByteArray();
-//}
-
 //QNetworkReply *NetworkManager::lastReply() const
 //{
 //    return m_lastReply;
@@ -439,17 +281,6 @@
 //}
 
 
-//int NetworkManager::attemptsCount() const
-//{
-//    return m_attempts;
-//}
-
-//void NetworkManager::setAttemptsCount(int attempts)
-//{
-//    if(attempts<1)
-//        return;
-//    m_attempts = attempts;
-//}
 
 //void NetworkManager::setAuthenticationCredentails(const QString &user, const QString &password)
 //{
@@ -468,16 +299,8 @@
 //    return m_manager->configuration();
 //}
 //#endif
-//void NetworkManager::setProxy(const QNetworkProxy &proxy)
-//{
-//    m_manager->setProxy(proxy);
-//    m_synchronousManager->setProxy(proxy);
-//}
 
-//QNetworkProxy NetworkManager::proxy() const
-//{
-//    return m_manager->proxy();
-//}
+
 
 //void NetworkManager::onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator)
 //{
