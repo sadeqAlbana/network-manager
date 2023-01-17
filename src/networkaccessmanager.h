@@ -19,8 +19,10 @@ class NetworkAccessManager : public QNetworkAccessManager
 public:
 
     enum RequstAttribute{
-      IdAttribute               = 1001, //a unique identifier for each request
-      MonitorProgressAttribute =  1002  //if set to true, the download \a progress() signal is emitted each time a chunck of data is received
+      IdAttribute                = 1001, //a unique identifier for each request
+      MonitorProgressAttribute   = 1002,  //if set to true, the download \a progress() signal is emitted each time a chunck of data is received
+      AttemptsCount              = 1003 //a unique identifier for each request
+
     };
 
     /*!
@@ -106,6 +108,8 @@ public:
     */
 
     void removeRawHeader(const QByteArray &headerName);
+
+    QNetworkRequest createNetworkRequest(const QUrl &url);
 
 signals:
     /*!

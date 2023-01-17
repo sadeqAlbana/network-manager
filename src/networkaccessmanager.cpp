@@ -12,6 +12,7 @@
 #include <QJsonValue>
 #include <QAuthenticator>
 #include <QNetworkProxy>
+#include <QRandomGenerator>
 #if !defined(QT_NO_BEARERMANAGEMENT) && QT_VERSION <QT_VERSION_CHECK(6,0,0)
 #include <QNetworkConfiguration>
 #endif
@@ -63,6 +64,41 @@ void NetworkAccessManager::setRawHeader(const QByteArray &headerName, const QByt
 void NetworkAccessManager::removeRawHeader(const QByteArray &headerName)
 {
     m_rawHeaders.remove(headerName);
+
+}
+
+QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url)
+{
+    QNetworkRequest request;
+
+    //merge the relative url with the base url
+    QUrl requestUrl= m_baseUrl.isEmpty()? url  : m_baseUrl.resolved(url);
+
+    request.setUrl(requestUrl);
+
+
+    //add raw headers
+    QMapIterator<QByteArray, QByteArray> i(m_rawHeaders);
+    while (i.hasNext()) {
+        i.next();
+        request.setRawHeader(i.key(),i.value());
+    }
+
+    //next is attempts count
+    if(m_attempts>1){
+        request.setAttribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::AttemptsCount),m_attempts);
+    }
+
+    //next is ID
+
+    qint64 random=QRandomGenerator::global()->bounded(1,1000);
+    qint64 id=QDateTime::currentMSecsSinceEpoch()+random;
+
+    request.setAttribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::IdAttribute),id);
+
+
+
+    return request;
 
 }
 
