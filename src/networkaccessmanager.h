@@ -4,6 +4,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QMap>
+#include "router.h"
 namespace DataSerialization {
     QByteArray serialize(const QVariant &data);
     QByteArray contentType(const QMetaType::Type type);
@@ -13,7 +14,7 @@ namespace DataSerialization {
 using HeadersMap= QMap<QByteArray,QByteArray>;
 
 class NetworkResponse;
-class NetworkAccessManager : public QNetworkAccessManager
+class NetworkAccessManager : public QNetworkAccessManager, private SNetworkManager::Router
 {
     Q_OBJECT
 public:
