@@ -44,6 +44,27 @@ void NetworkAccessManager::abortAllRequests()
     m_responses.clear();
 }
 
+HeadersMap NetworkAccessManager::rawHeaders()
+{
+    return m_rawHeaders;
+}
+
+QByteArray NetworkAccessManager::rawHeader(const QByteArray &header) const
+{
+    return m_rawHeaders.value(header);
+}
+
+void NetworkAccessManager::setRawHeader(const QByteArray &headerName, const QByteArray &headerValue)
+{
+    m_rawHeaders[headerName]=headerValue;
+
+}
+
+void NetworkAccessManager::removeRawHeader(const QByteArray &headerName)
+{
+    m_rawHeaders.remove(headerName);
+
+}
 
 QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData)
 {
@@ -172,4 +193,24 @@ QByteArray DataSerialization::serialize(const QVariant &data)
         qWarning()<<"DataSerialization::serialize : unsupported QVariant type: " << static_cast<QMetaType::Type>(data.typeId());
 
         return QByteArray();
+}
+
+QByteArray DataSerialization::contentType(const QMetaType::Type type)
+{
+//    if(m_permanentRawHeaders.contains("content-type")) //if this header already exists then return it to avoid conflicts
+//        return m_permanentRawHeaders["content-type"];
+
+    QByteArray contentType;
+    //QMetaType::Type::Type type=static_cast<QMetaType::Type::Type>(data.type());
+    switch ((type)) {
+    case QMetaType::Type::QJsonObject  :
+    case QMetaType::Type::QJsonValue   :
+    case QMetaType::Type::QJsonArray   :
+    case QMetaType::Type::QJsonDocument: contentType = "application/json"; break;
+    case QMetaType::Type::QImage       : contentType = "image/png";        break;
+    case QMetaType::Type::QString      : contentType = "text/plain";       break;
+
+    default                      :                                   break;
+    }
+    return contentType;
 }

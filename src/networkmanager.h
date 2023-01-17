@@ -116,7 +116,6 @@ protected:
     int m_attempts;
     QPair<QString,QString> authenticationCredentials;
     QPair<QString,QString> proxyAuthenticationCredentials;
-
     bool m_ignoreSslErrors;
 };
 

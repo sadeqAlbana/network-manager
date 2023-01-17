@@ -3,11 +3,14 @@
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-
+#include <QMap>
 namespace DataSerialization {
     QByteArray serialize(const QVariant &data);
+    QByteArray contentType(const QMetaType::Type type);
+
 };
 
+using HeadersMap= QMap<QByteArray,QByteArray>;
 
 class NetworkResponse;
 class NetworkAccessManager : public QNetworkAccessManager
@@ -72,9 +75,37 @@ public:
         calls  \a QNetworkReply::abort() and deletes the \a NetworkRespnse * pointer that was created with \a createRequest()
     */
 
-
     void abortAllRequests();
 
+    /*!
+        \fn HeadersMap NetworkAccessManager::NetworkAccessManager::rawHeaders()
+
+        returns the raw headers pairs that are sent with each standard request.
+    */
+    HeadersMap  rawHeaders();
+
+    /*!
+        \fn QByteArray NetworkAccessManager::rawHeader(const QByteArray &header)const
+
+        returns the header value associated with the \a header key or a default constructed \a QByteArray if not set.
+    */
+    QByteArray rawHeader(const QByteArray &header)const;
+
+    /*!
+        \fn void NetworkAccessManager::setRawHeader(const QByteArray &headerName, const QByteArray &headerValue)
+
+        adds a raw header that will be sent with each standard request
+    */
+
+    void setRawHeader(const QByteArray &headerName, const QByteArray &headerValue);
+
+    /*!
+        \fn void NetworkAccessManager::removeRawHeader(const QByteArray &headerName)
+
+        removes the header sepcified with \a headerName from the rawHeaders List.
+    */
+
+    void removeRawHeader(const QByteArray &headerName);
 
 signals:
     /*!
@@ -102,8 +133,9 @@ protected:
 private:
     QList<NetworkResponse *> m_responses; /**< stores a list of the current responses */
     QUrl m_baseUrl; /**< if set, this url will be prepending before every request, unless the passed request url contains a complete url */
-
-
+    HeadersMap m_rawHeaders; /**< stores a list of header pairs that will be used on each standard request */
+    int m_attempts = 1; /**< the number of rerequest attempts in case the request failed */
+    NetworkResponse* m_lastResponse;  /**< returns a pointer to the last created NetworkResponse object */
 };
 
 #endif // NETWORKACCESSMANAGER_H
