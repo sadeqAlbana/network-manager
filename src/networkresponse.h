@@ -49,15 +49,11 @@ public:
     operator bool();
 
     NetworkResponse * subcribe(Callback cb);
-    template <class T>
-    NetworkResponse * subcribe(T *instance,void (T::*ptr)(NetworkResponse *))
-{
 
-   // NetworkAccessManager *manager = qobject_cast<NetworkAccessManager *>(parent());
-//    if(manager){
-//        manager->registerRoute(this,instance,ptr);
-//    }
-//        return this;
+    template <class T>
+    NetworkResponse * subcribe(T *instance,void(T::*cb) (NetworkResponse *))
+{
+        return this->subcribe(std::bind(cb,instance,std::placeholders::_1));
 
 }
 

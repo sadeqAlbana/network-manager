@@ -3,6 +3,7 @@
 #include <QJsonValue>
 #include <QJsonObject>
 #include <testclass.h>
+#include <functional>
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc,argv);
@@ -11,10 +12,10 @@ int main(int argc, char *argv[])
 
 
     //callback to lambdas and non-member functions
-    manager.get(QUrl("https://reqres.in/api/users?page=1"))->subcribe([](NetworkResponse *res)
-    {
-        qDebug()<<res->json();
-    });
+//    manager.get(QUrl("https://reqres.in/api/users?page=1"))->subcribe([](NetworkResponse *res)
+//    {
+//        qDebug()<<res->json();
+//    });
 
 
     TestClass *testClass = new TestClass();

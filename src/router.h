@@ -11,6 +11,7 @@
 #include <QObject>
 #include <functional>
 #include <QMap>
+#include <QDebug>
 class NetworkResponse;
 
 #ifdef Q_CC_MSVC
@@ -43,6 +44,7 @@ public:
         {
             //MemberCallbackInfo cb= callbacks.value(reply);
             //cb.instance ? (cb.instance->*cb.ptr)(reply) : cb.callback(reply);
+            qDebug()<<"reached here";
             Callback cb=callbacks[reply];
             cb(reply);
         }
@@ -52,14 +54,17 @@ public:
     void registerRoute(NetworkResponse *reply, T *instance, void(T::*ptr)(NetworkResponse *))
     {
 //        MemberCallbackInfo obj={reinterpret_cast<CNTRLR *>(instance),reinterpret_cast<MemberCallback<CNTRLR>>(ptr),nullptr};
+
+
 //        callbacks.insert(reply, obj);
-        Callback cb = std::bind(ptr,instance);
+        Callback cb = std::bind(ptr,instance,std::placeholders::_1);
         callbacks.insert(reply, cb);
 
     }
 
     void registerRoute(NetworkResponse *reply, Callback cb)
     {
+        qDebug()<<"Registered";
         //MemberCallbackInfo obj={nullptr,nullptr,cb};
         callbacks.insert(reply, cb);
     }
