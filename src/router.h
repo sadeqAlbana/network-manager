@@ -53,6 +53,9 @@ public:
     {
 //        MemberCallbackInfo obj={reinterpret_cast<CNTRLR *>(instance),reinterpret_cast<MemberCallback<CNTRLR>>(ptr),nullptr};
 //        callbacks.insert(reply, obj);
+        Callback cb = std::bind(ptr,instance);
+        callbacks.insert(reply, cb);
+
     }
 
     void registerRoute(NetworkResponse *reply, Callback cb)
