@@ -50,7 +50,17 @@ public:
 
     NetworkResponse * subcribe(Callback cb);
     template <class T>
-    NetworkResponse * subcribe(T *instance,void (T::*ptr)(NetworkResponse *));
+    NetworkResponse * subcribe(T *instance,void (T::*ptr)(NetworkResponse *))
+{
+
+   // NetworkAccessManager *manager = qobject_cast<NetworkAccessManager *>(parent());
+//    if(manager){
+//        manager->registerRoute(this,instance,ptr);
+//    }
+//        return this;
+
+}
+
 
 signals:
     void finished();

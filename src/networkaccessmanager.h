@@ -187,7 +187,6 @@ private:
     HeadersMap m_rawHeaders; /**< stores a list of header pairs that will be used on each standard request */
     int m_attempts = 1; /**< the number of rerequest attempts in case the request failed */
     NetworkResponse* m_lastResponse;  /**< returns a pointer to the last created NetworkResponse object */
-    void onResponseFinished(NetworkResponse *res);
 };
 
 #endif // NETWORKACCESSMANAGER_H

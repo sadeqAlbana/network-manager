@@ -158,7 +158,6 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
     }
 
     m_lastResponse=res;
-    connect(res,&NetworkResponse::finished,this,[this,res](){this->onResponseFinished(res);});
     emit networkActivity(originalReq.url());
 
     return res;
@@ -172,10 +171,6 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     return reply;
 }
 
-void NetworkAccessManager::onResponseFinished(NetworkResponse *res)
-{
-    this->route(res);
-}
 
 
 QByteArray DataSerialization::serialize(const QVariant &data)
