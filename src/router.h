@@ -8,10 +8,8 @@
 #ifndef ROUTER_H
 #define ROUTER_H
 
-#include <QObject>
 #include <functional>
 #include <QMap>
-#include <QDebug>
 class NetworkResponse;
 
 
@@ -20,22 +18,15 @@ template<class T> using MemberCallback = void (T::*)(NetworkResponse *);
 using Callback = std::function<void (NetworkResponse *)>;
 
 
-
 typedef QMap<NetworkResponse *,Callback> MemberCallbacks;
 namespace SNetworkManager{
 class Router
 {
 public:
-    explicit Router(){}
-
-    void route(NetworkResponse *reply)
-    {
-        if(callbacks.contains(reply))
-        {
-            Callback cb=callbacks[reply];
-            cb(reply);
-        }
-    }
+    Router();
+    ~Router();
+    void route(NetworkResponse *reply);
+    void registerRoute(NetworkResponse *reply, Callback cb);
 
     template <class T>
     void registerRoute(NetworkResponse *reply, T *instance, MemberCallback<T> ptr)
@@ -45,10 +36,6 @@ public:
 
     }
 
-    void registerRoute(NetworkResponse *reply, Callback cb)
-    {
-        callbacks.insert(reply, cb);
-    }
 
 private:
     MemberCallbacks callbacks;

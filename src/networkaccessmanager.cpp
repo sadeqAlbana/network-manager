@@ -306,3 +306,20 @@ QByteArray DataSerialization::contentType(const QMetaType::Type type)
 }
 
 
+void NetworkAccessManager::onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator)
+{
+    Q_UNUSED(proxy);
+    authenticator->setUser(m_proxyAuthenticationCredentials.first);
+    authenticator->setPassword(m_proxyAuthenticationCredentials.second);
+}
+
+const QPair<QString, QString> &NetworkAccessManager::proxyAuthenticationCredentials() const
+{
+    return m_proxyAuthenticationCredentials;
+}
+
+void NetworkAccessManager::setProxyAuthenticationCredentials(const QPair<QString, QString> &newProxyAuthenticationCredentials)
+{
+    m_proxyAuthenticationCredentials = newProxyAuthenticationCredentials;
+    connect(this,&NetworkAccessManager::proxyAuthenticationRequired,this,&NetworkAccessManager::onProxyAuthenticationRequired);
+}

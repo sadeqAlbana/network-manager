@@ -27,8 +27,6 @@
 //    m_attempts(3)
 
 //{
-//    QObject::connect(m_manager,&NetworkAccessManager::finished,this,&NetworkManager::routeReply);
-//    QObject::connect(m_synchronousManager,&QNetworkAccessManager::finished,m_eventLoop,&QEventLoop::quit);
 
 //    QObject::connect(m_manager,&NetworkAccessManager::authenticationRequired,this,&NetworkManager::onAuthenticationRequired);
 //    QObject::connect(m_synchronousManager,&QNetworkAccessManager::authenticationRequired,this,&NetworkManager::onAuthenticationRequired);
@@ -202,14 +200,6 @@
 
 
 
-//#ifndef QT_NO_SSL
-//void NetworkManager::connectToHostEncrypted(const QString &hostName, quint16 port, const QSslConfiguration &sslConfiguration)
-//{
-//    manager()->connectToHostEncrypted(hostName,port,sslConfiguration);
-//    m_synchronousManager->connectToHostEncrypted(hostName,port,sslConfiguration);
-//}
-//#endif
-
 
 //QNetworkRequest NetworkManager::createNetworkRequest(const QString &url)
 //{
@@ -234,36 +224,7 @@
 //}
 
 
-//QNetworkReply *NetworkManager::createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, const QByteArray &data, const QByteArray &verb, const bool monitorProgress)
-//{
-//    QNetworkReply *reply=nullptr;
-//    switch(op){
 
-//    case QNetworkAccessManager::GetOperation: reply=m_manager->get(originalReq);  break;
-//    case QNetworkAccessManager::PostOperation: reply= m_manager->post(originalReq,data);  break;
-//    case QNetworkAccessManager::PutOperation: reply= m_manager->put(originalReq,data);  break;
-//    case QNetworkAccessManager::DeleteOperation: reply= m_manager->deleteResource(originalReq);  break;
-//    case QNetworkAccessManager::HeadOperation: reply= m_manager->head(originalReq); break;
-//    case QNetworkAccessManager::CustomOperation: reply= m_manager->sendCustomRequest(originalReq,verb,data); break;
-//    case QNetworkAccessManager::UnknownOperation: return nullptr;;
-//    }
-
-//    if(monitorProgress){
-//        connect(reply,&QNetworkReply::downloadProgress,this,[this,reply](qint64 bytesReceived, qint64 bytesTotal){
-//            emit downloadProgress(reply->request().url(),bytesReceived,bytesTotal);
-//        });
-//    }
-
-//    setLastReply(reply);
-
-//    return reply;
-
-//}
-
-//QNetworkReply *NetworkManager::lastReply() const
-//{
-//    return m_lastReply;
-//}
 
 //void NetworkManager::onAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator)
 //{
@@ -272,42 +233,14 @@
 //    authenticator->setPassword(authenticationCredentials.second);
 //}
 
-//void NetworkManager::setLastReply(QNetworkReply *reply)
-//{
-//    m_lastReply=reply;
-
-//    if(isIgnoringSslErrors())
-//        m_lastReply->ignoreSslErrors();
-//}
-
-
 
 //void NetworkManager::setAuthenticationCredentails(const QString &user, const QString &password)
 //{
 //    authenticationCredentials.first=user;
 //    authenticationCredentials.second=password;
 //}
-//#if !defined(QT_NO_BEARERMANAGEMENT) && QT_VERSION <QT_VERSION_CHECK(6,0,0)
-//void NetworkManager::setConfiguration(const QNetworkConfiguration &config)
-//{
-//    m_manager->setConfiguration(config);
-//    m_synchronousManager->setConfiguration(config);
-//}
-
-//QNetworkConfiguration NetworkManager::configuration() const
-//{
-//    return m_manager->configuration();
-//}
-//#endif
 
 
-
-//void NetworkManager::onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator)
-//{
-//    Q_UNUSED(proxy);
-//    authenticator->setUser(proxyAuthenticationCredentials.first);
-//    authenticator->setPassword(proxyAuthenticationCredentials.second);
-//}
 
 //void NetworkManager::routeReply(QNetworkReply *reply)
 //{

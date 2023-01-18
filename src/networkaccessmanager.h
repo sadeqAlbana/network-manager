@@ -155,6 +155,9 @@ public:
     QNetworkRequest createNetworkRequest(const QUrl &url);
 
 
+    const QPair<QString, QString> &proxyAuthenticationCredentials() const;
+    void setProxyAuthenticationCredentials(const QPair<QString, QString> &newProxyAuthenticationCredentials);
+
 signals:
     /*!
         \fn void networkActivity(QUrl url)
@@ -177,6 +180,8 @@ protected:
     */
     virtual NetworkResponse *createNewRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr);
     QNetworkReply *createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr) override;
+    virtual void onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
+
 
 
 private:
@@ -186,6 +191,8 @@ private:
     QUrl m_baseUrl; /**< if set, this url will be prepending before every request, unless the passed request url contains a complete url */
     HeadersMap m_rawHeaders; /**< stores a list of header pairs that will be used on each standard request */
     int m_attempts = 1; /**< the number of rerequest attempts in case the request failed */
+    QPair<QString,QString> m_proxyAuthenticationCredentials;
+
 };
 
 #endif // NETWORKACCESSMANAGER_H

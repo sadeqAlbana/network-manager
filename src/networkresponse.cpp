@@ -174,8 +174,8 @@ NetworkResponse * NetworkResponse::subcribe(std::function<void (NetworkResponse 
 
     NetworkAccessManager *manager = qobject_cast<NetworkAccessManager *>(parent());
     if(manager){
-        connect(this,&NetworkResponse::finished,manager,[this,manager](){manager->route(this);});
         manager->registerRoute(this,cb);
+        connect(this,&NetworkResponse::finished,manager,[this,manager](){manager->route(this);});
     }
     return this;
 }

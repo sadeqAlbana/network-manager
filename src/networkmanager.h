@@ -10,14 +10,9 @@
 
 
 #include <QObject>
-#include "networkresponse.h"
-#include "router.h"
-#include <QNetworkReply>
-#include <QEventLoop>
-#include "networkaccessmanager.h"
 
 
-//using HeadersMap= QMap<QByteArray,QByteArray>;
+
 
 //class NetworkManager : public QObject
 //{
@@ -25,87 +20,34 @@
 //public:
 //    NetworkManager(QObject *parent=nullptr);
 
-//    NetworkManager *get(QString url, const bool monitorProgress=false);
-//    NetworkManager *get(const QNetworkRequest &request, const bool monitorProgress=false);
 
-//    NetworkManager *post(const QString url, const QVariant data, QByteArray contentType=QByteArray());
-//    NetworkManager * put (const QString url, const QVariant data, QByteArray contentType=QByteArray());
-
-//    NetworkResponse getSynch(QString url);
-//    NetworkResponse postSynch(const QString url, const QVariant data, QByteArray contentType=QByteArray());
-//    NetworkResponse putSynch(const QString url, const QVariant data, QByteArray contentType=QByteArray());
 
 //    bool isConnectionError(QNetworkReply::NetworkError error);
-//    HeadersMap  permanentRawHeaders(){return m_permanentRawHeaders;} //chaning this methods signiture will cause a disaster to apps using this library, it's changed !
-//    QByteArray rawHeader(const QByteArray &header)const {return m_permanentRawHeaders.value(header);}
 
-//    void subcribe(Callback cb);
-//    template <class T>
-//    void subcribe(T *instance,void (T::*ptr)(NetworkResponse *))
-//    {
-//        m_router.registerRoute(m_lastReply,instance,ptr);
-//    }
 
-//    void setBaseUrl(QString url){m_baseUrl=url;}
-//    bool usingBaseUrl(){return !m_baseUrl.isEmpty();}
 //    void allowRedirect(bool allow){m_allowRedirect=allow;}
 //    inline bool redirectAllowed() const{return m_allowRedirect;}
-//    inline QNetworkAccessManager* manager(){return m_manager;}
 
 //    void setAuthenticationCredentails(const QString &user, const QString &password);
 
-//#if !defined(QT_NO_BEARERMANAGEMENT) && QT_VERSION <QT_VERSION_CHECK(6,0,0)
-//    void setConfiguration(const QNetworkConfiguration &config);
-//    QNetworkConfiguration configuration() const;
-//#endif
-//    void setProxy(const QNetworkProxy &proxy);
-//    QNetworkProxy proxy() const;
 
-//    void onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
+
+
 
 
 //    bool isIgnoringSslErrors() const;
 //    void ignoreSslErrors(bool ignore);
 
 //    void onSSLError(QNetworkReply *reply, const QList<QSslError> &errors);
-//#ifndef QT_NO_SSL
-//    void connectToHostEncrypted(const QString &hostName, quint16 port = 443, const QSslConfiguration &sslConfiguration = QSslConfiguration::defaultConfiguration());
-//#endif
 
 
-//    QNetworkReply *lastReply() const;
-//    QNetworkRequest createNetworkRequest(const QString &url);
 
-//signals:
-//    void networkActivity(QUrl url);
-//    void finishedNetworkActivity(QUrl url);
-//    void downloadProgress(QUrl url, qint64 bytesReceived, qint64 bytesTotal);
-
-
-//protected slots:
-//    virtual void routeReply(QNetworkReply *reply);
-
-//protected:
-
-//    QByteArray mapContentType(const QMetaType::Type type);
-//    QNetworkReply *createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, const QByteArray &data = QByteArray(), const QByteArray &verb = QByteArray(), const bool monitorProgress=false);
 
 
 //protected:
-//    SNetworkManager::Router m_router;
-//    QNetworkAccessManager *m_manager;
-//    QNetworkAccessManager *m_synchronousManager;
-//    QEventLoop *m_eventLoop;
-//    QString m_baseUrl;
-//    QNetworkReply* m_lastReply;
 //    HeadersMap m_permanentRawHeaders;
-
 //    bool m_allowRedirect=false;
-//    void onAuthenticationRequired(QNetworkReply *reply, QAuthenticator *authenticator);
-//    void setLastReply(QNetworkReply *reply);
-//    int m_attempts;
 //    QPair<QString,QString> authenticationCredentials;
-//    QPair<QString,QString> proxyAuthenticationCredentials;
 //    bool m_ignoreSslErrors;
 //};
 
