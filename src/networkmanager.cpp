@@ -21,9 +21,6 @@
 //#include <QNetworkConfiguration>
 //#endif
 //NetworkManager::NetworkManager(QObject *parent) : QObject (parent),
-//    m_manager(new NetworkAccessManager(this)),
-//    m_synchronousManager(new NetworkAccessManager(this)),
-//    m_eventLoop(new QEventLoop(this)),
 //    m_attempts(3)
 
 //{
@@ -32,105 +29,10 @@
 //    QObject::connect(m_synchronousManager,&QNetworkAccessManager::authenticationRequired,this,&NetworkManager::onAuthenticationRequired);
 
 
-//    QObject::connect(m_manager,&NetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
-//    QObject::connect(m_synchronousManager,&QNetworkAccessManager::proxyAuthenticationRequired,this,&NetworkManager::onProxyAuthenticationRequired);
-
-
 //    ;
 
 //}
 
-
-//NetworkManager* NetworkManager::get(QString url, const bool monitorProgress)
-//{
-//    this->get(createNetworkRequest(url),monitorProgress);
-//    return this;
-//}
-
-//NetworkManager *NetworkManager::get(const QNetworkRequest &request, const bool monitorProgress)
-//{
-//    this->createRequest(QNetworkAccessManager::GetOperation,request,QByteArray(),QByteArray(),monitorProgress);
-//    return this;
-//}
-
-//NetworkManager* NetworkManager::post(const QString url, const QVariant data, QByteArray contentType)
-//{
-//    QNetworkRequest request = createNetworkRequest(url);
-//    if(contentType.isNull())
-//        contentType=mapContentType(static_cast<QMetaType::Type>(data.typeId()));
-
-//    request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
-//    setLastReply(manager()->post(request,rawData(data)));
-//    return this;
-//}
-
-//NetworkManager *NetworkManager::put(const QString url, const QVariant data, QByteArray contentType)
-//{
-//    QNetworkRequest request = createNetworkRequest(url);
-
-//    if(contentType.isNull())
-//        contentType=mapContentType(static_cast<QMetaType::Type>(data.typeId()));
-
-//    request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
-//    setLastReply(manager()->put(request,rawData(data)));
-
-//    return this;
-//}
-
-//NetworkResponse NetworkManager::getSynch(QString url)
-//{
-//    QNetworkReply *reply;
-//    int attemps=1;
-//    do{
-//        reply= m_synchronousManager->get(createNetworkRequest(url));
-
-//        if(isIgnoringSslErrors())
-//            reply->ignoreSslErrors();
-
-//        m_eventLoop->exec();
-//        if(reply->error()==QNetworkReply::NoError || !isConnectionError(reply->error())){
-//            break;
-//        }
-//        else{
-//            attemps++;
-//        }
-//    }
-//    while(attemps<=attemptsCount());
-
-//    emit finishedNetworkActivity(reply->url());
-
-//    return NetworkResponse(reply);
-//}
-
-
-//NetworkResponse NetworkManager::putSynch(const QString url, const QVariant data, QByteArray contentType)
-//{
-//    QNetworkRequest request=createNetworkRequest(url);
-
-//    if(contentType.isNull())
-//        contentType=mapContentType(static_cast<QMetaType::Type>(data.typeId()));
-
-//    request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
-//    QNetworkReply *reply;
-//    int attemps=1;
-//    do{
-//        reply= m_synchronousManager->put(request,rawData(data));
-//        if(isIgnoringSslErrors() || !isConnectionError(reply->error()))
-//            reply->ignoreSslErrors();
-
-//        m_eventLoop->exec();
-//        if(reply->error()==QNetworkReply::NoError){
-//            break;
-//        }
-//        else{
-//            attemps++;
-//        }
-//    }
-//    while(attemps<=attemptsCount());
-
-//    emit finishedNetworkActivity(reply->url());
-//    return NetworkResponse(reply);
-//}
 
 //bool NetworkManager::isConnectionError(QNetworkReply::NetworkError error)
 //{
