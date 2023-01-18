@@ -9,7 +9,6 @@
 #define NETWORKRESPONSE_H
 
 #include <QNetworkReply>
-#include "router.h"
 class QDebug;
 class QImage;
 
@@ -48,7 +47,7 @@ public:
 
     operator bool();
 
-    NetworkResponse * subcribe(Callback cb);
+    NetworkResponse * subcribe(std::function<void(NetworkResponse *)> cb);
 
     template <class T>
     NetworkResponse * subcribe(T *instance,void(T::*cb) (NetworkResponse *))

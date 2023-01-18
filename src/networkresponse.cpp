@@ -159,7 +159,7 @@ QDebug operator <<(QDebug dbg, const NetworkResponse *res)
 }
 
 
-NetworkResponse * NetworkResponse::subcribe(Callback cb)
+NetworkResponse * NetworkResponse::subcribe(std::function<void (NetworkResponse *)> cb)
 {
 
     NetworkAccessManager *manager = qobject_cast<NetworkAccessManager *>(parent());

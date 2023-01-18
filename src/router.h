@@ -14,22 +14,12 @@
 #include <QDebug>
 class NetworkResponse;
 
-#ifdef Q_CC_MSVC
-#pragma pointers_to_members(full_generality,virtual_inheritance)
-#endif
 
-class CNTRLR{}; //MSVC will throw C2440 when using reinterpret_cast with undefined classes
-
-//template<class T> using MemberCallback = void (T::*)(NetworkResponse *);
+template<class T> using MemberCallback = void (T::*)(NetworkResponse *);
 
 using Callback = std::function<void (NetworkResponse *)>;
 
-//struct MemberCallbackInfo
-//{
-//    CNTRLR *instance;
-//    MemberCallback<CNTRLR> ptr;
-//    Callback callback;
-//};
+
 
 typedef QMap<NetworkResponse *,Callback> MemberCallbacks;
 namespace SNetworkManager{
@@ -42,21 +32,14 @@ public:
     {
         if(callbacks.contains(reply))
         {
-            //MemberCallbackInfo cb= callbacks.value(reply);
-            //cb.instance ? (cb.instance->*cb.ptr)(reply) : cb.callback(reply);
-            qDebug()<<"reached here";
             Callback cb=callbacks[reply];
             cb(reply);
         }
     }
 
     template <class T>
-    void registerRoute(NetworkResponse *reply, T *instance, void(T::*ptr)(NetworkResponse *))
+    void registerRoute(NetworkResponse *reply, T *instance, MemberCallback<T> ptr)
     {
-//        MemberCallbackInfo obj={reinterpret_cast<CNTRLR *>(instance),reinterpret_cast<MemberCallback<CNTRLR>>(ptr),nullptr};
-
-
-//        callbacks.insert(reply, obj);
         Callback cb = std::bind(ptr,instance,std::placeholders::_1);
         callbacks.insert(reply, cb);
 
@@ -64,8 +47,6 @@ public:
 
     void registerRoute(NetworkResponse *reply, Callback cb)
     {
-        qDebug()<<"Registered";
-        //MemberCallbackInfo obj={nullptr,nullptr,cb};
         callbacks.insert(reply, cb);
     }
 
