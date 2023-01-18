@@ -102,35 +102,6 @@
 //    return NetworkResponse(reply);
 //}
 
-//NetworkResponse NetworkManager::postSynch(const QString url, const QVariant data, QByteArray contentType)
-//{
-//    QNetworkRequest request=createNetworkRequest(url);
-
-//    if(contentType.isNull())
-//        contentType=mapContentType(static_cast<QMetaType::Type>(data.typeId()));
-
-//    request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
-//    QNetworkReply *reply;
-//    int attemps=1;
-//    do{
-//        reply= m_synchronousManager->post(request,rawData(data));
-//        if(isIgnoringSslErrors())
-//            reply->ignoreSslErrors();
-
-//        m_eventLoop->exec();
-//        if(reply->error()==QNetworkReply::NoError || !isConnectionError(reply->error())){
-//            break;
-//        }
-//        else{
-//            attemps++;
-//        }
-//    }
-//    while(attemps<=attemptsCount());
-
-//    emit finishedNetworkActivity(reply->url());
-
-//    return NetworkResponse(reply);
-//}
 
 //NetworkResponse NetworkManager::putSynch(const QString url, const QVariant data, QByteArray contentType)
 //{
@@ -175,11 +146,6 @@
 
 
 
-//void NetworkManager::subcribe(Callback cb)
-//{
-//    m_router.registerRoute(m_lastReply,cb);
-//}
-
 //bool NetworkManager::isIgnoringSslErrors() const
 //{
 //    return m_ignoreSslErrors;
@@ -200,28 +166,6 @@
 
 
 
-
-//QNetworkRequest NetworkManager::createNetworkRequest(const QString &url)
-//{
-//    QNetworkRequest req;
-
-//    qDebug()<<"creating request: " << url;
-//    if(redirectAllowed()){
-//        req.setAttribute(QNetworkRequest::RedirectionTargetAttribute,true);
-//        req.setAttribute(QNetworkRequest::RedirectPolicyAttribute,QNetworkRequest::SameOriginRedirectPolicy);
-//    }
-
-//    QString requestUrl= usingBaseUrl() ? m_baseUrl+url : url;
-//    req.setUrl(requestUrl);
-
-//    for (const QByteArray & headerName : m_permanentRawHeaders.keys()) {
-//        req.setRawHeader(headerName,m_permanentRawHeaders[headerName]);
-//    }
-
-//    //emit networkActivity(url);
-
-//    return  req;
-//}
 
 
 

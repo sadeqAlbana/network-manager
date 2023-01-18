@@ -40,6 +40,7 @@ public:
     const QJsonObject jsonObject() const;
     const QJsonArray jsonArray() const;
 
+    //this method lacks the way to know attempts count !
     void waitForFinished();
     //use union to avoid conversion at request?
 #ifdef QT_HAVE_GUI
