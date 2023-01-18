@@ -9,7 +9,7 @@
 #define NETWORKRESPONSE_H
 
 #include <QNetworkReply>
-
+#include "router.h"
 class QDebug;
 class QImage;
 
@@ -17,6 +17,7 @@ class NetworkResponse : public QObject
 {
     Q_OBJECT
 public:
+
     NetworkResponse(QNetworkReply *reply, QObject *parent=nullptr);
     ~NetworkResponse();
     QNetworkReply::NetworkError error() const;
@@ -47,6 +48,10 @@ public:
 
     operator bool();
 
+    NetworkResponse * subcribe(Callback cb);
+    template <class T>
+    NetworkResponse * subcribe(T *instance,void (T::*ptr)(NetworkResponse *));
+
 signals:
     void finished();
 
@@ -58,6 +63,7 @@ private:
 
 
     void onReplyFinished();
+
 };
 
 typedef NetworkResponse Response;

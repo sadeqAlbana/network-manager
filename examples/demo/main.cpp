@@ -17,10 +17,10 @@ int main(int argc, char *argv[])
     });
 
 
-//    TestClass *testClass = new TestClass();
+    TestClass *testClass = new TestClass();
 
-//    //callbacks to member functions of any class type
-//    manager.get("https://reqres.in/api/users?page=1")->subcribe(testClass,&TestClass::processData);
+    //callbacks to member functions of any class type
+    manager.get(QUrl("https://reqres.in/api/users?page=1"))->subcribe(testClass,&TestClass::processData);
 
 //    //synchronus call
 //    NetworkResponse res=manager.getSynch("https://reqres.in/api/users?page=1");

@@ -18,6 +18,7 @@ class NetworkAccessManager : public QNetworkAccessManager, private SNetworkManag
 {
     Q_OBJECT
 public:
+    friend class NetworkResponse;
 
     enum RequstAttribute{
       IdAttribute                = 1001, //a unique identifier for each request
@@ -35,116 +36,89 @@ public:
     explicit NetworkAccessManager(QObject *parent = nullptr);
 
     /*!
-        \fn NetworkAccessManager * NetworkAccessManager::head(const QUrl &url)
+        \fn NetworkResponse * NetworkAccessManager::head(const QUrl &url)
+        sends a HEAD request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+        and returns a pointer to the NetworkAccessManager
+    */
+    NetworkResponse *head(const QUrl &url);
+
+    /*!
+        \fn NetworkResponse * NetworkAccessManager::head(const QNetworkRequest &request)
+
+        sends a HEAD request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+
+    */
+    NetworkResponse *head(const QNetworkRequest &request);
+
+    /*!
+        \fn NetworkResponse * NetworkAccessManager::get(const QUrl &url)
+        sends a get request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+        and returns a pointer to the NetworkAccessManager
+    */
+    NetworkResponse *get(const QUrl &url);
+
+    /*!
+        \fn NetworkResponse * NetworkAccessManager::get(const QNetworkRequest &request)
+
+        sends a get request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+
+    */
+    NetworkResponse *get(const QNetworkRequest &request);
+
+    /*!
+        \fn NetworkResponse * NetworkAccessManager::deleteResource(const QUrl &url)
         sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
         and returns a pointer to the NetworkAccessManager
     */
-    NetworkAccessManager *head(const QUrl &url);
+    NetworkResponse *deleteResource(const QUrl &url);
 
     /*!
-        \fn NetworkAccessManager * NetworkAccessManager::head(const QNetworkRequest &request)
+        \fn NetworkResponse * NetworkAccessManager::deleteResource(const QNetworkRequest &request)
 
         sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
 
     */
-    NetworkAccessManager *head(const QNetworkRequest &request);
+    NetworkResponse *deleteResource(const QNetworkRequest &request);
+
+
+    /*!
+        \fn NetworkResponse * NetworkAccessManager::post(const QUrl &url, const QVariant &data)
+        sends a post request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+        and returns a pointer to the NetworkAccessManager
+    */
+    NetworkResponse *post(const QUrl &url, const QVariant &data);
+
+    /*!
+        \fn NetworkResponse * NetworkAccessManager::post(const QNetworkRequest &request, const QVariant &data)
+
+        sends a post request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+
+    */
+    NetworkResponse *post(const QNetworkRequest &request, const QVariant &data);
+
+    /*!
+        \fn NetworkResponse * NetworkAccessManager::put(const QUrl &url, const QVariant &data)
+        sends a put request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+        and returns a pointer to the NetworkAccessManager
+    */
+    NetworkResponse *put(const QUrl &url, const QVariant &data);
+
+    /*!
+        \fn NetworkResponse * NetworkAccessManager::put(const QNetworkRequest &request, const QVariant &data)
+
+        sends a put request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+
+    */
+    NetworkResponse *put(const QNetworkRequest &request, const QVariant &data);
 
     /*!
         \fn void NetworkAccessManager::abortAllRequests()
 
         aborts all requests that are being processed
-        calls  \a QNetworkReply::abort() and deletes the \a NetworkRespnse * pointer that was created with \a createRequest()
+        calls  \a QNetworkReply::abort() and deletes the \a NetworkRespnse * pointers and \a QNetworkReply * pointers that was created with \a createNewRequest() and \a createRequest()
     */
 
 
-
-    /*!
-        \fn NetworkAccessManager * NetworkAccessManager::get(const QUrl &url)
-        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
-        and returns a pointer to the NetworkAccessManager
-    */
-    NetworkAccessManager *get(const QUrl &url);
-
-    /*!
-        \fn NetworkAccessManager * NetworkAccessManager::get(const QNetworkRequest &request)
-
-        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
-
-    */
-    NetworkAccessManager *get(const QNetworkRequest &request);
-
-    /*!
-        \fn void NetworkAccessManager::abortAllRequests()
-
-        aborts all requests that are being processed
-        calls  \a QNetworkReply::abort() and deletes the \a NetworkRespnse * pointer that was created with \a createRequest()
-    */
-
-    /*!
-        \fn NetworkAccessManager * NetworkAccessManager::deleteResource(const QUrl &url)
-        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
-        and returns a pointer to the NetworkAccessManager
-    */
-    NetworkAccessManager *deleteResource(const QUrl &url);
-
-    /*!
-        \fn NetworkAccessManager * NetworkAccessManager::deleteResource(const QNetworkRequest &request)
-
-        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
-
-    */
-    NetworkAccessManager *deleteResource(const QNetworkRequest &request);
-
-    /*!
-        \fn void NetworkAccessManager::abortAllRequests()
-
-        aborts all requests that are being processed
-        calls  \a QNetworkReply::abort() and deletes the \a NetworkRespnse * pointer that was created with \a createRequest()
-    */
-
-    /*!
-        \fn NetworkAccessManager * NetworkAccessManager::post(const QUrl &url, const QVariant &data)
-        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
-        and returns a pointer to the NetworkAccessManager
-    */
-    NetworkAccessManager *post(const QUrl &url, const QVariant &data);
-
-    /*!
-        \fn NetworkAccessManager * NetworkAccessManager::post(const QNetworkRequest &request, const QVariant &data)
-
-        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
-
-    */
-    NetworkAccessManager *post(const QNetworkRequest &request, const QVariant &data);
-
-    /*!
-        \fn NetworkAccessManager * NetworkAccessManager::put(const QUrl &url, const QVariant &data)
-        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
-        and returns a pointer to the NetworkAccessManager
-    */
-    NetworkAccessManager *put(const QUrl &url, const QVariant &data);
-
-    /*!
-        \fn NetworkAccessManager * NetworkAccessManager::put(const QNetworkRequest &request, const QVariant &data)
-
-        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
-
-    */
-    NetworkAccessManager *put(const QNetworkRequest &request, const QVariant &data);
-
-    /*!
-        \fn void NetworkAccessManager::abortAllRequests()
-
-        aborts all requests that are being processed
-        calls  \a QNetworkReply::abort() and deletes the \a NetworkRespnse * pointer that was created with \a createRequest()
-    */
-
-    /*!
-        \fn void NetworkAccessManager::abortAllRequests()
-
-        aborts all requests that are being processed
-        calls  \a QNetworkReply::abort() and deletes the \a NetworkRespnse * pointer that was created with \a createRequest()
-    */
 
     void abortAllRequests();
 
@@ -180,14 +154,6 @@ public:
 
     QNetworkRequest createNetworkRequest(const QUrl &url);
 
-
-    NetworkAccessManager * subcribe(Callback cb);
-    template <class T>
-    NetworkAccessManager * subcribe(T *instance,void (T::*ptr)(NetworkResponse *))
-    {
-        registerRoute(m_lastResponse,instance,ptr);
-        return this;
-    }
 
 signals:
     /*!

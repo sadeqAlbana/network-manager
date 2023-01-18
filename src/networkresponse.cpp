@@ -13,6 +13,7 @@
 #include <QImage>
 #endif
 #include <QDebug>
+#include "networkaccessmanager.h"
 NetworkResponse::NetworkResponse(QNetworkReply *reply, QObject *parent): QObject(parent),
     m_reply(reply)
 {
@@ -155,4 +156,27 @@ QDebug operator <<(QDebug dbg, const NetworkResponse &res)
 QDebug operator <<(QDebug dbg, const NetworkResponse *res)
 {
     return operator <<(dbg,*res);
+}
+
+
+NetworkResponse * NetworkResponse::subcribe(Callback cb)
+{
+
+    NetworkAccessManager *manager = qobject_cast<NetworkAccessManager *>(parent());
+    if(manager){
+        manager->registerRoute(this,cb);
+    }
+    return this;
+}
+
+template<class T>
+NetworkResponse *NetworkResponse::subcribe(T *instance,void (T::*ptr)(NetworkResponse *))
+{
+
+    NetworkAccessManager *manager = qobject_cast<NetworkAccessManager *>(parent());
+    if(manager){
+        manager->registerRoute(this,instance,ptr);
+    }
+        return this;
+
 }

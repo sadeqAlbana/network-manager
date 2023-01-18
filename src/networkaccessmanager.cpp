@@ -23,65 +23,60 @@ NetworkAccessManager::NetworkAccessManager(QObject *parent)
 
 }
 
-NetworkAccessManager *NetworkAccessManager::head(const QUrl &url)
+NetworkResponse *NetworkAccessManager::head(const QUrl &url)
 {
     return this->head(createNetworkRequest(url));
 
 }
 
-NetworkAccessManager *NetworkAccessManager::head(const QNetworkRequest &request)
+NetworkResponse *NetworkAccessManager::head(const QNetworkRequest &request)
 {
-    createNewRequest(QNetworkAccessManager::HeadOperation,request);
-    return this;
+    return createNewRequest(QNetworkAccessManager::HeadOperation,request);
 }
 
-NetworkAccessManager *NetworkAccessManager::get(const QUrl &url)
+NetworkResponse *NetworkAccessManager::get(const QUrl &url)
 {
     return this->get(createNetworkRequest(url));
 }
 
-NetworkAccessManager *NetworkAccessManager::get(const QNetworkRequest &request)
+NetworkResponse *NetworkAccessManager::get(const QNetworkRequest &request)
 {
-    createNewRequest(QNetworkAccessManager::GetOperation,request);
-    return this;
+    return createNewRequest(QNetworkAccessManager::GetOperation,request);
 }
 
-NetworkAccessManager *NetworkAccessManager::deleteResource(const QUrl &url)
+NetworkResponse *NetworkAccessManager::deleteResource(const QUrl &url)
 {
     return this->deleteResource(createNetworkRequest(url));
 
 }
 
-NetworkAccessManager *NetworkAccessManager::deleteResource(const QNetworkRequest &request)
+NetworkResponse *NetworkAccessManager::deleteResource(const QNetworkRequest &request)
 {
-    createNewRequest(QNetworkAccessManager::DeleteOperation,request);
-    return this;
+    return createNewRequest(QNetworkAccessManager::DeleteOperation,request);
 }
 
-NetworkAccessManager *NetworkAccessManager::post(const QUrl &url, const QVariant &data)
+NetworkResponse *NetworkAccessManager::post(const QUrl &url, const QVariant &data)
 {
     QNetworkRequest request = createNetworkRequest(url);
     return post(request,data);
 }
 
 
-NetworkAccessManager *NetworkAccessManager::post(const QNetworkRequest &request, const QVariant &data)
+NetworkResponse *NetworkAccessManager::post(const QNetworkRequest &request, const QVariant &data)
 {
-    createNewRequest(QNetworkAccessManager::PostOperation,request);
-    return this;
+    return createNewRequest(QNetworkAccessManager::PostOperation,request);
 }
 
-NetworkAccessManager *NetworkAccessManager::put(const QUrl &url, const QVariant &data)
+NetworkResponse *NetworkAccessManager::put(const QUrl &url, const QVariant &data)
 {
     QNetworkRequest request = createNetworkRequest(url);
     return put(request,data);
 }
 
 
-NetworkAccessManager *NetworkAccessManager::put(const QNetworkRequest &request, const QVariant &data)
+NetworkResponse *NetworkAccessManager::put(const QNetworkRequest &request, const QVariant &data)
 {
-    createNewRequest(QNetworkAccessManager::PutOperation,request);
-    return this;
+    return createNewRequest(QNetworkAccessManager::PutOperation,request);
 }
 
 
@@ -150,11 +145,6 @@ QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url)
 
 }
 
-NetworkAccessManager * NetworkAccessManager::subcribe(Callback cb)
-{
-    registerRoute(m_lastResponse,cb);
-    return this;
-}
 
 NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData)
 {
