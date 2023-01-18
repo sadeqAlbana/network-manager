@@ -11,20 +11,22 @@ int main(int argc, char *argv[])
     NetworkAccessManager manager;
 
 
-    //callback to lambdas and non-member functions
-//    manager.get(QUrl("https://reqres.in/api/users?page=1"))->subcribe([](NetworkResponse *res)
-//    {
-//        qDebug()<<res->json();
-//    });
+//    //callback to lambdas and regular functions
+    manager.get(QUrl("https://reqres.in/api/users?page=1"))->subcribe([](NetworkResponse *res)
+    {
+        qDebug()<<res->json();
+    });
 
 
-    TestClass *testClass = new TestClass();
+    TestClass testClass = TestClass();
 
-    //callbacks to member functions of any class type
-    manager.get(QUrl("https://reqres.in/api/users?page=1"))->subcribe(testClass,&TestClass::processData);
+//    //callbacks to member functions of any class type
+    manager.get(QUrl("https://reqres.in/api/users?page=1"))->subcribe(&testClass,&TestClass::processData);
 
 //    //synchronus call
-//    NetworkResponse res=manager.getSynch("https://reqres.in/api/users?page=1");
+    NetworkResponse *res=manager.get(QUrl("https://reqres.in/api/users?page=1"));
+    res->waitForFinished();
+    qDebug()<<res->json();
 
 //    qDebug()<<res.json("page").toInt();
 

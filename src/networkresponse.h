@@ -40,6 +40,7 @@ public:
     const QJsonObject jsonObject() const;
     const QJsonArray jsonArray() const;
 
+    void waitForFinished();
     //use union to avoid conversion at request?
 #ifdef QT_HAVE_GUI
     QImage image() const;

@@ -14,6 +14,7 @@
 #endif
 #include <QDebug>
 #include "networkaccessmanager.h"
+#include <QEventLoop>
 NetworkResponse::NetworkResponse(QNetworkReply *reply, QObject *parent): QObject(parent),
     m_reply(reply)
 {
@@ -84,6 +85,15 @@ const QJsonObject NetworkResponse::jsonObject() const
 const QJsonArray NetworkResponse::jsonArray() const
 {
     return m_replyData.toJsonArray();
+}
+
+void NetworkResponse::waitForFinished()
+{
+    QEventLoop eventLoop;
+
+    connect(this,&NetworkResponse::finished,&eventLoop,&QEventLoop::quit);
+
+    eventLoop.exec();
 }
 #ifdef QT_HAVE_GUI
 QImage NetworkResponse::image() const

@@ -157,7 +157,6 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
         });
     }
 
-    m_lastResponse=res;
     emit networkActivity(originalReq.url());
 
     return res;
