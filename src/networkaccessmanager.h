@@ -35,6 +35,30 @@ public:
     explicit NetworkAccessManager(QObject *parent = nullptr);
 
     /*!
+        \fn NetworkAccessManager * NetworkAccessManager::head(const QUrl &url)
+        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+        and returns a pointer to the NetworkAccessManager
+    */
+    NetworkAccessManager *head(const QUrl &url);
+
+    /*!
+        \fn NetworkAccessManager * NetworkAccessManager::head(const QNetworkRequest &request)
+
+        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+
+    */
+    NetworkAccessManager *head(const QNetworkRequest &request);
+
+    /*!
+        \fn void NetworkAccessManager::abortAllRequests()
+
+        aborts all requests that are being processed
+        calls  \a QNetworkReply::abort() and deletes the \a NetworkRespnse * pointer that was created with \a createRequest()
+    */
+
+
+
+    /*!
         \fn NetworkAccessManager * NetworkAccessManager::get(const QUrl &url)
         sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
         and returns a pointer to the NetworkAccessManager
@@ -57,6 +81,28 @@ public:
     */
 
     /*!
+        \fn NetworkAccessManager * NetworkAccessManager::deleteResource(const QUrl &url)
+        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+        and returns a pointer to the NetworkAccessManager
+    */
+    NetworkAccessManager *deleteResource(const QUrl &url);
+
+    /*!
+        \fn NetworkAccessManager * NetworkAccessManager::deleteResource(const QNetworkRequest &request)
+
+        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+
+    */
+    NetworkAccessManager *deleteResource(const QNetworkRequest &request);
+
+    /*!
+        \fn void NetworkAccessManager::abortAllRequests()
+
+        aborts all requests that are being processed
+        calls  \a QNetworkReply::abort() and deletes the \a NetworkRespnse * pointer that was created with \a createRequest()
+    */
+
+    /*!
         \fn NetworkAccessManager * NetworkAccessManager::post(const QUrl &url, const QVariant &data)
         sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
         and returns a pointer to the NetworkAccessManager
@@ -70,6 +116,28 @@ public:
 
     */
     NetworkAccessManager *post(const QNetworkRequest &request, const QVariant &data);
+
+    /*!
+        \fn NetworkAccessManager * NetworkAccessManager::put(const QUrl &url, const QVariant &data)
+        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+        and returns a pointer to the NetworkAccessManager
+    */
+    NetworkAccessManager *put(const QUrl &url, const QVariant &data);
+
+    /*!
+        \fn NetworkAccessManager * NetworkAccessManager::put(const QNetworkRequest &request, const QVariant &data)
+
+        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+
+    */
+    NetworkAccessManager *put(const QNetworkRequest &request, const QVariant &data);
+
+    /*!
+        \fn void NetworkAccessManager::abortAllRequests()
+
+        aborts all requests that are being processed
+        calls  \a QNetworkReply::abort() and deletes the \a NetworkRespnse * pointer that was created with \a createRequest()
+    */
 
     /*!
         \fn void NetworkAccessManager::abortAllRequests()
