@@ -30,7 +30,7 @@ struct MemberCallbackInfo
     Callback callback;
 };
 
-typedef QMap<QNetworkReply *,MemberCallbackInfo> MemberCallbacks;
+typedef QMap<NetworkResponse *,MemberCallbackInfo> MemberCallbacks;
 namespace SNetworkManager{
 class Router
 {
@@ -39,21 +39,21 @@ public:
 
     void route(NetworkResponse *reply)
     {
-        if(callbacks.contains(reply->networkReply()))
+        if(callbacks.contains(reply))
         {
-            MemberCallbackInfo cb= callbacks.value(reply->networkReply());
+            MemberCallbackInfo cb= callbacks.value(reply);
             cb.instance ? (cb.instance->*cb.ptr)(reply) : cb.callback(reply);
         }
     }
 
     template <class T>
-    void registerRoute(QNetworkReply *reply, T *instance, MemberCallback<T> ptr)
+    void registerRoute(NetworkResponse *reply, T *instance, MemberCallback<T> ptr)
     {
         MemberCallbackInfo obj={reinterpret_cast<CNTRLR *>(instance),reinterpret_cast<MemberCallback<CNTRLR>>(ptr),nullptr};
         callbacks.insert(reply, obj);
     }
 
-    void registerRoute(QNetworkReply *reply, Callback cb)
+    void registerRoute(NetworkResponse *reply, Callback cb)
     {
         MemberCallbackInfo obj={nullptr,nullptr,cb};
         callbacks.insert(reply, obj);

@@ -127,6 +127,8 @@ void NetworkResponse::onReplyFinished()
         m_binaryData=this->m_reply->readAll();
         processReply();
     }
+
+    emit finished();
 }
 
 

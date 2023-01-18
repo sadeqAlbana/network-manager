@@ -47,6 +47,9 @@ public:
 
     operator bool();
 
+signals:
+    void finished();
+
 private:
     QNetworkReply *m_reply;
     QByteArray m_binaryData;

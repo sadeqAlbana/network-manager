@@ -23,9 +23,14 @@ NetworkAccessManager::NetworkAccessManager(QObject *parent)
 
 }
 
+NetworkAccessManager *NetworkAccessManager::get(const QUrl &url)
+{
+    return this->get(createNetworkRequest(url));
+}
+
 NetworkAccessManager *NetworkAccessManager::get(const QNetworkRequest &request)
 {
-    QNetworkAccessManager::get(request);
+    createNewRequest(QNetworkAccessManager::GetOperation,request);
     return this;
 }
 
@@ -102,9 +107,15 @@ QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url)
 
 }
 
-QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData)
+NetworkAccessManager * NetworkAccessManager::subcribe(Callback cb)
 {
-    QNetworkReply *reply=QNetworkAccessManager::createRequest(op,originalReq,outgoingData);
+    registerRoute(m_lastResponse,cb);
+    return this;
+}
+
+NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData)
+{
+    QNetworkReply *reply=createRequest(op,originalReq,outgoingData);
     NetworkResponse *res=new NetworkResponse(reply,this);
     m_responses << res;
     if(originalReq.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::MonitorProgressAttribute)).toBool()){
@@ -112,9 +123,25 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
             emit this->downloadProgress(bytesReceived,bytesTotal,res);
         });
     }
+
+    m_lastResponse=res;
+    connect(res,&NetworkResponse::finished,this,[this,res](){this->onResponseFinished(res);});
     emit networkActivity(originalReq.url());
 
+    return res;
+}
+
+QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData)
+{
+    QNetworkReply *reply=QNetworkAccessManager::createRequest(op,originalReq,outgoingData);
+
+    m_replies << reply;
     return reply;
+}
+
+void NetworkAccessManager::onResponseFinished(NetworkResponse *res)
+{
+    this->route(res);
 }
 
 
@@ -250,3 +277,5 @@ QByteArray DataSerialization::contentType(const QMetaType::Type type)
     }
     return contentType;
 }
+
+

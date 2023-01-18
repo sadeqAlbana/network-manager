@@ -112,6 +112,15 @@ public:
 
     QNetworkRequest createNetworkRequest(const QUrl &url);
 
+
+    NetworkAccessManager * subcribe(Callback cb);
+    template <class T>
+    NetworkAccessManager * subcribe(T *instance,void (T::*ptr)(NetworkResponse *))
+    {
+        registerRoute(m_lastResponse,instance,ptr);
+        return this;
+    }
+
 signals:
     /*!
         \fn void networkActivity(QUrl url)
@@ -132,15 +141,19 @@ protected:
         calls \a QNetworkAccessManager::createRequest internally
 
     */
-    QNetworkReply *createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr);
+    virtual NetworkResponse *createNewRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr);
+    QNetworkReply *createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr) override;
 
 
 private:
     QList<NetworkResponse *> m_responses; /**< stores a list of the current responses */
+    QList<QNetworkReply *> m_replies; /**< stores a list of the current replies */
+
     QUrl m_baseUrl; /**< if set, this url will be prepending before every request, unless the passed request url contains a complete url */
     HeadersMap m_rawHeaders; /**< stores a list of header pairs that will be used on each standard request */
     int m_attempts = 1; /**< the number of rerequest attempts in case the request failed */
     NetworkResponse* m_lastResponse;  /**< returns a pointer to the last created NetworkResponse object */
+    void onResponseFinished(NetworkResponse *res);
 };
 
 #endif // NETWORKACCESSMANAGER_H
