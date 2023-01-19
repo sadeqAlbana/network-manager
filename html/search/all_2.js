@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['deleteresource_4',['deleteResource',['../classNetworkAccessManager.html#a12cbf26f407c40ccf4974331ca3c0704',1,'NetworkAccessManager::deleteResource(const QUrl &amp;url)'],['../classNetworkAccessManager.html#a7394f7f16d6473f17919280f8b190ae4',1,'NetworkAccessManager::deleteResource(const QNetworkRequest &amp;request)']]],
-  ['downloadprogress_5',['downloadProgress',['../classNetworkAccessManager.html#a3c2103bc912e4e41b361cdf7de7d35d5',1,'NetworkAccessManager']]]
+  ['contenttypeheader_0',['contentTypeHeader',['../classNetworkResponse.html#adccb8b957c4a1da24f332d9efc2ee973',1,'NetworkResponse']]],
+  ['createnetworkrequest_1',['createNetworkRequest',['../classNetworkAccessManager.html#aaaacb4f780ef3fe2d916a7178a7cc236',1,'NetworkAccessManager']]],
+  ['createnewrequest_2',['createNewRequest',['../classNetworkAccessManager.html#aab9d200125259ee815136db75876c0b4',1,'NetworkAccessManager']]],
+  ['createrequest_3',['createRequest',['../classNetworkAccessManager.html#a67b09480e818b7267e45a357a992c59e',1,'NetworkAccessManager']]]
 ];

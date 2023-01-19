@@ -1,7 +1,4 @@
 var searchData=
 [
-  ['networkaccessmanager_12',['NetworkAccessManager',['../classNetworkAccessManager.html',1,'NetworkAccessManager'],['../classNetworkAccessManager.html#a7e9623d8500e7e49ebb873b1ffebeb1d',1,'NetworkAccessManager::NetworkAccessManager(QObject *parent=nullptr)']]],
-  ['networkactivity_13',['networkActivity',['../classNetworkAccessManager.html#a2f6aa2007549f62e23bde4f6805be430',1,'NetworkAccessManager']]],
-  ['networkerror_14',['networkError',['../classNetworkAccessManager.html#ac08461c5cab6b289054d834ab239ba7c',1,'NetworkAccessManager']]],
-  ['networkresponse_15',['NetworkResponse',['../classNetworkResponse.html',1,'']]]
+  ['head_0',['head',['../classNetworkAccessManager.html#a0ec3ffac99147467a87989701c61d3a2',1,'NetworkAccessManager::head(const QUrl &amp;url)'],['../classNetworkAccessManager.html#a4359cd56fc9b22ff53a215fdfb493619',1,'NetworkAccessManager::head(const QNetworkRequest &amp;request)']]]
 ];

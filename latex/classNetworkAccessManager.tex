@@ -2,7 +2,8 @@
 \label{classNetworkAccessManager}\index{NetworkAccessManager@{NetworkAccessManager}}
 
 
-Inheritance diagram for Network\+Access\+Manager\+:\nopagebreak
+Inheritance diagram for Network\+Access\+Manager\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -11,7 +12,8 @@ Inheritance diagram for Network\+Access\+Manager\+:\nopagebreak
 \end{figure}
 
 
-Collaboration diagram for Network\+Access\+Manager\+:\nopagebreak
+Collaboration diagram for Network\+Access\+Manager\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -93,6 +95,18 @@ virtual \mbox{\hyperlink{classNetworkResponse}{Network\+Response}} $\ast$ \mbox{
 virtual void \mbox{\hyperlink{classNetworkAccessManager_afabbb2d03d982eabf4d12ec47acd5bed}{on\+Proxy\+Authentication\+Required}} (const QNetwork\+Proxy \&proxy, QAuthenticator $\ast$authenticator)
 \item 
 virtual void \mbox{\hyperlink{classNetworkAccessManager_a176002c09b4c5c519d7a8d70a7c03de4}{route\+Reply}} (\mbox{\hyperlink{classNetworkResponse}{Network\+Response}} $\ast$res)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions inherited from \mbox{\hyperlink{classSNetworkManager_1_1Router}{SNetwork\+Manager\+::\+Router}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSNetworkManager_1_1Router_a4bc6dd1a063feff985c1bcac0513c0af}\label{classSNetworkManager_1_1Router_a4bc6dd1a063feff985c1bcac0513c0af}} 
+void {\bfseries route} (\mbox{\hyperlink{classNetworkResponse}{Network\+Response}} $\ast$reply)
+\item 
+\mbox{\Hypertarget{classSNetworkManager_1_1Router_a4a04381b0fcbd6765b5248c9592f465f}\label{classSNetworkManager_1_1Router_a4a04381b0fcbd6765b5248c9592f465f}} 
+void {\bfseries register\+Route} (\mbox{\hyperlink{classNetworkResponse}{Network\+Response}} $\ast$reply, Callback cb)
+\item 
+\mbox{\Hypertarget{classSNetworkManager_1_1Router_a51241d2b6615f271b3ee5f92479e4f06}\label{classSNetworkManager_1_1Router_a51241d2b6615f271b3ee5f92479e4f06}} 
+{\footnotesize template$<$class T $>$ }\\void {\bfseries register\+Route} (\mbox{\hyperlink{classNetworkResponse}{Network\+Response}} $\ast$reply, T $\ast$instance, Member\+Callback$<$ T $>$ ptr)
 \end{DoxyCompactItemize}
 \doxysubsection*{Friends}
 \begin{DoxyCompactItemize}
@@ -281,7 +295,7 @@ removes the header sepcified with {\itshape header\+Name} from the raw\+Headers 
 \doxysubsubsection{\texorpdfstring{routeReply()}{routeReply()}}
 {\footnotesize\ttfamily void Network\+Access\+Manager\+::route\+Reply (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNetworkResponse}{Network\+Response}} $\ast$}]{res }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}
 
-this is method will be called when a {\itshape \mbox{\hyperlink{classNetworkResponse}{Network\+Response}}} registered with {\itshape Network\+Response\+::subscribe} is finished aka emits ({\itshape Network\+Response\+::finished}) signal. the default implementation calls the route if the response has no errors or the network error is within the ignored errors list. \mbox{\Hypertarget{classNetworkAccessManager_a2005ab4fe53a63401b5c64344e6a85ab}\label{classNetworkAccessManager_a2005ab4fe53a63401b5c64344e6a85ab}} 
+this is method will be called when a {\itshape \mbox{\hyperlink{classNetworkResponse}{Network\+Response}}} registered with {\itshape Network\+Response\+::subscribe} is finished aka emits ({\itshape \mbox{\hyperlink{classNetworkResponse_aa2ac972473e511260c0030b2c4c1b9fe}{Network\+Response\+::finished}}}) signal. the default implementation calls the route if the response has no errors or the network error is within the ignored errors list. \mbox{\Hypertarget{classNetworkAccessManager_a2005ab4fe53a63401b5c64344e6a85ab}\label{classNetworkAccessManager_a2005ab4fe53a63401b5c64344e6a85ab}} 
 \index{NetworkAccessManager@{NetworkAccessManager}!setIgnoredErrors@{setIgnoredErrors}}
 \index{setIgnoredErrors@{setIgnoredErrors}!NetworkAccessManager@{NetworkAccessManager}}
 \doxysubsubsection{\texorpdfstring{setIgnoredErrors()}{setIgnoredErrors()}}

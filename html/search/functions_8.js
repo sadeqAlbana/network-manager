@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['post_47',['post',['../classNetworkAccessManager.html#a67829d4cea700bad3c48dae743e89801',1,'NetworkAccessManager::post(const QUrl &amp;url, const QVariant &amp;data)'],['../classNetworkAccessManager.html#a5de6eca184332901a1f39261f5ee4873',1,'NetworkAccessManager::post(const QNetworkRequest &amp;request, const QVariant &amp;data)']]],
-  ['proxyauthenticationcredentials_48',['proxyAuthenticationCredentials',['../classNetworkAccessManager.html#aaed938c303ef070e9029d3b942346c73',1,'NetworkAccessManager']]],
-  ['put_49',['put',['../classNetworkAccessManager.html#a6dd5a37f2f61c0ccea7c96b0d2469313',1,'NetworkAccessManager::put(const QUrl &amp;url, const QVariant &amp;data)'],['../classNetworkAccessManager.html#a72a9182528d211be2677fd60653a5919',1,'NetworkAccessManager::put(const QNetworkRequest &amp;request, const QVariant &amp;data)']]]
+  ['ignorederrors_0',['ignoredErrors',['../classNetworkAccessManager.html#a774751a36c7e124d989167fc239be198',1,'NetworkAccessManager']]],
+  ['ignoredsslerrors_1',['ignoredSslErrors',['../classNetworkAccessManager.html#acfc0e49cc98eb2b28fd48776a8887ab6',1,'NetworkAccessManager']]],
+  ['isimage_2',['isImage',['../classNetworkResponse.html#a9abd9cad7a8fb2d357c4307b2b633af8',1,'NetworkResponse']]],
+  ['isjson_3',['isJson',['../classNetworkResponse.html#a06353441cbc29ff35e89a845c411e6ed',1,'NetworkResponse']]],
+  ['istext_4',['isText',['../classNetworkResponse.html#a201d3031fc77c461018818c78fa72f4f',1,'NetworkResponse']]]
 ];

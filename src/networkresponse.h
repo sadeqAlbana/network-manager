@@ -18,26 +18,25 @@ class NetworkResponse : public QObject
 
     NetworkResponse(QNetworkReply *reply, QObject *parent=nullptr);
 public:
-
     friend class NetworkAccessManager;
     ~NetworkResponse();
     QNetworkReply::NetworkError error() const;
     QString errorString() const;
     QJsonValue json(QString key);
     QJsonValue json();
-    QByteArray binaryData() const{return m_binaryData;}
-    QVariant data(){return m_replyData;}
+    QByteArray binaryData() const;
+    QVariant data() const;
 
     bool isJson();
     bool isImage();
     bool isText();
-    QByteArray contentTypeHeader() const;
-    QUrl url(){return m_reply->url();}
-    QNetworkAccessManager::Operation operation() const {return m_reply->operation();}
-    QByteArray rawHeader(const QByteArray &headerName) const{return m_reply->rawHeader(headerName);}
-    QVariant attribute(QNetworkRequest::Attribute code) const{return m_reply->attribute(code);}
-    int status() const {return m_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();}
-    QNetworkReply *networkReply() const {return m_reply;}
+    QString contentTypeHeader() const;
+    QUrl url() const;
+    QNetworkAccessManager::Operation operation() const;
+    QByteArray rawHeader(const QByteArray &headerName) const;
+    QVariant attribute(QNetworkRequest::Attribute code) const;
+    int status() const;
+    QNetworkReply *networkReply() const;
     friend QDebug operator <<(QDebug dbg, const NetworkResponse &res);
     const QJsonObject jsonObject() const;
     const QJsonArray jsonArray() const;
@@ -49,9 +48,14 @@ public:
     QImage image() const;
 #endif
 
-    operator bool();
+    operator bool() const;
 
     NetworkResponse * subcribe(std::function<void(NetworkResponse *)> cb);
+
+    /*!
+        \fn template <class T> NetworkResponse * subcribe(T *instance,void(T::*cb) (NetworkResponse *))
+        this is an overloaded method, it takes an instance of T and a member function pointer to be called later.
+    */
 
     template <class T>
     NetworkResponse * subcribe(T *instance,void(T::*cb) (NetworkResponse *))
@@ -62,6 +66,11 @@ public:
 
 
 signals:
+    /*!
+        \fn void finished()
+
+        this signal is emitted after QNetworkReply::finished is emitted and the reply's data have been read.
+    */
     void finished();
 
 private:
@@ -69,8 +78,6 @@ private:
     QByteArray m_binaryData;
     QVariant m_replyData;
     void processReply();
-
-
     void onReplyFinished();
 
 };

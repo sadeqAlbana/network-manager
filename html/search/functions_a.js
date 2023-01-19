@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['setignorederrors_54',['setIgnoredErrors',['../classNetworkAccessManager.html#a2005ab4fe53a63401b5c64344e6a85ab',1,'NetworkAccessManager']]],
-  ['setignoredsslerrors_55',['setIgnoredSslErrors',['../classNetworkAccessManager.html#a2533efc7b3245e4eb8356f047af9cc66',1,'NetworkAccessManager']]],
-  ['setproxyauthenticationcredentials_56',['setProxyAuthenticationCredentials',['../classNetworkAccessManager.html#ae36bc4c1d58eb7229b7c9cc4d2c66932',1,'NetworkAccessManager']]],
-  ['setrawheader_57',['setRawHeader',['../classNetworkAccessManager.html#a107a23bc94bb2b636f1b5fb15d8d6d1a',1,'NetworkAccessManager']]]
+  ['networkaccessmanager_0',['NetworkAccessManager',['../classNetworkAccessManager.html#a7e9623d8500e7e49ebb873b1ffebeb1d',1,'NetworkAccessManager']]],
+  ['networkactivity_1',['networkActivity',['../classNetworkAccessManager.html#a2f6aa2007549f62e23bde4f6805be430',1,'NetworkAccessManager']]],
+  ['networkerror_2',['networkError',['../classNetworkAccessManager.html#ac08461c5cab6b289054d834ab239ba7c',1,'NetworkAccessManager']]],
+  ['networkreply_3',['networkReply',['../classNetworkResponse.html#abc2eef570f9f20b9f640dc3fffddf5f3',1,'NetworkResponse']]]
 ];
