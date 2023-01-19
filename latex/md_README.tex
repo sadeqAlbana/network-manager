@@ -1,0 +1,23 @@
+{\bfseries{a simple http client with routing capabilities}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\#include <QCoreApplication>}
+\DoxyCodeLine{\#include "{}networkmanager.h"{}}
+\DoxyCodeLine{}
+\DoxyCodeLine{int main(int argc, char *argv[])}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{    QCoreApplication a(argc,argv);}
+\DoxyCodeLine{}
+\DoxyCodeLine{    NetworkManager manager;}
+\DoxyCodeLine{}
+\DoxyCodeLine{    manager.get("{}https://reqres.in/api/users?page=2"{})-\/>subcribe([](NetworkResponse *res)}
+\DoxyCodeLine{    \{}
+\DoxyCodeLine{        qDebug()<<res-\/>json();}
+\DoxyCodeLine{    \});}
+\DoxyCodeLine{}
+\DoxyCodeLine{    return a.exec();}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+ 
