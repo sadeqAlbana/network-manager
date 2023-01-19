@@ -17,6 +17,12 @@
 #include <QNetworkConfiguration>
 #endif
 
+/*!
+    \fn explicit NetworkAccessManager::NetworkAccessManager(QObject *parent = nullptr)
+
+    Constructs a NetworkAccessManager object that is the center of
+    the Network Access API and sets parent as the parent object.
+*/
 NetworkAccessManager::NetworkAccessManager(QObject *parent)
     : QNetworkAccessManager{parent},m_ignoredErrors{
                                         QNetworkReply::ContentOperationNotPermittedError,
@@ -28,26 +34,65 @@ NetworkAccessManager::NetworkAccessManager(QObject *parent)
 
 }
 
+/*!
+    \fn NetworkResponse * NetworkAccessManager::head(const QUrl &url)
+    sends a HEAD request with the passed  url, internally creates a \a QNetworkRequset Object from the factory
+    returns a pointer to the created NetworkResponse wrapper object.
+*/
+
 NetworkResponse *NetworkAccessManager::head(const QUrl &url)
 {
     return this->head(createNetworkRequest(url));
 
 }
 
+/*!
+    \fn NetworkResponse * NetworkAccessManager::head(const QNetworkRequest &request)
+
+    sends a HEAD request using the passed \a QNetworkRequest object.
+    note that the request must either be created using \a createNetworkRequest or have an ID attribute.
+    returns a pointer to the created NetworkResponse wrapper object.
+    the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
+
+*/
+
 NetworkResponse *NetworkAccessManager::head(const QNetworkRequest &request)
 {
     return createNewRequest(QNetworkAccessManager::HeadOperation,request);
 }
+
+/*!
+    \fn NetworkResponse * NetworkAccessManager::get(const QUrl &url)
+    sends a get request with the passed url, internally creates a \a QNetworkRequset Object from the factory.
+    returns a pointer to the created NetworkResponse wrapper object.
+    the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
+*/
 
 NetworkResponse *NetworkAccessManager::get(const QUrl &url)
 {
     return this->get(createNetworkRequest(url));
 }
 
+/*!
+    \fn NetworkResponse * NetworkAccessManager::get(const QNetworkRequest &request)
+
+    sends a get request with the passed url, internally creates a \a QNetworkRequset Object from the factory.
+    returns a pointer to the created NetworkResponse wrapper object.
+    the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
+
+*/
+
 NetworkResponse *NetworkAccessManager::get(const QNetworkRequest &request)
 {
     return createNewRequest(QNetworkAccessManager::GetOperation,request);
 }
+
+/*!
+    \fn NetworkResponse * NetworkAccessManager::deleteResource(const QUrl &url)
+    sends a request with the passed url, internally creates a \a QNetworkRequset Object from the factory.
+    returns a pointer to the created NetworkResponse wrapper object.
+    the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
+*/
 
 NetworkResponse *NetworkAccessManager::deleteResource(const QUrl &url)
 {
@@ -55,10 +100,26 @@ NetworkResponse *NetworkAccessManager::deleteResource(const QUrl &url)
 
 }
 
+/*!
+    \fn NetworkResponse * NetworkAccessManager::deleteResource(const QNetworkRequest &request)
+
+    sends a request with the passed url, internally creates a \a QNetworkRequset Object from the factory.
+    returns a pointer to the created NetworkResponse wrapper object.
+    the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
+
+*/
+
 NetworkResponse *NetworkAccessManager::deleteResource(const QNetworkRequest &request)
 {
     return createNewRequest(QNetworkAccessManager::DeleteOperation,request);
 }
+
+/*!
+    \fn NetworkResponse * NetworkAccessManager::post(const QUrl &url, const QVariant &data)
+    sends a post request with the passed url, internally creates a \a QNetworkRequset Object from the factory.
+    returns a pointer to the created NetworkResponse wrapper object.
+    the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
+*/
 
 NetworkResponse *NetworkAccessManager::post(const QUrl &url, const QVariant &data)
 {
@@ -66,11 +127,30 @@ NetworkResponse *NetworkAccessManager::post(const QUrl &url, const QVariant &dat
     return post(request,data);
 }
 
+/*!
+    \fn NetworkResponse * NetworkAccessManager::post(const QNetworkRequest &request, const QVariant &data)
+
+    sends a post request with the passed url, internally creates a \a QNetworkRequset Object from the factory.
+    returns a pointer to the created NetworkResponse wrapper object.
+    the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
+
+*/
+
 
 NetworkResponse *NetworkAccessManager::post(const QNetworkRequest &request, const QVariant &data)
 {
     return createNewRequest(QNetworkAccessManager::PostOperation,request);
 }
+
+
+/*!
+    \fn NetworkResponse * NetworkAccessManager::put(const QUrl &url, const QVariant &data)
+
+    sends a put request with the passed url, internally creates a \a QNetworkRequset Object from the factory.
+    returns a pointer to the created NetworkResponse wrapper object.
+    the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
+*/
+
 
 NetworkResponse *NetworkAccessManager::put(const QUrl &url, const QVariant &data)
 {
@@ -79,11 +159,26 @@ NetworkResponse *NetworkAccessManager::put(const QUrl &url, const QVariant &data
 }
 
 
+/*!
+    \fn NetworkResponse * NetworkAccessManager::put(const QNetworkRequest &request, const QVariant &data)
+
+    sends a put request with the passed url, internally creates a \a QNetworkRequset Object from the factory.
+    returns a pointer to the created NetworkResponse wrapper object.
+    the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
+
+*/
+
 NetworkResponse *NetworkAccessManager::put(const QNetworkRequest &request, const QVariant &data)
 {
     return createNewRequest(QNetworkAccessManager::PutOperation,request);
 }
 
+/*!
+    \fn void NetworkAccessManager::abortAllRequests()
+
+    aborts all requests that are being processed.
+    calls  \a QNetworkReply::abort() and deletes the \a NetworkRespnse * pointers and \a QNetworkReply * pointers that was created with \a createNewRequest() and \a createRequest().
+*/
 
 void NetworkAccessManager::abortAllRequests()
 {
@@ -93,15 +188,33 @@ void NetworkAccessManager::abortAllRequests()
     m_responses.clear();
 }
 
-HeadersMap NetworkAccessManager::rawHeaders()
+/*!
+    \fn HeadersMap NetworkAccessManager::rawHeaders() const
+
+    returns the raw headers pairs that are sent with each standard request.
+*/
+
+HeadersMap NetworkAccessManager::rawHeaders() const
 {
     return m_rawHeaders;
 }
+
+/*!
+    \fn QByteArray NetworkAccessManager::rawHeader(const QByteArray &header) const
+
+    returns the header value associated with the \a header key or a default constructed \a QByteArray if not set.
+*/
 
 QByteArray NetworkAccessManager::rawHeader(const QByteArray &header) const
 {
     return m_rawHeaders.value(header);
 }
+
+/*!
+    \fn void NetworkAccessManager::setRawHeader(const QByteArray &headerName, const QByteArray &headerValue)
+
+    adds a raw header that will be sent with each standard request
+*/
 
 void NetworkAccessManager::setRawHeader(const QByteArray &headerName, const QByteArray &headerValue)
 {
@@ -109,11 +222,24 @@ void NetworkAccessManager::setRawHeader(const QByteArray &headerName, const QByt
 
 }
 
+/*!
+    \fn void NetworkAccessManager::removeRawHeader(const QByteArray &headerName)
+
+    removes the header sepcified with \a headerName from the rawHeaders List.
+*/
+
+
 void NetworkAccessManager::removeRawHeader(const QByteArray &headerName)
 {
     m_rawHeaders.remove(headerName);
 
 }
+
+/*!
+    \fn QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url)
+
+    constructs a new \a QNetworkRequest object with an internal ID and the default configuration.
+*/
 
 QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url)
 {
@@ -145,6 +271,10 @@ QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url)
 
 }
 
+/*!
+    \fn virtual NetworkResponse *NetworkAccessManager::createNewRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr)
+    the default implementation calls \a NetworkAccessManager::createRequest internally
+*/
 
 NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData)
 {
@@ -163,16 +293,28 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
         });
     }
 
+    connect(reply,&QNetworkReply::errorOccurred,this,[this,res](QNetworkReply::NetworkError error){
+        if(!m_ignoredErrors.contains(error)){
+            emit networkError(res);
+        }
+    });
+
     emit networkActivity(originalReq.url());
 
     return res;
 }
+
+/*!
+    \fn QNetworkReply *NetworkAccessManager::createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr) override
+    the default implementation calls \a NetworkAccessManager::createRequest internally, then adds the \a QNetworkReply * instance to the replies list.
+*/
 
 QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData)
 {
     QNetworkReply *reply=QNetworkAccessManager::createRequest(op,originalReq,outgoingData);
 
     m_replies << reply;
+
     return reply;
 }
 
@@ -311,6 +453,12 @@ QByteArray DataSerialization::contentType(const QMetaType::Type type)
     return contentType;
 }
 
+/*!
+    \fn void NetworkAccessManager::onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator)
+    this is a signal handler for QNetworkAccessManager::proxyAuthenticationRequired.
+    the default implementation passes the stored proxy credentials to the authenticator.
+*/
+
 
 void NetworkAccessManager::onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator)
 {
@@ -319,40 +467,84 @@ void NetworkAccessManager::onProxyAuthenticationRequired(const QNetworkProxy &pr
     authenticator->setPassword(m_proxyAuthenticationCredentials.second);
 }
 
+/*!
+    \fn NetworkAccessManager::routeReply(NetworkResponse *res)
+    this is method will be called when a \a NetworkResponse registered with \a NetworkResponse::subscribe is finished aka emits (\a NetworkResponse::finished) signal.
+    the default implementation calls the route if the response has no errors or the network error is within the ignored errors list.
+*/
+
+
 void NetworkAccessManager::routeReply(NetworkResponse *res)
 {
-    if(m_ignoredErrors.contains(res->error())){
+    //we use the QNetworkReply::NoError just in case someone fucks up the original list
+    if(m_ignoredErrors.contains(res->error()) || res->error()==QNetworkReply::NoError){
         this->route(res);
-    }else{
-        emit networkError(res);
     }
 
 }
+
+/*!
+    \fn void NetworkAccessManager::ignoredErrors(const QList<QNetworkReply::NetworkError> &newIgnoredErrors)
+
+    returns a list of the errors that are ignored by \a networkError() signal.
+*/
 
 QList<QNetworkReply::NetworkError> NetworkAccessManager::ignoredErrors() const
 {
     return m_ignoredErrors;
 }
 
+/*!
+    \fn void NetworkAccessManager::setIgnoredErrors(const QList<QNetworkReply::NetworkError> &newIgnoredErrors)
+
+    sets the list for network errors that will be ignored by \a networkError() signal.
+*/
+
 void NetworkAccessManager::setIgnoredErrors(const QList<QNetworkReply::NetworkError> &newIgnoredErrors)
 {
     m_ignoredErrors = newIgnoredErrors;
 }
+
+/*!
+    \fn QList<QSslError> NetworkAccessManager::ignoredSslErrors() const
+
+    returns a list of the ssl errors that are passed to \a QNetworkReply::ignoreSslErrors().
+*/
+
 
 QList<QSslError> NetworkAccessManager::ignoredSslErrors() const
 {
     return m_ignoredSslErrors;
 }
 
+/*!
+    \fn void NetworkAccessManager::setIgnoredSslErrors(const QList<QSslError> &newIgnoredSslErrors)
+
+    sets the list for ssl errors that will be passed to \a QNetworkReply::ignoreSslErrors().
+*/
+
 void NetworkAccessManager::setIgnoredSslErrors(const QList<QSslError> &newIgnoredSslErrors)
 {
     m_ignoredSslErrors = newIgnoredSslErrors;
 }
 
+/*!
+    \fn const QPair<QString, QString> &NetworkAccessManager::proxyAuthenticationCredentials() const
+
+    returns the credentials used for proxy authentication, or a default constructed object if not set.
+*/
+
 const QPair<QString, QString> &NetworkAccessManager::proxyAuthenticationCredentials() const
 {
     return m_proxyAuthenticationCredentials;
 }
+
+/*!
+    \fn void NetworkAccessManager::setProxyAuthenticationCredentials(const QPair<QString, QString> &newProxyAuthenticationCredentials)
+
+    sets the credentials that will be used for proxy authentication.
+*/
+
 
 void NetworkAccessManager::setProxyAuthenticationCredentials(const QPair<QString, QString> &newProxyAuthenticationCredentials)
 {
