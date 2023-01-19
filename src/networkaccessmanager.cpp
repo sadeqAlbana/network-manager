@@ -18,7 +18,12 @@
 #endif
 
 NetworkAccessManager::NetworkAccessManager(QObject *parent)
-    : QNetworkAccessManager{parent}
+    : QNetworkAccessManager{parent},m_ignoredErrors{
+                                        QNetworkReply::ContentOperationNotPermittedError,
+                                        QNetworkReply::ContentNotFoundError,
+                                        QNetworkReply::NoError
+                                        },
+      m_ignoredSslErrors{QSslError(QSslError::SelfSignedCertificate),QSslError(QSslError::SelfSignedCertificateInChain)}
 {
 
 }
@@ -127,11 +132,6 @@ QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url)
         request.setRawHeader(i.key(),i.value());
     }
 
-    //next is attempts count
-    if(m_attempts>1){
-        request.setAttribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::AttemptsCount),m_attempts);
-    }
-
     //next is ID
 
     qint64 random=QRandomGenerator::global()->bounded(1,1000);
@@ -151,6 +151,12 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
     QNetworkReply *reply=createRequest(op,originalReq,outgoingData);
     NetworkResponse *res=new NetworkResponse(reply,this);
     m_responses << res;
+
+
+    if(m_ignoredSslErrors.size()){
+        reply->ignoreSslErrors(m_ignoredSslErrors);
+    }
+
     if(originalReq.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::MonitorProgressAttribute)).toBool()){
         connect(reply,&QNetworkReply::downloadProgress,this,[=](qint64 bytesReceived, qint64 bytesTotal){
             emit this->downloadProgress(bytesReceived,bytesTotal,res);
@@ -300,7 +306,7 @@ QByteArray DataSerialization::contentType(const QMetaType::Type type)
     case QMetaType::Type::QImage       : contentType = "image/png";        break;
     case QMetaType::Type::QString      : contentType = "text/plain";       break;
 
-    default                      :                                   break;
+    default                      :                                         break;
     }
     return contentType;
 }
@@ -311,6 +317,36 @@ void NetworkAccessManager::onProxyAuthenticationRequired(const QNetworkProxy &pr
     Q_UNUSED(proxy);
     authenticator->setUser(m_proxyAuthenticationCredentials.first);
     authenticator->setPassword(m_proxyAuthenticationCredentials.second);
+}
+
+void NetworkAccessManager::routeReply(NetworkResponse *res)
+{
+    if(m_ignoredErrors.contains(res->error())){
+        this->route(res);
+    }else{
+        emit networkError(res);
+    }
+
+}
+
+QList<QNetworkReply::NetworkError> NetworkAccessManager::ignoredErrors() const
+{
+    return m_ignoredErrors;
+}
+
+void NetworkAccessManager::setIgnoredErrors(const QList<QNetworkReply::NetworkError> &newIgnoredErrors)
+{
+    m_ignoredErrors = newIgnoredErrors;
+}
+
+QList<QSslError> NetworkAccessManager::ignoredSslErrors() const
+{
+    return m_ignoredSslErrors;
+}
+
+void NetworkAccessManager::setIgnoredSslErrors(const QList<QSslError> &newIgnoredSslErrors)
+{
+    m_ignoredSslErrors = newIgnoredSslErrors;
 }
 
 const QPair<QString, QString> &NetworkAccessManager::proxyAuthenticationCredentials() const

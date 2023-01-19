@@ -6,8 +6,6 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Network Gui)
 add_library(SNetworkManager STATIC
     router.h router.cpp
     networkresponse.cpp networkresponse.h
-
-    networkmanager.cpp networkmanager.h
     networkaccessmanager.cpp networkaccessmanager.h
 )
 

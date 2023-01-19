@@ -14,7 +14,7 @@ namespace DataSerialization {
 using HeadersMap= QMap<QByteArray,QByteArray>;
 
 class NetworkResponse;
-class NetworkAccessManager : public QNetworkAccessManager, private SNetworkManager::Router
+class NetworkAccessManager : public QNetworkAccessManager, protected SNetworkManager::Router
 {
     Q_OBJECT
 public:
@@ -23,8 +23,6 @@ public:
     enum RequstAttribute{
       IdAttribute                = 1001, //a unique identifier for each request
       MonitorProgressAttribute   = 1002,  //if set to true, the download \a progress() signal is emitted each time a chunck of data is received
-      AttemptsCount              = 1003 //a unique identifier for each request
-
     };
 
     /*!
@@ -158,6 +156,12 @@ public:
     const QPair<QString, QString> &proxyAuthenticationCredentials() const;
     void setProxyAuthenticationCredentials(const QPair<QString, QString> &newProxyAuthenticationCredentials);
 
+    QList<QSslError> ignoredSslErrors() const;
+    void setIgnoredSslErrors(const QList<QSslError> &newIgnoredSslErrors);
+
+    QList<QNetworkReply::NetworkError> ignoredErrors() const;
+    void setIgnoredErrors(const QList<QNetworkReply::NetworkError> &newIgnoredErrors);
+
 signals:
     /*!
         \fn void networkActivity(QUrl url)
@@ -171,16 +175,17 @@ signals:
         this signal is a wrapper around \a QNetworkReply::downloadProgress, with the addition of \a NetworkResponse *
     */
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal, NetworkResponse *res);
+    void networkError(NetworkResponse *res);
 
 
 protected:
     /*!
         calls \a QNetworkAccessManager::createRequest internally
-
     */
     virtual NetworkResponse *createNewRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr);
     QNetworkReply *createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr) override;
     virtual void onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
+    virtual void routeReply(NetworkResponse *res);
 
 
 
@@ -190,8 +195,10 @@ private:
 
     QUrl m_baseUrl; /**< if set, this url will be prepending before every request, unless the passed request url contains a complete url */
     HeadersMap m_rawHeaders; /**< stores a list of header pairs that will be used on each standard request */
-    int m_attempts = 1; /**< the number of rerequest attempts in case the request failed */
     QPair<QString,QString> m_proxyAuthenticationCredentials;
+
+    QList<QNetworkReply::NetworkError> m_ignoredErrors;
+    QList<QSslError> m_ignoredSslErrors;
 
 };
 

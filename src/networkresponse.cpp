@@ -23,6 +23,9 @@ NetworkResponse::NetworkResponse(QNetworkReply *reply, QObject *parent): QObject
         return;
 
     QObject::connect(reply,&QNetworkReply::finished,this,&NetworkResponse::onReplyFinished);
+
+
+
 }
 
 NetworkResponse::~NetworkResponse()

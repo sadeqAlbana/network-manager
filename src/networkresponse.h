@@ -15,9 +15,11 @@ class QImage;
 class NetworkResponse : public QObject
 {
     Q_OBJECT
-public:
 
     NetworkResponse(QNetworkReply *reply, QObject *parent=nullptr);
+public:
+
+    friend class NetworkAccessManager;
     ~NetworkResponse();
     QNetworkReply::NetworkError error() const;
     QString errorString() const;
