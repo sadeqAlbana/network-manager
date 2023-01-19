@@ -33,7 +33,6 @@ public:
     {
         Callback cb = std::bind(ptr,instance,std::placeholders::_1);
         callbacks.insert(reply, cb);
-
     }
 
 

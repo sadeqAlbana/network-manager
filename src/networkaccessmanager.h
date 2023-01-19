@@ -36,44 +36,53 @@ public:
     /*!
         \fn NetworkResponse * NetworkAccessManager::head(const QUrl &url)
         sends a HEAD request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
-        and returns a pointer to the NetworkAccessManager
+        returns a pointer to the created NetworkResponse wrapper object.
+        the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
     */
     NetworkResponse *head(const QUrl &url);
 
     /*!
         \fn NetworkResponse * NetworkAccessManager::head(const QNetworkRequest &request)
 
-        sends a HEAD request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+        sends a HEAD request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory.
+        returns a pointer to the created NetworkResponse wrapper object.
+        the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
 
     */
     NetworkResponse *head(const QNetworkRequest &request);
 
     /*!
         \fn NetworkResponse * NetworkAccessManager::get(const QUrl &url)
-        sends a get request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
-        and returns a pointer to the NetworkAccessManager
+        sends a get request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory.
+        returns a pointer to the created NetworkResponse wrapper object.
+        the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
     */
     NetworkResponse *get(const QUrl &url);
 
     /*!
         \fn NetworkResponse * NetworkAccessManager::get(const QNetworkRequest &request)
 
-        sends a get request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+        sends a get request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory.
+        returns a pointer to the created NetworkResponse wrapper object.
+        the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
 
     */
     NetworkResponse *get(const QNetworkRequest &request);
 
     /*!
         \fn NetworkResponse * NetworkAccessManager::deleteResource(const QUrl &url)
-        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
-        and returns a pointer to the NetworkAccessManager
+        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory.
+        returns a pointer to the created NetworkResponse wrapper object.
+        the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
     */
     NetworkResponse *deleteResource(const QUrl &url);
 
     /*!
         \fn NetworkResponse * NetworkAccessManager::deleteResource(const QNetworkRequest &request)
 
-        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+        sends a request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory.
+        returns a pointer to the created NetworkResponse wrapper object.
+        the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
 
     */
     NetworkResponse *deleteResource(const QNetworkRequest &request);
@@ -81,30 +90,37 @@ public:
 
     /*!
         \fn NetworkResponse * NetworkAccessManager::post(const QUrl &url, const QVariant &data)
-        sends a post request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
-        and returns a pointer to the NetworkAccessManager
+        sends a post request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory.
+        returns a pointer to the created NetworkResponse wrapper object.
+        the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
     */
     NetworkResponse *post(const QUrl &url, const QVariant &data);
 
     /*!
         \fn NetworkResponse * NetworkAccessManager::post(const QNetworkRequest &request, const QVariant &data)
 
-        sends a post request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+        sends a post request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory.
+        returns a pointer to the created NetworkResponse wrapper object.
+        the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
 
     */
     NetworkResponse *post(const QNetworkRequest &request, const QVariant &data);
 
     /*!
         \fn NetworkResponse * NetworkAccessManager::put(const QUrl &url, const QVariant &data)
-        sends a put request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
-        and returns a pointer to the NetworkAccessManager
+
+        sends a put request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory.
+        returns a pointer to the created NetworkResponse wrapper object.
+        the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
     */
     NetworkResponse *put(const QUrl &url, const QVariant &data);
 
     /*!
         \fn NetworkResponse * NetworkAccessManager::put(const QNetworkRequest &request, const QVariant &data)
 
-        sends a put request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory
+        sends a put request with the passed \a url, internally creates a \a QNetworkRequset Object from the factory.
+        returns a pointer to the created NetworkResponse wrapper object.
+        the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
 
     */
     NetworkResponse *put(const QNetworkRequest &request, const QVariant &data);
@@ -112,8 +128,8 @@ public:
     /*!
         \fn void NetworkAccessManager::abortAllRequests()
 
-        aborts all requests that are being processed
-        calls  \a QNetworkReply::abort() and deletes the \a NetworkRespnse * pointers and \a QNetworkReply * pointers that was created with \a createNewRequest() and \a createRequest()
+        aborts all requests that are being processed.
+        calls  \a QNetworkReply::abort() and deletes the \a NetworkRespnse * pointers and \a QNetworkReply * pointers that was created with \a createNewRequest() and \a createRequest().
     */
 
 
