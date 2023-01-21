@@ -297,7 +297,18 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
         if(!m_ignoredErrors.contains(error)){
             emit networkError(res);
         }
+//        if(res->networkReply()->request().attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::NotifyActivity)).toBool()){
+//            setMonitoredRequestCount(m_monitoredRequestCount-1);
+//        }
     });
+
+    connect(reply,&QNetworkReply::finished,this,[this,res](){
+        if(res->networkReply()->request().attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::NotifyActivity)).toBool()){
+            setMonitoredRequestCount(m_monitoredRequestCount-1);
+        }
+    });
+
+    setMonitoredRequestCount(m_monitoredRequestCount+1);
 
     emit networkActivity(originalReq.url());
 
@@ -481,6 +492,29 @@ void NetworkAccessManager::routeReply(NetworkResponse *res)
         this->route(res);
     }
 
+}
+
+int NetworkAccessManager::monitoredRequestCount() const
+{
+    return m_monitoredRequestCount;
+}
+
+void NetworkAccessManager::setMonitoredRequestCount(int newMonitoredRequestCount)
+{
+    if (m_monitoredRequestCount == newMonitoredRequestCount)
+        return;
+    m_monitoredRequestCount = newMonitoredRequestCount;
+    emit monitoredRequestCountChanged();
+}
+
+const QUrl &NetworkAccessManager::baseUrl() const
+{
+    return m_baseUrl;
+}
+
+void NetworkAccessManager::setBaseUrl(const QUrl &newBaseUrl)
+{
+    m_baseUrl = newBaseUrl;
 }
 
 /*!

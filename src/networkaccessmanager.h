@@ -23,6 +23,7 @@ public:
     enum RequstAttribute{
       IdAttribute                = 1001, /**< a unique identifier for each request. */
       MonitorProgressAttribute   = 1002,  /**< if set to true, the download \a progress() signal is emitted each time a chunck of data is received. */
+      NotifyActivity             = 1003
     };
 
 
@@ -82,6 +83,12 @@ public:
     QList<QNetworkReply::NetworkError> ignoredErrors() const;
     void setIgnoredErrors(const QList<QNetworkReply::NetworkError> &newIgnoredErrors);
 
+    const QUrl &baseUrl() const;
+    void setBaseUrl(const QUrl &newBaseUrl);
+
+    int monitoredRequestCount() const;
+
+
 signals:
     /*!
         \fn void NetworkAccessManager::networkActivity(QUrl url)
@@ -104,12 +111,14 @@ signals:
     void networkError(NetworkResponse *res);
 
 
+    void monitoredRequestCountChanged();
+
 protected:
     QNetworkReply *createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr) override;
     virtual NetworkResponse *createNewRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr);
     virtual void onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
     virtual void routeReply(NetworkResponse *res);
-
+    void setMonitoredRequestCount(int newMonitoredRequestCount);
 
 
 private:
@@ -123,6 +132,8 @@ private:
     QList<QNetworkReply::NetworkError> m_ignoredErrors;
     QList<QSslError> m_ignoredSslErrors;
 
+    int m_monitoredRequestCount=0;
+    Q_PROPERTY(int monitoredRequestCount READ monitoredRequestCount NOTIFY monitoredRequestCountChanged)
 };
 
 #endif // NETWORKACCESSMANAGER_H
