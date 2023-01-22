@@ -123,7 +123,7 @@ NetworkResponse *NetworkAccessManager::deleteResource(const QNetworkRequest &req
 
 NetworkResponse *NetworkAccessManager::post(const QUrl &url, const QVariant &data)
 {
-    QNetworkRequest request = createNetworkRequest(url);
+    QNetworkRequest request = createNetworkRequest(url,data);
     return post(request,data);
 }
 
@@ -139,7 +139,7 @@ NetworkResponse *NetworkAccessManager::post(const QUrl &url, const QVariant &dat
 
 NetworkResponse *NetworkAccessManager::post(const QNetworkRequest &request, const QVariant &data)
 {
-    return createNewRequest(QNetworkAccessManager::PostOperation,request);
+    return createNewRequest(QNetworkAccessManager::PostOperation,request,DataSerialization::serialize(data));
 }
 
 
@@ -154,7 +154,7 @@ NetworkResponse *NetworkAccessManager::post(const QNetworkRequest &request, cons
 
 NetworkResponse *NetworkAccessManager::put(const QUrl &url, const QVariant &data)
 {
-    QNetworkRequest request = createNetworkRequest(url);
+    QNetworkRequest request = createNetworkRequest(url,data);
     return put(request,data);
 }
 
@@ -170,7 +170,7 @@ NetworkResponse *NetworkAccessManager::put(const QUrl &url, const QVariant &data
 
 NetworkResponse *NetworkAccessManager::put(const QNetworkRequest &request, const QVariant &data)
 {
-    return createNewRequest(QNetworkAccessManager::PutOperation,request);
+    return createNewRequest(QNetworkAccessManager::PutOperation,request,DataSerialization::serialize(data));
 }
 
 /*!
@@ -241,7 +241,7 @@ void NetworkAccessManager::removeRawHeader(const QByteArray &headerName)
     constructs a new \a QNetworkRequest object with an internal ID and the default configuration.
 */
 
-QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url)
+QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url, const QVariant &data)
 {
     QNetworkRequest request;
 
@@ -250,12 +250,30 @@ QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url)
 
     request.setUrl(requestUrl);
 
+    if(!data.isNull()){
+        QByteArray contentType=DataSerialization::contentType(static_cast<QMetaType::Type>(data.typeId()));
+        if(!contentType.isEmpty()){
+            request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
+        }
+    }
 
     //add raw headers
-    QMapIterator<QByteArray, QByteArray> i(m_rawHeaders);
-    while (i.hasNext()) {
-        i.next();
-        request.setRawHeader(i.key(),i.value());
+    {
+        QMapIterator<QByteArray, QByteArray> i(m_rawHeaders);
+        while (i.hasNext()) {
+            i.next();
+            request.setRawHeader(i.key(),i.value());
+        }
+    }
+
+
+    //add default attributes
+    {
+        QMapIterator<QNetworkRequest::Attribute,QVariant> i(m_defaultRequestAttributes);
+        while (i.hasNext()) {
+            i.next();
+            request.setAttribute(i.key(),i.value());
+        }
     }
 
     //next is ID
@@ -283,9 +301,17 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
     m_responses << res;
 
 
+
+#if QT_CONFIG(ssl)
+
     if(m_ignoredSslErrors.size()){
-        reply->ignoreSslErrors(m_ignoredSslErrors);
+        if(!m_ignoredErrors.contains(QSslError::NoError)){
+            reply->ignoreSslErrors(m_ignoredSslErrors);
+        }
+    }else{
+        reply->ignoreSslErrors();
     }
+#endif
 
     if(originalReq.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::MonitorProgressAttribute)).toBool()){
         connect(reply,&QNetworkReply::downloadProgress,this,[=](qint64 bytesReceived, qint64 bytesTotal){
@@ -297,9 +323,9 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
         if(!m_ignoredErrors.contains(error)){
             emit networkError(res);
         }
-//        if(res->networkReply()->request().attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::NotifyActivity)).toBool()){
-//            setMonitoredRequestCount(m_monitoredRequestCount-1);
-//        }
+        //        if(res->networkReply()->request().attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::NotifyActivity)).toBool()){
+        //            setMonitoredRequestCount(m_monitoredRequestCount-1);
+        //        }
     });
 
     connect(reply,&QNetworkReply::finished,this,[this,res](){
@@ -308,7 +334,10 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
         }
     });
 
-    setMonitoredRequestCount(m_monitoredRequestCount+1);
+    if(res->networkReply()->request().attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::NotifyActivity)).toBool()){
+        setMonitoredRequestCount(m_monitoredRequestCount+1);
+
+    }
 
     emit networkActivity(originalReq.url());
 
@@ -329,125 +358,136 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     return reply;
 }
 
+NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNetworkRequest &originalReq, const QByteArray &data)
+{
+    QBuffer *buffer = new QBuffer;
+    buffer->setData(data);
+    buffer->open(QIODevice::ReadOnly);
+
+    NetworkResponse *reply = createNewRequest(op,originalReq, buffer);
+    buffer->setParent(reply->networkReply());
+    return reply;
+}
+
 
 
 QByteArray DataSerialization::serialize(const QVariant &data)
 {
     QMetaType::Type type=static_cast<QMetaType::Type>(data.typeId());
 
-        /**************************json**************************/
-        if(type==QMetaType::Type::QJsonObject)
-        {
-            QJsonObject object=data.toJsonObject();
-            QJsonDocument document;
-            document.setObject(object);
-            return document.toJson(QJsonDocument::Compact);
-        }
+    /**************************json**************************/
+    if(type==QMetaType::Type::QJsonObject)
+    {
+        QJsonObject object=data.toJsonObject();
+        QJsonDocument document;
+        document.setObject(object);
+        return document.toJson(QJsonDocument::Compact);
+    }
 
-        if(type==QMetaType::Type::QJsonArray)
+    if(type==QMetaType::Type::QJsonArray)
+    {
+        QJsonArray array=data.toJsonArray();
+        QJsonDocument document;
+        document.setArray(array);
+        return document.toJson(QJsonDocument::Compact);
+    }
+
+    if(type==QMetaType::Type::QJsonDocument)
+    {
+        return data.toJsonDocument().toJson(QJsonDocument::Compact);
+    }
+
+    if(type==QMetaType::Type::QJsonValue)
+    {
+        QJsonValue jsonValue=data.value<QJsonValue>();
+
+        if(jsonValue.type()==QJsonValue::Type::Array)
         {
-            QJsonArray array=data.toJsonArray();
+            QJsonArray array=jsonValue.toArray();
             QJsonDocument document;
             document.setArray(array);
             return document.toJson(QJsonDocument::Compact);
         }
 
-        if(type==QMetaType::Type::QJsonDocument)
+        if(jsonValue.type()==QJsonValue::Type::Object)
         {
-            return data.toJsonDocument().toJson(QJsonDocument::Compact);
+            QJsonObject object=jsonValue.toObject();
+            QJsonDocument document;
+            document.setObject(object);
+            return document.toJson(QJsonDocument::Compact);
         }
-
-        if(type==QMetaType::Type::QJsonValue)
+        if(jsonValue.type()==QJsonValue::Type::String)
         {
-            QJsonValue jsonValue=data.value<QJsonValue>();
-
-            if(jsonValue.type()==QJsonValue::Type::Array)
-            {
-                QJsonArray array=jsonValue.toArray();
-                QJsonDocument document;
-                document.setArray(array);
-                return document.toJson(QJsonDocument::Compact);
-            }
-
-            if(jsonValue.type()==QJsonValue::Type::Object)
-            {
-                QJsonObject object=jsonValue.toObject();
-                QJsonDocument document;
-                document.setObject(object);
-                return document.toJson(QJsonDocument::Compact);
-            }
-            if(jsonValue.type()==QJsonValue::Type::String)
-            {
-                return jsonValue.toString().toUtf8();
-            }
-            if(jsonValue.type()==QJsonValue::Type::Double)
-            {
-                return QString::number(jsonValue.toDouble()).toUtf8();
-            }
-            if(jsonValue.type()==QJsonValue::Type::Bool)
-            {
-                return jsonValue.toBool() ? QByteArray("1") : QByteArray("0");
-            }
-            if(jsonValue.type()==QJsonValue::Type::Null){
-                return QByteArray("");
-            }
-            if(jsonValue.type()==QJsonValue::Type::Undefined){
-                return QByteArray();
-            }
-
+            return jsonValue.toString().toUtf8();
         }
-
-        /**********************end json**************************/
-
-        if(type==QMetaType::Type::QString)
-            return data.toString().toUtf8();
-
-        if(type==QMetaType::Type::Int)
-            return QString::number(data.toInt()).toUtf8();
-
-        if(type==QMetaType::Type::Double)
-            return QString::number(data.toDouble()).toUtf8();
-
-        if(type==QMetaType::Type::Float)
-            return QString::number(data.toFloat()).toUtf8();
-
-        if(type==QMetaType::Type::Long || type==QMetaType::Type::LongLong)
-            return QString::number(data.toLongLong()).toUtf8();
-
-        if(type==QMetaType::Type::UInt)
-            return QString::number(data.toUInt()).toUtf8();
-
-        if(type==QMetaType::Type::ULongLong)
-            return QString::number(data.toULongLong()).toUtf8();
-
-        if(type==QMetaType::Type::QByteArray)
-            return data.toByteArray();
-    #ifdef QT_HAVE_GUI
-        if(type==QMetaType::Type::QImage)
+        if(jsonValue.type()==QJsonValue::Type::Double)
         {
-            QImage image=data.value<QImage>();
-            QByteArray imageData;
-            QBuffer buffer(&imageData);
-            buffer.open(QIODevice::WriteOnly);
-            image.save(&buffer,"PNG");
-            buffer.close();
-            return imageData;
+            return QString::number(jsonValue.toDouble()).toUtf8();
         }
-    #endif
-
-
-        if(type==QMetaType::Type::UnknownType)
+        if(jsonValue.type()==QJsonValue::Type::Bool)
+        {
+            return jsonValue.toBool() ? QByteArray("1") : QByteArray("0");
+        }
+        if(jsonValue.type()==QJsonValue::Type::Null){
+            return QByteArray("");
+        }
+        if(jsonValue.type()==QJsonValue::Type::Undefined){
             return QByteArray();
+        }
 
-        qWarning()<<"DataSerialization::serialize : unsupported QVariant type: " << static_cast<QMetaType::Type>(data.typeId());
+    }
 
+    /**********************end json**************************/
+
+    if(type==QMetaType::Type::QString)
+        return data.toString().toUtf8();
+
+    if(type==QMetaType::Type::Int)
+        return QString::number(data.toInt()).toUtf8();
+
+    if(type==QMetaType::Type::Double)
+        return QString::number(data.toDouble()).toUtf8();
+
+    if(type==QMetaType::Type::Float)
+        return QString::number(data.toFloat()).toUtf8();
+
+    if(type==QMetaType::Type::Long || type==QMetaType::Type::LongLong)
+        return QString::number(data.toLongLong()).toUtf8();
+
+    if(type==QMetaType::Type::UInt)
+        return QString::number(data.toUInt()).toUtf8();
+
+    if(type==QMetaType::Type::ULongLong)
+        return QString::number(data.toULongLong()).toUtf8();
+
+    if(type==QMetaType::Type::QByteArray)
+        return data.toByteArray();
+#ifdef QT_HAVE_GUI
+    if(type==QMetaType::Type::QImage)
+    {
+        QImage image=data.value<QImage>();
+        QByteArray imageData;
+        QBuffer buffer(&imageData);
+        buffer.open(QIODevice::WriteOnly);
+        image.save(&buffer,"PNG");
+        buffer.close();
+        return imageData;
+    }
+#endif
+
+
+    if(type==QMetaType::Type::UnknownType)
         return QByteArray();
+
+    qWarning()<<"DataSerialization::serialize : unsupported QVariant type: " << static_cast<QMetaType::Type>(data.typeId());
+
+    return QByteArray();
 }
 
 QByteArray DataSerialization::contentType(const QMetaType::Type type)
 {
-//    if(m_permanentRawHeaders.contains("content-type")) //if this header already exists then return it to avoid conflicts
-//        return m_permanentRawHeaders["content-type"];
+    //    if(m_permanentRawHeaders.contains("content-type")) //if this header already exists then return it to avoid conflicts
+    //        return m_permanentRawHeaders["content-type"];
 
     QByteArray contentType;
     //QMetaType::Type::Type type=static_cast<QMetaType::Type::Type>(data.type());
@@ -497,6 +537,16 @@ void NetworkAccessManager::routeReply(NetworkResponse *res)
 int NetworkAccessManager::monitoredRequestCount() const
 {
     return m_monitoredRequestCount;
+}
+
+void NetworkAccessManager::setRequestAttribute(QNetworkRequest::Attribute code, const QVariant &value)
+{
+    m_defaultRequestAttributes.insert(code,value);
+}
+
+void NetworkAccessManager::removeRequsetAttribute(QNetworkRequest::Attribute code)
+{
+    m_defaultRequestAttributes.remove(code);
 }
 
 void NetworkAccessManager::setMonitoredRequestCount(int newMonitoredRequestCount)

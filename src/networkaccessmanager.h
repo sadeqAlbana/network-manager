@@ -70,7 +70,7 @@ public:
     void setRawHeader(const QByteArray &headerName, const QByteArray &headerValue);
     void removeRawHeader(const QByteArray &headerName);
 
-    QNetworkRequest createNetworkRequest(const QUrl &url);
+    QNetworkRequest createNetworkRequest(const QUrl &url, const QVariant &data=QVariant());
 
 
 
@@ -87,6 +87,10 @@ public:
     void setBaseUrl(const QUrl &newBaseUrl);
 
     int monitoredRequestCount() const;
+
+    void setRequestAttribute(QNetworkRequest::Attribute code, const QVariant &value);
+    void removeRequsetAttribute(QNetworkRequest::Attribute code);
+
 
 
 signals:
@@ -113,9 +117,13 @@ signals:
 
     void monitoredRequestCountChanged();
 
+
 protected:
     QNetworkReply *createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr) override;
+
     virtual NetworkResponse *createNewRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr);
+    NetworkResponse *createNewRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, const QByteArray &data); ;
+
     virtual void onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
     virtual void routeReply(NetworkResponse *res);
     void setMonitoredRequestCount(int newMonitoredRequestCount);
@@ -130,9 +138,9 @@ private:
     QPair<QString,QString> m_proxyAuthenticationCredentials;
 
     QList<QNetworkReply::NetworkError> m_ignoredErrors;
-    QList<QSslError> m_ignoredSslErrors;
-
+    QList<QSslError> m_ignoredSslErrors={QSslError(QSslError::NoError)};
     int m_monitoredRequestCount=0;
+    QMap<QNetworkRequest::Attribute,QVariant> m_defaultRequestAttributes;
     Q_PROPERTY(int monitoredRequestCount READ monitoredRequestCount NOTIFY monitoredRequestCountChanged)
 };
 
