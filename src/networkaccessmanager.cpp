@@ -246,7 +246,7 @@ QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url, cons
     QNetworkRequest request;
 
     //merge the relative url with the base url
-    QUrl requestUrl= m_baseUrl.isEmpty()? url  : m_baseUrl.resolved(url);
+    QUrl requestUrl= m_baseUrl.isEmpty()? url  : url.isRelative()? m_baseUrl.resolved(url) : url;
 
     request.setUrl(requestUrl);
 
@@ -357,6 +357,11 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
 
     return reply;
 }
+
+/*!
+    \fn NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNetworkRequest &originalReq, const QByteArray &data).
+    this is an overloaded function, it serializes the byte array into a QIODevice using QBuffer.
+*/
 
 NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNetworkRequest &originalReq, const QByteArray &data)
 {
@@ -534,20 +539,42 @@ void NetworkAccessManager::routeReply(NetworkResponse *res)
 
 }
 
+/*!
+    \fn int NetworkAccessManager::monitoredRequestCount() const
+    returns the number of requests that are being monitored for activity, a monitored request will increase the monitoredRequestCount property and decrease it when finished.
+    this is useful when you want to add a network activity modal on the GUI.
+*/
+
 int NetworkAccessManager::monitoredRequestCount() const
 {
     return m_monitoredRequestCount;
 }
+
+/*!
+    \fn void NetworkAccessManager::setRequestAttribute(QNetworkRequest::Attribute code, const QVariant &value)
+    set a request attribute on the manager's level.
+*/
 
 void NetworkAccessManager::setRequestAttribute(QNetworkRequest::Attribute code, const QVariant &value)
 {
     m_defaultRequestAttributes.insert(code,value);
 }
 
+/*!
+    \fn void NetworkAccessManager::removeRequsetAttribute(QNetworkRequest::Attribute code).
+    removes the attribute associated with the given key code.
+*/
+
+
 void NetworkAccessManager::removeRequsetAttribute(QNetworkRequest::Attribute code)
 {
     m_defaultRequestAttributes.remove(code);
 }
+
+/*!
+    \fn void NetworkAccessManager::setMonitoredRequestCount(int newMonitoredRequestCount)
+    sets the monitored requests count, this method is for internal use only.
+*/
 
 void NetworkAccessManager::setMonitoredRequestCount(int newMonitoredRequestCount)
 {
@@ -557,10 +584,21 @@ void NetworkAccessManager::setMonitoredRequestCount(int newMonitoredRequestCount
     emit monitoredRequestCountChanged();
 }
 
+/*!
+    \fn const QUrl &NetworkAccessManager::baseUrl() const
+    returns the base url used for requests with relative urls.
+*/
+
 const QUrl &NetworkAccessManager::baseUrl() const
 {
     return m_baseUrl;
 }
+
+/*!
+    \fn NetworkAccessManager::setBaseUrl(const QUrl &newBaseUrl)
+    sets a base url for NetworkAccessManager, if baseUrl is not empty it will be resolved with the passed relative url for every request using \a QUrl::resolved() method.
+    please note that passing a non relative url will override the baseUrl.
+*/
 
 void NetworkAccessManager::setBaseUrl(const QUrl &newBaseUrl)
 {

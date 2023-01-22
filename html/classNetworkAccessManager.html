@@ -74,6 +74,7 @@ $(function() {
 <a href="#signals">Signals</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#properties">Properties</a> &#124;
 <a href="#friends">Friends</a> &#124;
 <a href="classNetworkAccessManager-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">NetworkAccessManager Class Reference</div></div>
@@ -104,6 +105,7 @@ Collaboration diagram for NetworkAccessManager:</div>
 Public Types</h2></td></tr>
 <tr class="memitem:a87a2cadc8884ff3370236be3abd49fc3"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#a87a2cadc8884ff3370236be3abd49fc3">RequstAttribute</a> { <a class="el" href="classNetworkAccessManager.html#a87a2cadc8884ff3370236be3abd49fc3af91267cc502c6416ab6d139a12daa2bf">IdAttribute</a> = 1001
 , <a class="el" href="classNetworkAccessManager.html#a87a2cadc8884ff3370236be3abd49fc3a6785eeb9926093a4918296ce637dd483">MonitorProgressAttribute</a> = 1002
+, <b>NotifyActivity</b> = 1003
  }</td></tr>
 <tr class="separator:a87a2cadc8884ff3370236be3abd49fc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -115,6 +117,8 @@ Signals</h2></td></tr>
 <tr class="separator:a3c2103bc912e4e41b361cdf7de7d35d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac08461c5cab6b289054d834ab239ba7c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#ac08461c5cab6b289054d834ab239ba7c">networkError</a> (<a class="el" href="classNetworkResponse.html">NetworkResponse</a> *res)</td></tr>
 <tr class="separator:ac08461c5cab6b289054d834ab239ba7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ec85169ffa8dfdf6d57371322c31b3b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#a9ec85169ffa8dfdf6d57371322c31b3b">monitoredRequestCountChanged</a> ()</td></tr>
+<tr class="separator:a9ec85169ffa8dfdf6d57371322c31b3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -150,8 +154,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a107a23bc94bb2b636f1b5fb15d8d6d1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5e2d938f1bdee2ca97ae9256b2b67c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#aa5e2d938f1bdee2ca97ae9256b2b67c8">removeRawHeader</a> (const QByteArray &amp;headerName)</td></tr>
 <tr class="separator:aa5e2d938f1bdee2ca97ae9256b2b67c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaaacb4f780ef3fe2d916a7178a7cc236"><td class="memItemLeft" align="right" valign="top">QNetworkRequest&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#aaaacb4f780ef3fe2d916a7178a7cc236">createNetworkRequest</a> (const QUrl &amp;url)</td></tr>
-<tr class="separator:aaaacb4f780ef3fe2d916a7178a7cc236"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f571d46f62503aa2425038604de4d7b"><td class="memItemLeft" align="right" valign="top">QNetworkRequest&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#a3f571d46f62503aa2425038604de4d7b">createNetworkRequest</a> (const QUrl &amp;url, const QVariant &amp;data=QVariant())</td></tr>
+<tr class="separator:a3f571d46f62503aa2425038604de4d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaed938c303ef070e9029d3b942346c73"><td class="memItemLeft" align="right" valign="top">const QPair&lt; QString, QString &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#aaed938c303ef070e9029d3b942346c73">proxyAuthenticationCredentials</a> () const</td></tr>
 <tr class="separator:aaed938c303ef070e9029d3b942346c73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae36bc4c1d58eb7229b7c9cc4d2c66932"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#ae36bc4c1d58eb7229b7c9cc4d2c66932">setProxyAuthenticationCredentials</a> (const QPair&lt; QString, QString &gt; &amp;newProxyAuthenticationCredentials)</td></tr>
@@ -164,6 +168,16 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a774751a36c7e124d989167fc239be198"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2005ab4fe53a63401b5c64344e6a85ab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#a2005ab4fe53a63401b5c64344e6a85ab">setIgnoredErrors</a> (const QList&lt; QNetworkReply::NetworkError &gt; &amp;newIgnoredErrors)</td></tr>
 <tr class="separator:a2005ab4fe53a63401b5c64344e6a85ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4331d06cbdcaeaac51c349f0ddc939a4"><td class="memItemLeft" align="right" valign="top">const QUrl &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#a4331d06cbdcaeaac51c349f0ddc939a4">baseUrl</a> () const</td></tr>
+<tr class="separator:a4331d06cbdcaeaac51c349f0ddc939a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa42d4fe0ed6131a42aad50aa484d320"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#aaa42d4fe0ed6131a42aad50aa484d320">setBaseUrl</a> (const QUrl &amp;newBaseUrl)</td></tr>
+<tr class="separator:aaa42d4fe0ed6131a42aad50aa484d320"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a189aeb4b47cba222af2d7d24c0cdce08"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#a189aeb4b47cba222af2d7d24c0cdce08">monitoredRequestCount</a> () const</td></tr>
+<tr class="separator:a189aeb4b47cba222af2d7d24c0cdce08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fe7a21f7a78bb0c16c141fe7fecfaab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#a4fe7a21f7a78bb0c16c141fe7fecfaab">setRequestAttribute</a> (QNetworkRequest::Attribute code, const QVariant &amp;value)</td></tr>
+<tr class="separator:a4fe7a21f7a78bb0c16c141fe7fecfaab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1fbdcf816584dbed0d0549232f1207d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#ac1fbdcf816584dbed0d0549232f1207d">removeRequsetAttribute</a> (QNetworkRequest::Attribute code)</td></tr>
+<tr class="separator:ac1fbdcf816584dbed0d0549232f1207d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -171,10 +185,15 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a67b09480e818b7267e45a357a992c59e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab9d200125259ee815136db75876c0b4"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classNetworkResponse.html">NetworkResponse</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#aab9d200125259ee815136db75876c0b4">createNewRequest</a> (QNetworkAccessManager::Operation op, const QNetworkRequest &amp;originalReq, QIODevice *outgoingData=nullptr)</td></tr>
 <tr class="separator:aab9d200125259ee815136db75876c0b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c836de7f9e65fb6b180157223a8c95a"><td class="memItemLeft" align="right" valign="top"><a id="a0c836de7f9e65fb6b180157223a8c95a" name="a0c836de7f9e65fb6b180157223a8c95a"></a>
+<a class="el" href="classNetworkResponse.html">NetworkResponse</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>createNewRequest</b> (QNetworkAccessManager::Operation op, const QNetworkRequest &amp;originalReq, const QByteArray &amp;data)</td></tr>
+<tr class="separator:a0c836de7f9e65fb6b180157223a8c95a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afabbb2d03d982eabf4d12ec47acd5bed"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#afabbb2d03d982eabf4d12ec47acd5bed">onProxyAuthenticationRequired</a> (const QNetworkProxy &amp;proxy, QAuthenticator *authenticator)</td></tr>
 <tr class="separator:afabbb2d03d982eabf4d12ec47acd5bed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a176002c09b4c5c519d7a8d70a7c03de4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#a176002c09b4c5c519d7a8d70a7c03de4">routeReply</a> (<a class="el" href="classNetworkResponse.html">NetworkResponse</a> *res)</td></tr>
 <tr class="separator:a176002c09b4c5c519d7a8d70a7c03de4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56a3ca1fd829276c4048f7dfad3e4f88"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNetworkAccessManager.html#a56a3ca1fd829276c4048f7dfad3e4f88">setMonitoredRequestCount</a> (int newMonitoredRequestCount)</td></tr>
+<tr class="separator:a56a3ca1fd829276c4048f7dfad3e4f88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classSNetworkManager_1_1Router"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classSNetworkManager_1_1Router')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classSNetworkManager_1_1Router.html">SNetworkManager::Router</a></td></tr>
 <tr class="memitem:a4bc6dd1a063feff985c1bcac0513c0af inherit pro_methods_classSNetworkManager_1_1Router"><td class="memItemLeft" align="right" valign="top"><a id="a4bc6dd1a063feff985c1bcac0513c0af" name="a4bc6dd1a063feff985c1bcac0513c0af"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>route</b> (<a class="el" href="classNetworkResponse.html">NetworkResponse</a> *reply)</td></tr>
@@ -186,6 +205,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>registerRoute</b> (<a
 template&lt;class T &gt; </td></tr>
 <tr class="memitem:a51241d2b6615f271b3ee5f92479e4f06 inherit pro_methods_classSNetworkManager_1_1Router"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>registerRoute</b> (<a class="el" href="classNetworkResponse.html">NetworkResponse</a> *reply, T *instance, MemberCallback&lt; T &gt; ptr)</td></tr>
 <tr class="separator:a51241d2b6615f271b3ee5f92479e4f06 inherit pro_methods_classSNetworkManager_1_1Router"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
+Properties</h2></td></tr>
+<tr class="memitem:a5f13ced3d80181bb27c6bd99057f0fff"><td class="memItemLeft" align="right" valign="top"><a id="a5f13ced3d80181bb27c6bd99057f0fff" name="a5f13ced3d80181bb27c6bd99057f0fff"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>monitoredRequestCount</b></td></tr>
+<tr class="separator:a5f13ced3d80181bb27c6bd99057f0fff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -261,8 +286,26 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NetworkResponse</b><
 
 </div>
 </div>
-<a id="aaaacb4f780ef3fe2d916a7178a7cc236" name="aaaacb4f780ef3fe2d916a7178a7cc236"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaaacb4f780ef3fe2d916a7178a7cc236">&#9670;&#160;</a></span>createNetworkRequest()</h2>
+<a id="a4331d06cbdcaeaac51c349f0ddc939a4" name="a4331d06cbdcaeaac51c349f0ddc939a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4331d06cbdcaeaac51c349f0ddc939a4">&#9670;&#160;</a></span>baseUrl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const QUrl &amp; NetworkAccessManager::baseUrl </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>returns the base url used for requests with relative urls. </p>
+
+</div>
+</div>
+<a id="a3f571d46f62503aa2425038604de4d7b" name="a3f571d46f62503aa2425038604de4d7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f571d46f62503aa2425038604de4d7b">&#9670;&#160;</a></span>createNetworkRequest()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -271,8 +314,18 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NetworkResponse</b><
           <td class="memname">QNetworkRequest NetworkAccessManager::createNetworkRequest </td>
           <td>(</td>
           <td class="paramtype">const QUrl &amp;&#160;</td>
-          <td class="paramname"><em>url</em></td><td>)</td>
+          <td class="paramname"><em>url</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const QVariant &amp;&#160;</td>
+          <td class="paramname"><em>data</em> = <code>QVariant()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -559,6 +612,50 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NetworkResponse</b><
 
 </div>
 </div>
+<a id="a189aeb4b47cba222af2d7d24c0cdce08" name="a189aeb4b47cba222af2d7d24c0cdce08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a189aeb4b47cba222af2d7d24c0cdce08">&#9670;&#160;</a></span>monitoredRequestCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int NetworkAccessManager::monitoredRequestCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>returns the number of requests that are being monitored for activity, a monitored request will increase the monitoredRequestCount property and decrease it when finished. this is useful when you want to add a network activity modal on the GUI. </p>
+
+</div>
+</div>
+<a id="a9ec85169ffa8dfdf6d57371322c31b3b" name="a9ec85169ffa8dfdf6d57371322c31b3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ec85169ffa8dfdf6d57371322c31b3b">&#9670;&#160;</a></span>monitoredRequestCountChanged</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NetworkAccessManager::monitoredRequestCountChanged </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">signal</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>this signal is emitted when the montiored requests count is changed. </p>
+
+</div>
+</div>
 <a id="a2f6aa2007549f62e23bde4f6805be430" name="a2f6aa2007549f62e23bde4f6805be430"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2f6aa2007549f62e23bde4f6805be430">&#9670;&#160;</a></span>networkActivity</h2>
 
@@ -840,6 +937,25 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NetworkResponse</b><
 
 </div>
 </div>
+<a id="ac1fbdcf816584dbed0d0549232f1207d" name="ac1fbdcf816584dbed0d0549232f1207d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1fbdcf816584dbed0d0549232f1207d">&#9670;&#160;</a></span>removeRequsetAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NetworkAccessManager::removeRequsetAttribute </td>
+          <td>(</td>
+          <td class="paramtype">QNetworkRequest::Attribute&#160;</td>
+          <td class="paramname"><em>code</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>removes the attribute associated with the given key code. </p>
+
+</div>
+</div>
 <a id="a176002c09b4c5c519d7a8d70a7c03de4" name="a176002c09b4c5c519d7a8d70a7c03de4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a176002c09b4c5c519d7a8d70a7c03de4">&#9670;&#160;</a></span>routeReply()</h2>
 
@@ -864,6 +980,25 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NetworkResponse</b><
 </table>
 </div><div class="memdoc">
 <p>this is method will be called when a <em><a class="el" href="classNetworkResponse.html">NetworkResponse</a></em> registered with <em>NetworkResponse::subscribe</em> is finished aka emits (<em><a class="el" href="classNetworkResponse.html#aa2ac972473e511260c0030b2c4c1b9fe">NetworkResponse::finished</a></em>) signal. the default implementation calls the route if the response has no errors or the network error is within the ignored errors list. </p>
+
+</div>
+</div>
+<a id="aaa42d4fe0ed6131a42aad50aa484d320" name="aaa42d4fe0ed6131a42aad50aa484d320"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa42d4fe0ed6131a42aad50aa484d320">&#9670;&#160;</a></span>setBaseUrl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NetworkAccessManager::setBaseUrl </td>
+          <td>(</td>
+          <td class="paramtype">const QUrl &amp;&#160;</td>
+          <td class="paramname"><em>newBaseUrl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>sets a base url for <a class="el" href="classNetworkAccessManager.html">NetworkAccessManager</a>, if baseUrl is not empty it will be resolved with the passed relative url for every request using <em>QUrl::resolved()</em> method. please note that passing a non relative url will override the baseUrl. </p>
 
 </div>
 </div>
@@ -902,6 +1037,33 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NetworkResponse</b><
       </table>
 </div><div class="memdoc">
 <p>sets the list for ssl errors that will be passed to <em>QNetworkReply::ignoreSslErrors()</em>. </p>
+
+</div>
+</div>
+<a id="a56a3ca1fd829276c4048f7dfad3e4f88" name="a56a3ca1fd829276c4048f7dfad3e4f88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56a3ca1fd829276c4048f7dfad3e4f88">&#9670;&#160;</a></span>setMonitoredRequestCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NetworkAccessManager::setMonitoredRequestCount </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>newMonitoredRequestCount</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>sets the monitored requests count, this method is for internal use only. </p>
 
 </div>
 </div>
@@ -950,6 +1112,35 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NetworkResponse</b><
       </table>
 </div><div class="memdoc">
 <p>adds a raw header that will be sent with each standard request </p>
+
+</div>
+</div>
+<a id="a4fe7a21f7a78bb0c16c141fe7fecfaab" name="a4fe7a21f7a78bb0c16c141fe7fecfaab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fe7a21f7a78bb0c16c141fe7fecfaab">&#9670;&#160;</a></span>setRequestAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NetworkAccessManager::setRequestAttribute </td>
+          <td>(</td>
+          <td class="paramtype">QNetworkRequest::Attribute&#160;</td>
+          <td class="paramname"><em>code</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QVariant &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>set a request attribute on the manager's level. </p>
 
 </div>
 </div>

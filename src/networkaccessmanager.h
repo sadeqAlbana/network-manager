@@ -114,6 +114,11 @@ signals:
     */
     void networkError(NetworkResponse *res);
 
+    /*!
+        \fn void NetworkAccessManager::monitoredRequestCountChanged()
+        this signal is emitted when the montiored requests count is changed.
+
+    */
 
     void monitoredRequestCountChanged();
 
@@ -126,6 +131,7 @@ protected:
 
     virtual void onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
     virtual void routeReply(NetworkResponse *res);
+
     void setMonitoredRequestCount(int newMonitoredRequestCount);
 
 
