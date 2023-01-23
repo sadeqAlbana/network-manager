@@ -17,7 +17,6 @@ void SNetworkManager::Router::route(NetworkResponse *reply)
         Callback cb=callbacks[reply];
         cb(reply);
     }
-    reply->deleteLater();
 }
 
 void SNetworkManager::Router::registerRoute(NetworkResponse *reply, Callback cb)

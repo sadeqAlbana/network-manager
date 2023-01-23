@@ -125,11 +125,11 @@ protected:
     NetworkResponse *createNewRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, const QByteArray &data); ;
 
     virtual void onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
-    virtual void routeReply(NetworkResponse *res);
+    virtual void routeReply(NetworkResponse *response);
     void setMonitoredRequestCount(int newMonitoredRequestCount);
 
 
-private:
+protected:
     QList<NetworkResponse *> m_responses; /**< stores a list of the current responses */
     QList<QNetworkReply *> m_replies; /**< stores a list of the current replies */
 
@@ -141,6 +141,7 @@ private:
     QList<QSslError> m_ignoredSslErrors={QSslError(QSslError::NoError)};
     int m_monitoredRequestCount=0;
     QMap<QNetworkRequest::Attribute,QVariant> m_defaultRequestAttributes;
+private:
     Q_PROPERTY(int monitoredRequestCount READ monitoredRequestCount NOTIFY monitoredRequestCountChanged)
 };
 
