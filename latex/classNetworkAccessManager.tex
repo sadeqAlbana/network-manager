@@ -25,6 +25,7 @@ Collaboration diagram for Network\+Access\+Manager\+:
 \item 
 enum \mbox{\hyperlink{classNetworkAccessManager_a87a2cadc8884ff3370236be3abd49fc3}{Requst\+Attribute}} \{ \mbox{\hyperlink{classNetworkAccessManager_a87a2cadc8884ff3370236be3abd49fc3af91267cc502c6416ab6d139a12daa2bf}{Id\+Attribute}} = 1001
 , \mbox{\hyperlink{classNetworkAccessManager_a87a2cadc8884ff3370236be3abd49fc3a6785eeb9926093a4918296ce637dd483}{Monitor\+Progress\+Attribute}} = 1002
+, {\bfseries Notify\+Activity} = 1003
  \}
 \end{DoxyCompactItemize}
 \doxysubsection*{Signals}
@@ -35,6 +36,8 @@ void \mbox{\hyperlink{classNetworkAccessManager_a2f6aa2007549f62e23bde4f6805be43
 void \mbox{\hyperlink{classNetworkAccessManager_a3c2103bc912e4e41b361cdf7de7d35d5}{download\+Progress}} (qint64 bytes\+Received, qint64 bytes\+Total, \mbox{\hyperlink{classNetworkResponse}{Network\+Response}} $\ast$res)
 \item 
 void \mbox{\hyperlink{classNetworkAccessManager_ac08461c5cab6b289054d834ab239ba7c}{network\+Error}} (\mbox{\hyperlink{classNetworkResponse}{Network\+Response}} $\ast$res)
+\item 
+void \mbox{\hyperlink{classNetworkAccessManager_a9ec85169ffa8dfdf6d57371322c31b3b}{monitored\+Request\+Count\+Changed}} ()
 \end{DoxyCompactItemize}
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
@@ -71,7 +74,7 @@ void \mbox{\hyperlink{classNetworkAccessManager_a107a23bc94bb2b636f1b5fb15d8d6d1
 \item 
 void \mbox{\hyperlink{classNetworkAccessManager_aa5e2d938f1bdee2ca97ae9256b2b67c8}{remove\+Raw\+Header}} (const QByte\+Array \&header\+Name)
 \item 
-QNetwork\+Request \mbox{\hyperlink{classNetworkAccessManager_aaaacb4f780ef3fe2d916a7178a7cc236}{create\+Network\+Request}} (const QUrl \&url)
+QNetwork\+Request \mbox{\hyperlink{classNetworkAccessManager_a3f571d46f62503aa2425038604de4d7b}{create\+Network\+Request}} (const QUrl \&url, const QVariant \&data=QVariant())
 \item 
 const QPair$<$ QString, QString $>$ \& \mbox{\hyperlink{classNetworkAccessManager_aaed938c303ef070e9029d3b942346c73}{proxy\+Authentication\+Credentials}} () const
 \item 
@@ -84,6 +87,16 @@ void \mbox{\hyperlink{classNetworkAccessManager_a2533efc7b3245e4eb8356f047af9cc6
 QList$<$ QNetwork\+Reply\+::\+Network\+Error $>$ \mbox{\hyperlink{classNetworkAccessManager_a774751a36c7e124d989167fc239be198}{ignored\+Errors}} () const
 \item 
 void \mbox{\hyperlink{classNetworkAccessManager_a2005ab4fe53a63401b5c64344e6a85ab}{set\+Ignored\+Errors}} (const QList$<$ QNetwork\+Reply\+::\+Network\+Error $>$ \&new\+Ignored\+Errors)
+\item 
+const QUrl \& \mbox{\hyperlink{classNetworkAccessManager_a4331d06cbdcaeaac51c349f0ddc939a4}{base\+Url}} () const
+\item 
+void \mbox{\hyperlink{classNetworkAccessManager_aaa42d4fe0ed6131a42aad50aa484d320}{set\+Base\+Url}} (const QUrl \&new\+Base\+Url)
+\item 
+int \mbox{\hyperlink{classNetworkAccessManager_a189aeb4b47cba222af2d7d24c0cdce08}{monitored\+Request\+Count}} () const
+\item 
+void \mbox{\hyperlink{classNetworkAccessManager_a4fe7a21f7a78bb0c16c141fe7fecfaab}{set\+Request\+Attribute}} (QNetwork\+Request\+::\+Attribute code, const QVariant \&value)
+\item 
+void \mbox{\hyperlink{classNetworkAccessManager_ac1fbdcf816584dbed0d0549232f1207d}{remove\+Requset\+Attribute}} (QNetwork\+Request\+::\+Attribute code)
 \end{DoxyCompactItemize}
 \doxysubsection*{Protected Member Functions}
 \begin{DoxyCompactItemize}
@@ -92,9 +105,14 @@ QNetwork\+Reply $\ast$ \mbox{\hyperlink{classNetworkAccessManager_a67b09480e818b
 \item 
 virtual \mbox{\hyperlink{classNetworkResponse}{Network\+Response}} $\ast$ \mbox{\hyperlink{classNetworkAccessManager_aab9d200125259ee815136db75876c0b4}{create\+New\+Request}} (QNetwork\+Access\+Manager\+::\+Operation op, const QNetwork\+Request \&original\+Req, QIODevice $\ast$outgoing\+Data=nullptr)
 \item 
+\mbox{\Hypertarget{classNetworkAccessManager_a0c836de7f9e65fb6b180157223a8c95a}\label{classNetworkAccessManager_a0c836de7f9e65fb6b180157223a8c95a}} 
+\mbox{\hyperlink{classNetworkResponse}{Network\+Response}} $\ast$ {\bfseries create\+New\+Request} (QNetwork\+Access\+Manager\+::\+Operation op, const QNetwork\+Request \&original\+Req, const QByte\+Array \&data)
+\item 
 virtual void \mbox{\hyperlink{classNetworkAccessManager_afabbb2d03d982eabf4d12ec47acd5bed}{on\+Proxy\+Authentication\+Required}} (const QNetwork\+Proxy \&proxy, QAuthenticator $\ast$authenticator)
 \item 
 virtual void \mbox{\hyperlink{classNetworkAccessManager_a176002c09b4c5c519d7a8d70a7c03de4}{route\+Reply}} (\mbox{\hyperlink{classNetworkResponse}{Network\+Response}} $\ast$res)
+\item 
+void \mbox{\hyperlink{classNetworkAccessManager_a56a3ca1fd829276c4048f7dfad3e4f88}{set\+Monitored\+Request\+Count}} (int new\+Monitored\+Request\+Count)
 \end{DoxyCompactItemize}
 \doxysubsubsection*{Protected Member Functions inherited from \mbox{\hyperlink{classSNetworkManager_1_1Router}{SNetwork\+Manager\+::\+Router}}}
 \begin{DoxyCompactItemize}
@@ -107,6 +125,12 @@ void {\bfseries register\+Route} (\mbox{\hyperlink{classNetworkResponse}{Network
 \item 
 \mbox{\Hypertarget{classSNetworkManager_1_1Router_a51241d2b6615f271b3ee5f92479e4f06}\label{classSNetworkManager_1_1Router_a51241d2b6615f271b3ee5f92479e4f06}} 
 {\footnotesize template$<$class T $>$ }\\void {\bfseries register\+Route} (\mbox{\hyperlink{classNetworkResponse}{Network\+Response}} $\ast$reply, T $\ast$instance, Member\+Callback$<$ T $>$ ptr)
+\end{DoxyCompactItemize}
+\doxysubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classNetworkAccessManager_a5f13ced3d80181bb27c6bd99057f0fff}\label{classNetworkAccessManager_a5f13ced3d80181bb27c6bd99057f0fff}} 
+int {\bfseries monitored\+Request\+Count}
 \end{DoxyCompactItemize}
 \doxysubsection*{Friends}
 \begin{DoxyCompactItemize}
@@ -151,11 +175,17 @@ Constructs a \mbox{\hyperlink{classNetworkAccessManager}{Network\+Access\+Manage
 \doxysubsubsection{\texorpdfstring{abortAllRequests()}{abortAllRequests()}}
 {\footnotesize\ttfamily void Network\+Access\+Manager\+::abort\+All\+Requests (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
-aborts all requests that are being processed. calls {\itshape QNetwork\+Reply\+::abort()} and deletes the {\itshape Network\+Respnse} $\ast$ pointers and {\itshape QNetwork\+Reply} $\ast$ pointers that was created with {\itshape \mbox{\hyperlink{classNetworkAccessManager_aab9d200125259ee815136db75876c0b4}{create\+New\+Request()}}} and {\itshape \mbox{\hyperlink{classNetworkAccessManager_a67b09480e818b7267e45a357a992c59e}{create\+Request()}}}. \mbox{\Hypertarget{classNetworkAccessManager_aaaacb4f780ef3fe2d916a7178a7cc236}\label{classNetworkAccessManager_aaaacb4f780ef3fe2d916a7178a7cc236}} 
+aborts all requests that are being processed. calls {\itshape QNetwork\+Reply\+::abort()} and deletes the {\itshape Network\+Respnse} $\ast$ pointers and {\itshape QNetwork\+Reply} $\ast$ pointers that was created with {\itshape \mbox{\hyperlink{classNetworkAccessManager_aab9d200125259ee815136db75876c0b4}{create\+New\+Request()}}} and {\itshape \mbox{\hyperlink{classNetworkAccessManager_a67b09480e818b7267e45a357a992c59e}{create\+Request()}}}. \mbox{\Hypertarget{classNetworkAccessManager_a4331d06cbdcaeaac51c349f0ddc939a4}\label{classNetworkAccessManager_a4331d06cbdcaeaac51c349f0ddc939a4}} 
+\index{NetworkAccessManager@{NetworkAccessManager}!baseUrl@{baseUrl}}
+\index{baseUrl@{baseUrl}!NetworkAccessManager@{NetworkAccessManager}}
+\doxysubsubsection{\texorpdfstring{baseUrl()}{baseUrl()}}
+{\footnotesize\ttfamily const QUrl \& Network\+Access\+Manager\+::base\+Url (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+returns the base url used for requests with relative urls. \mbox{\Hypertarget{classNetworkAccessManager_a3f571d46f62503aa2425038604de4d7b}\label{classNetworkAccessManager_a3f571d46f62503aa2425038604de4d7b}} 
 \index{NetworkAccessManager@{NetworkAccessManager}!createNetworkRequest@{createNetworkRequest}}
 \index{createNetworkRequest@{createNetworkRequest}!NetworkAccessManager@{NetworkAccessManager}}
 \doxysubsubsection{\texorpdfstring{createNetworkRequest()}{createNetworkRequest()}}
-{\footnotesize\ttfamily QNetwork\+Request Network\+Access\+Manager\+::create\+Network\+Request (\begin{DoxyParamCaption}\item[{const QUrl \&}]{url }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily QNetwork\+Request Network\+Access\+Manager\+::create\+Network\+Request (\begin{DoxyParamCaption}\item[{const QUrl \&}]{url,  }\item[{const QVariant \&}]{data = {\ttfamily QVariant()} }\end{DoxyParamCaption})}
 
 constructs a new {\itshape QNetwork\+Request} object with an internal ID and the default configuration. \mbox{\Hypertarget{classNetworkAccessManager_aab9d200125259ee815136db75876c0b4}\label{classNetworkAccessManager_aab9d200125259ee815136db75876c0b4}} 
 \index{NetworkAccessManager@{NetworkAccessManager}!createNewRequest@{createNewRequest}}
@@ -223,7 +253,19 @@ returns a list of the errors that are ignored by {\itshape \mbox{\hyperlink{clas
 \doxysubsubsection{\texorpdfstring{ignoredSslErrors()}{ignoredSslErrors()}}
 {\footnotesize\ttfamily QList$<$ QSsl\+Error $>$ Network\+Access\+Manager\+::ignored\+Ssl\+Errors (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
-returns a list of the ssl errors that are passed to {\itshape QNetwork\+Reply\+::ignore\+Ssl\+Errors()}. \mbox{\Hypertarget{classNetworkAccessManager_a2f6aa2007549f62e23bde4f6805be430}\label{classNetworkAccessManager_a2f6aa2007549f62e23bde4f6805be430}} 
+returns a list of the ssl errors that are passed to {\itshape QNetwork\+Reply\+::ignore\+Ssl\+Errors()}. \mbox{\Hypertarget{classNetworkAccessManager_a189aeb4b47cba222af2d7d24c0cdce08}\label{classNetworkAccessManager_a189aeb4b47cba222af2d7d24c0cdce08}} 
+\index{NetworkAccessManager@{NetworkAccessManager}!monitoredRequestCount@{monitoredRequestCount}}
+\index{monitoredRequestCount@{monitoredRequestCount}!NetworkAccessManager@{NetworkAccessManager}}
+\doxysubsubsection{\texorpdfstring{monitoredRequestCount()}{monitoredRequestCount()}}
+{\footnotesize\ttfamily int Network\+Access\+Manager\+::monitored\+Request\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+returns the number of requests that are being monitored for activity, a monitored request will increase the monitored\+Request\+Count property and decrease it when finished. this is useful when you want to add a network activity modal on the GUI. \mbox{\Hypertarget{classNetworkAccessManager_a9ec85169ffa8dfdf6d57371322c31b3b}\label{classNetworkAccessManager_a9ec85169ffa8dfdf6d57371322c31b3b}} 
+\index{NetworkAccessManager@{NetworkAccessManager}!monitoredRequestCountChanged@{monitoredRequestCountChanged}}
+\index{monitoredRequestCountChanged@{monitoredRequestCountChanged}!NetworkAccessManager@{NetworkAccessManager}}
+\doxysubsubsection{\texorpdfstring{monitoredRequestCountChanged}{monitoredRequestCountChanged}}
+{\footnotesize\ttfamily void Network\+Access\+Manager\+::monitored\+Request\+Count\+Changed (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [signal]}}
+
+this signal is emitted when the montiored requests count is changed. \mbox{\Hypertarget{classNetworkAccessManager_a2f6aa2007549f62e23bde4f6805be430}\label{classNetworkAccessManager_a2f6aa2007549f62e23bde4f6805be430}} 
 \index{NetworkAccessManager@{NetworkAccessManager}!networkActivity@{networkActivity}}
 \index{networkActivity@{networkActivity}!NetworkAccessManager@{NetworkAccessManager}}
 \doxysubsubsection{\texorpdfstring{networkActivity}{networkActivity}}
@@ -289,13 +331,25 @@ returns the raw headers pairs that are sent with each standard request. \mbox{\H
 \doxysubsubsection{\texorpdfstring{removeRawHeader()}{removeRawHeader()}}
 {\footnotesize\ttfamily void Network\+Access\+Manager\+::remove\+Raw\+Header (\begin{DoxyParamCaption}\item[{const QByte\+Array \&}]{header\+Name }\end{DoxyParamCaption})}
 
-removes the header sepcified with {\itshape header\+Name} from the raw\+Headers List. \mbox{\Hypertarget{classNetworkAccessManager_a176002c09b4c5c519d7a8d70a7c03de4}\label{classNetworkAccessManager_a176002c09b4c5c519d7a8d70a7c03de4}} 
+removes the header sepcified with {\itshape header\+Name} from the raw\+Headers List. \mbox{\Hypertarget{classNetworkAccessManager_ac1fbdcf816584dbed0d0549232f1207d}\label{classNetworkAccessManager_ac1fbdcf816584dbed0d0549232f1207d}} 
+\index{NetworkAccessManager@{NetworkAccessManager}!removeRequsetAttribute@{removeRequsetAttribute}}
+\index{removeRequsetAttribute@{removeRequsetAttribute}!NetworkAccessManager@{NetworkAccessManager}}
+\doxysubsubsection{\texorpdfstring{removeRequsetAttribute()}{removeRequsetAttribute()}}
+{\footnotesize\ttfamily void Network\+Access\+Manager\+::remove\+Requset\+Attribute (\begin{DoxyParamCaption}\item[{QNetwork\+Request\+::\+Attribute}]{code }\end{DoxyParamCaption})}
+
+removes the attribute associated with the given key code. \mbox{\Hypertarget{classNetworkAccessManager_a176002c09b4c5c519d7a8d70a7c03de4}\label{classNetworkAccessManager_a176002c09b4c5c519d7a8d70a7c03de4}} 
 \index{NetworkAccessManager@{NetworkAccessManager}!routeReply@{routeReply}}
 \index{routeReply@{routeReply}!NetworkAccessManager@{NetworkAccessManager}}
 \doxysubsubsection{\texorpdfstring{routeReply()}{routeReply()}}
 {\footnotesize\ttfamily void Network\+Access\+Manager\+::route\+Reply (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classNetworkResponse}{Network\+Response}} $\ast$}]{res }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}
 
-this is method will be called when a {\itshape \mbox{\hyperlink{classNetworkResponse}{Network\+Response}}} registered with {\itshape Network\+Response\+::subscribe} is finished aka emits ({\itshape \mbox{\hyperlink{classNetworkResponse_aa2ac972473e511260c0030b2c4c1b9fe}{Network\+Response\+::finished}}}) signal. the default implementation calls the route if the response has no errors or the network error is within the ignored errors list. \mbox{\Hypertarget{classNetworkAccessManager_a2005ab4fe53a63401b5c64344e6a85ab}\label{classNetworkAccessManager_a2005ab4fe53a63401b5c64344e6a85ab}} 
+this is method will be called when a {\itshape \mbox{\hyperlink{classNetworkResponse}{Network\+Response}}} registered with {\itshape Network\+Response\+::subscribe} is finished aka emits ({\itshape \mbox{\hyperlink{classNetworkResponse_aa2ac972473e511260c0030b2c4c1b9fe}{Network\+Response\+::finished}}}) signal. the default implementation calls the route if the response has no errors or the network error is within the ignored errors list. \mbox{\Hypertarget{classNetworkAccessManager_aaa42d4fe0ed6131a42aad50aa484d320}\label{classNetworkAccessManager_aaa42d4fe0ed6131a42aad50aa484d320}} 
+\index{NetworkAccessManager@{NetworkAccessManager}!setBaseUrl@{setBaseUrl}}
+\index{setBaseUrl@{setBaseUrl}!NetworkAccessManager@{NetworkAccessManager}}
+\doxysubsubsection{\texorpdfstring{setBaseUrl()}{setBaseUrl()}}
+{\footnotesize\ttfamily void Network\+Access\+Manager\+::set\+Base\+Url (\begin{DoxyParamCaption}\item[{const QUrl \&}]{new\+Base\+Url }\end{DoxyParamCaption})}
+
+sets a base url for \mbox{\hyperlink{classNetworkAccessManager}{Network\+Access\+Manager}}, if base\+Url is not empty it will be resolved with the passed relative url for every request using {\itshape QUrl\+::resolved()} method. please note that passing a non relative url will override the base\+Url. \mbox{\Hypertarget{classNetworkAccessManager_a2005ab4fe53a63401b5c64344e6a85ab}\label{classNetworkAccessManager_a2005ab4fe53a63401b5c64344e6a85ab}} 
 \index{NetworkAccessManager@{NetworkAccessManager}!setIgnoredErrors@{setIgnoredErrors}}
 \index{setIgnoredErrors@{setIgnoredErrors}!NetworkAccessManager@{NetworkAccessManager}}
 \doxysubsubsection{\texorpdfstring{setIgnoredErrors()}{setIgnoredErrors()}}
@@ -307,7 +361,13 @@ sets the list for network errors that will be ignored by {\itshape \mbox{\hyperl
 \doxysubsubsection{\texorpdfstring{setIgnoredSslErrors()}{setIgnoredSslErrors()}}
 {\footnotesize\ttfamily void Network\+Access\+Manager\+::set\+Ignored\+Ssl\+Errors (\begin{DoxyParamCaption}\item[{const QList$<$ QSsl\+Error $>$ \&}]{new\+Ignored\+Ssl\+Errors }\end{DoxyParamCaption})}
 
-sets the list for ssl errors that will be passed to {\itshape QNetwork\+Reply\+::ignore\+Ssl\+Errors()}. \mbox{\Hypertarget{classNetworkAccessManager_ae36bc4c1d58eb7229b7c9cc4d2c66932}\label{classNetworkAccessManager_ae36bc4c1d58eb7229b7c9cc4d2c66932}} 
+sets the list for ssl errors that will be passed to {\itshape QNetwork\+Reply\+::ignore\+Ssl\+Errors()}. \mbox{\Hypertarget{classNetworkAccessManager_a56a3ca1fd829276c4048f7dfad3e4f88}\label{classNetworkAccessManager_a56a3ca1fd829276c4048f7dfad3e4f88}} 
+\index{NetworkAccessManager@{NetworkAccessManager}!setMonitoredRequestCount@{setMonitoredRequestCount}}
+\index{setMonitoredRequestCount@{setMonitoredRequestCount}!NetworkAccessManager@{NetworkAccessManager}}
+\doxysubsubsection{\texorpdfstring{setMonitoredRequestCount()}{setMonitoredRequestCount()}}
+{\footnotesize\ttfamily void Network\+Access\+Manager\+::set\+Monitored\+Request\+Count (\begin{DoxyParamCaption}\item[{int}]{new\+Monitored\+Request\+Count }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+sets the monitored requests count, this method is for internal use only. \mbox{\Hypertarget{classNetworkAccessManager_ae36bc4c1d58eb7229b7c9cc4d2c66932}\label{classNetworkAccessManager_ae36bc4c1d58eb7229b7c9cc4d2c66932}} 
 \index{NetworkAccessManager@{NetworkAccessManager}!setProxyAuthenticationCredentials@{setProxyAuthenticationCredentials}}
 \index{setProxyAuthenticationCredentials@{setProxyAuthenticationCredentials}!NetworkAccessManager@{NetworkAccessManager}}
 \doxysubsubsection{\texorpdfstring{setProxyAuthenticationCredentials()}{setProxyAuthenticationCredentials()}}
@@ -319,7 +379,13 @@ sets the credentials that will be used for proxy authentication. \mbox{\Hypertar
 \doxysubsubsection{\texorpdfstring{setRawHeader()}{setRawHeader()}}
 {\footnotesize\ttfamily void Network\+Access\+Manager\+::set\+Raw\+Header (\begin{DoxyParamCaption}\item[{const QByte\+Array \&}]{header\+Name,  }\item[{const QByte\+Array \&}]{header\+Value }\end{DoxyParamCaption})}
 
-adds a raw header that will be sent with each standard request 
+adds a raw header that will be sent with each standard request \mbox{\Hypertarget{classNetworkAccessManager_a4fe7a21f7a78bb0c16c141fe7fecfaab}\label{classNetworkAccessManager_a4fe7a21f7a78bb0c16c141fe7fecfaab}} 
+\index{NetworkAccessManager@{NetworkAccessManager}!setRequestAttribute@{setRequestAttribute}}
+\index{setRequestAttribute@{setRequestAttribute}!NetworkAccessManager@{NetworkAccessManager}}
+\doxysubsubsection{\texorpdfstring{setRequestAttribute()}{setRequestAttribute()}}
+{\footnotesize\ttfamily void Network\+Access\+Manager\+::set\+Request\+Attribute (\begin{DoxyParamCaption}\item[{QNetwork\+Request\+::\+Attribute}]{code,  }\item[{const QVariant \&}]{value }\end{DoxyParamCaption})}
+
+set a request attribute on the manager\textquotesingle{}s level. 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 
