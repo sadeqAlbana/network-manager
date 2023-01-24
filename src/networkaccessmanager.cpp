@@ -533,7 +533,11 @@ void NetworkAccessManager::onProxyAuthenticationRequired(const QNetworkProxy &pr
 void NetworkAccessManager::routeReply(NetworkResponse *response)
 {
     //we use the QNetworkReply::NoError just in case someone fucks up the original list
-    if(m_ignoredErrors.contains(response->error()) || response->error()==QNetworkReply::NoError){
+
+    QNetworkRequest request=response->networkReply()->request();
+    bool override=request.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::OverrideErrorHandling)).toBool();
+
+    if(m_ignoredErrors.contains(response->error()) || response->error()==QNetworkReply::NoError || override){
         this->route(response);
     }
     else{

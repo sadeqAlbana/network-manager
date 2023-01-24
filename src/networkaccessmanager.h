@@ -23,7 +23,8 @@ public:
     enum RequstAttribute{
       IdAttribute                = 1001, /**< a unique identifier for each request. */
       MonitorProgressAttribute   = 1002,  /**< if set to true, the download \a progress() signal is emitted each time a chunck of data is received. */
-      NotifyActivity             = 1003
+      NotifyActivity             = 1003,
+      OverrideErrorHandling      = 1004  /**< if set to true, the NetworkResponse will be routed to it's callback regardless of the rror */
     };
 
 
