@@ -249,7 +249,7 @@ QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url, cons
     QUrl requestUrl= m_baseUrl.isEmpty()? url  : url.isRelative()? m_baseUrl.resolved(url) : url;
 
     request.setUrl(requestUrl);
-
+    request.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::AttemptsCount),m_attemptsCount);
     if(!data.isNull()){
         QByteArray contentType=DataSerialization::contentType(static_cast<QMetaType::Type>(data.typeId()));
         if(!contentType.isEmpty()){
@@ -589,6 +589,16 @@ void NetworkAccessManager::setMonitoredRequestCount(int newMonitoredRequestCount
         return;
     m_monitoredRequestCount = newMonitoredRequestCount;
     emit monitoredRequestCountChanged();
+}
+
+int NetworkAccessManager::attemptsCount() const
+{
+    return m_attemptsCount;
+}
+
+void NetworkAccessManager::setAttemptsCount(int newAttemptsCount)
+{
+    m_attemptsCount = newAttemptsCount;
 }
 
 /*!

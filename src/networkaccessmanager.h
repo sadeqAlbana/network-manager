@@ -24,7 +24,9 @@ public:
       IdAttribute                = 1001, /**< a unique identifier for each request. */
       MonitorProgressAttribute   = 1002,  /**< if set to true, the download \a progress() signal is emitted each time a chunck of data is received. */
       NotifyActivity             = 1003,
-      OverrideErrorHandling      = 1004  /**< if set to true, the NetworkResponse will be routed to it's callback regardless of the rror */
+      OverrideErrorHandling      = 1004, /**< if set to true, the NetworkResponse will be routed to it's callback regardless of the rror */
+      AttemptsCount              = 1005  /**< if not set, it will be ignored and default count will be the same as attemptsCount() */
+
     };
 
 
@@ -94,6 +96,9 @@ public:
 
 
 
+    int attemptsCount() const;
+    void setAttemptsCount(int newAttemptsCount);
+
 signals:
     /*!
         \fn void NetworkAccessManager::networkActivity(QUrl url)
@@ -148,6 +153,7 @@ protected:
     QList<QSslError> m_ignoredSslErrors={QSslError(QSslError::NoError)};
     int m_monitoredRequestCount=0;
     QMap<QNetworkRequest::Attribute,QVariant> m_defaultRequestAttributes;
+    int m_attemptsCount=1;
 private:
     Q_PROPERTY(int monitoredRequestCount READ monitoredRequestCount NOTIFY monitoredRequestCountChanged)
 };
