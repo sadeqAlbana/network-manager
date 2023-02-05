@@ -25,7 +25,9 @@ public:
       MonitorProgressAttribute   = 1002,  /**< if set to true, the download \a progress() signal is emitted each time a chunck of data is received. */
       NotifyActivity             = 1003,
       OverrideErrorHandling      = 1004, /**< if set to true, the NetworkResponse will be routed to it's callback regardless of the rror */
-      AttemptsCount              = 1005  /**< if not set, it will be ignored and default count will be the same as attemptsCount() */
+      AttemptsCount              = 1005,  /**< if not set, it will be ignored and default count will be the same as attemptsCount() */
+      ActualAttempts              = 1005  /**< internal ! represents the actual attemptsCount */
+
 
     };
 

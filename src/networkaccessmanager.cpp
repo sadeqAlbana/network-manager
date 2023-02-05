@@ -250,6 +250,8 @@ QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url, cons
 
     request.setUrl(requestUrl);
     request.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::AttemptsCount),m_attemptsCount);
+    request.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::ActualAttempts),m_attemptsCount);
+
     if(!data.isNull()){
         QByteArray contentType=DataSerialization::contentType(static_cast<QMetaType::Type>(data.typeId()));
         if(!contentType.isEmpty()){
@@ -323,12 +325,23 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
         if(!m_ignoredErrors.contains(error)){
             emit networkError(res);
         }
-        //        if(res->networkReply()->request().attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::NotifyActivity)).toBool()){
-        //            setMonitoredRequestCount(m_monitoredRequestCount-1);
-        //        }
     });
 
     connect(reply,&QNetworkReply::finished,this,[this,res](){
+
+        QNetworkReply::NetworkError error=res->error();
+        QNetworkRequest originalReq=res->networkReply()->request();
+        int attemptsCount=originalReq.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::AttemptsCount)).toInt();
+        int actualAttempts=originalReq.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::ActualAttempts)).toInt();
+
+        if(!m_ignoredErrors.contains(error) && error!=QNetworkReply::NoError){
+            //do another attempt
+
+            if(actualAttempts<attemptsCount){
+                originalReq.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::AttemptsCount),++actualAttempts);
+            }
+        }
+
         if(res->networkReply()->request().attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::NotifyActivity)).toBool()){
             setMonitoredRequestCount(m_monitoredRequestCount-1);
         }
