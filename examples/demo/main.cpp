@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
 
     NetworkAccessManager manager;
     manager.setAttemptsCount(10);
+    manager.setTransferTimeout(3000);
 
 
 //    //callback to lambdas and regular functions
@@ -18,11 +19,11 @@ int main(int argc, char *argv[])
         qDebug()<<res->json();
     });
 
-    QObject::connect(&manager,&NetworkAccessManager::networkError,[=](NetworkResponse *res){
+//    QObject::connect(&manager,&NetworkAccessManager::networkError,[=](NetworkResponse *res){
 
 
-        qDebug()<<res->error();
-    });
+//        qDebug()<<res->error();
+//    });
 
 
     TestClass testClass = TestClass();
@@ -43,5 +44,7 @@ int main(int argc, char *argv[])
 
 //    manager.post("url",QByteArray("some text"),"text/raw");
 
+
+    qDebug()<<"test end";
     return a.exec();
 }

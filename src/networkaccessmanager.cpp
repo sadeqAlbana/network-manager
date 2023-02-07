@@ -250,7 +250,7 @@ QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url, cons
 
     request.setUrl(requestUrl);
     request.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::AttemptsCount),m_attemptsCount);
-    request.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::ActualAttempts),m_attemptsCount);
+    request.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::ActualAttempts),1);
 
     if(!data.isNull()){
         QByteArray contentType=DataSerialization::contentType(static_cast<QMetaType::Type>(data.typeId()));
@@ -334,8 +334,9 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
 //        }
 //    });
 
-    connect(reply,&QNetworkReply::finished,this,[this,res](){
+    connect(res,&NetworkResponse::finished,this,[this](){
 
+        NetworkResponse *res=qobject_cast<NetworkResponse *>(sender());
         QNetworkReply::NetworkError error=res->error();
         QNetworkRequest originalReq=res->networkReply()->request();
 
