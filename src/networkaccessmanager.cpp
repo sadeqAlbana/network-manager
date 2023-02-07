@@ -340,6 +340,7 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
 //        NetworkResponse *res=qobject_cast<NetworkResponse *>(sender());
         QNetworkReply::NetworkError error=res->error();
         QNetworkRequest originalRequest=res->networkReply()->request();
+        qDebug()<<"finished !";
 
 
         if(!m_ignoredErrors.contains(error) && error!=QNetworkReply::NoError){
@@ -354,8 +355,6 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
                 qDebug()<<"attempting one more time...";
                 originalRequest.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::ActualAttempts),++actualAttempts);
                 QNetworkReply *oldReply=res->networkReply();
-               // QNetworkReply *newAttemptReply=res->m_reply;
-                //res->swap(newAttemptReply);
                 createNewRequest(res->operation(),originalRequest,nullptr,res);
                 oldReply->disconnect();
                 oldReply->deleteLater();
