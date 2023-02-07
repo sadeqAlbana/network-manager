@@ -134,14 +134,14 @@ signals:
 protected:
     QNetworkReply *createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr) override;
 
-    virtual NetworkResponse *createNewRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr);
+    virtual NetworkResponse *createNewRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr, NetworkResponse *originalResponse=nullptr);
     NetworkResponse *createNewRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, const QByteArray &data); ;
 
     virtual void onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
     virtual void routeReply(NetworkResponse *response);
 
     void setMonitoredRequestCount(int newMonitoredRequestCount);
-
+    QList<QNetworkAccessManager::Operation> supportedRerequestOperations() const;
 
 protected:
     QList<NetworkResponse *> m_responses; /**< stores a list of the current responses */

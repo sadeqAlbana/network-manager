@@ -64,7 +64,7 @@ public:
 
 }
 
-    void replace(QNetworkReply *newReply);
+    void swap(QNetworkReply *newReply);
 
 signals:
     /*!

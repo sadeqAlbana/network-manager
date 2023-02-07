@@ -350,4 +350,14 @@ NetworkResponse * NetworkResponse::subcribe(std::function<void (NetworkResponse 
     return this;
 }
 
+void NetworkResponse::swap(QNetworkReply *newReply)
+{
+    if(!newReply)
+        return;
+    m_reply->disconnect();
+    m_reply=newReply;
+
+    QObject::connect(m_reply,&QNetworkReply::finished,this,&NetworkResponse::onReplyFinished);
+}
+
 

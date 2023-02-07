@@ -296,11 +296,18 @@ QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url, cons
     the default implementation calls \a NetworkAccessManager::createRequest internally
 */
 
-NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData)
+NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData, NetworkResponse *originalResponse)
 {
     QNetworkReply *reply=createRequest(op,originalReq,outgoingData);
-    NetworkResponse *res=new NetworkResponse(reply,this);
-    m_responses << res;
+    NetworkResponse *res;
+    if(originalResponse){
+        res=originalResponse;
+    }
+    else{
+        res=new NetworkResponse(reply,this);
+       m_responses << res;
+    }
+
 
 
 
@@ -337,8 +344,15 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
         if(!m_ignoredErrors.contains(error) && error!=QNetworkReply::NoError){
             //do another attempt
 
-            if(actualAttempts<attemptsCount){
+            if(actualAttempts<attemptsCount && supportedRerequestOperations().contains(res->operation())){
                 originalReq.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::AttemptsCount),++actualAttempts);
+
+                QNetworkReply *reply=res->m_reply;
+                reply->disconnect();
+                reply->deleteLater();
+                m_replies.removeOne(res->networkReply());
+                createNewRequest(res->operation(),originalReq,nullptr,res);
+
             }
         }
 
@@ -602,6 +616,14 @@ void NetworkAccessManager::setMonitoredRequestCount(int newMonitoredRequestCount
         return;
     m_monitoredRequestCount = newMonitoredRequestCount;
     emit monitoredRequestCountChanged();
+}
+
+QList<QNetworkAccessManager::Operation> NetworkAccessManager::supportedRerequestOperations() const
+{
+    return QList<QNetworkAccessManager::Operation>{
+                QNetworkAccessManager::GetOperation,
+                QNetworkAccessManager::DeleteOperation,
+                QNetworkAccessManager::HeadOperation};
 }
 
 int NetworkAccessManager::attemptsCount() const
