@@ -328,29 +328,35 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
         });
     }
 
-    connect(reply,&QNetworkReply::errorOccurred,this,[this,res](QNetworkReply::NetworkError error){
-        if(!m_ignoredErrors.contains(error)){
-            emit networkError(res);
-        }
-    });
+//    connect(reply,&QNetworkReply::errorOccurred,this,[this,res](QNetworkReply::NetworkError error){
+//        if(!m_ignoredErrors.contains(error)){
+//            emit networkError(res);
+//        }
+//    });
 
     connect(reply,&QNetworkReply::finished,this,[this,res](){
 
         QNetworkReply::NetworkError error=res->error();
         QNetworkRequest originalReq=res->networkReply()->request();
-        int attemptsCount=originalReq.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::AttemptsCount)).toInt();
-        int actualAttempts=originalReq.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::ActualAttempts)).toInt();
+
 
         if(!m_ignoredErrors.contains(error) && error!=QNetworkReply::NoError){
             //do another attempt
-
+            qDebug()<<"error !";
+            int attemptsCount=originalReq.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::AttemptsCount)).toInt();
+            int actualAttempts=originalReq.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::ActualAttempts)).toInt();
+            qDebug()<<"actual attempts: "<<actualAttempts;
+            qDebug()<<"attempts count:"<<attemptsCount;
             if(actualAttempts<attemptsCount && supportedRerequestOperations().contains(res->operation())){
-                originalReq.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::AttemptsCount),++actualAttempts);
 
-                QNetworkReply *reply=res->m_reply;
-                reply->disconnect();
-                reply->deleteLater();
-                m_replies.removeOne(res->networkReply());
+                qDebug()<<"attempting one more time...";
+                originalReq.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::AttemptsCount),++actualAttempts);
+                QNetworkReply *oldReply=res->networkReply();
+                QNetworkReply *newAttemptReply=res->m_reply;
+                res->swap(newAttemptReply);
+                oldReply->disconnect();
+                oldReply->deleteLater();
+                m_replies.removeOne(oldReply);
                 createNewRequest(res->operation(),originalReq,nullptr,res);
 
             }

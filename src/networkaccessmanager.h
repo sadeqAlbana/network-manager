@@ -26,7 +26,7 @@ public:
       NotifyActivity             = 1003,
       OverrideErrorHandling      = 1004, /**< if set to true, the NetworkResponse will be routed to it's callback regardless of the rror */
       AttemptsCount              = 1005,  /**< if not set, it will be ignored and default count will be the same as attemptsCount() */
-      ActualAttempts              = 1005  /**< internal ! represents the actual attemptsCount */
+      ActualAttempts              = 1006  /**< internal ! represents the actual attemptsCount */
 
 
     };
