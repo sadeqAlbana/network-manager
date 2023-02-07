@@ -134,7 +134,7 @@ signals:
 protected:
     QNetworkReply *createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr) override;
 
-    virtual NetworkResponse *createNewRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData = nullptr, NetworkResponse *originalResponse=nullptr);
+    virtual NetworkResponse *createNewRequest(QNetworkAccessManager::Operation op, const QNetworkRequest originalReq, QIODevice *outgoingData = nullptr, NetworkResponse *originalResponse=nullptr);
     NetworkResponse *createNewRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &originalReq, const QByteArray &data); ;
 
     virtual void onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);

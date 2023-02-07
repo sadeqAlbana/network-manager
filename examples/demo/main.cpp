@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 
     NetworkAccessManager manager;
     manager.setAttemptsCount(10);
-    manager.setTransferTimeout(3000);
+    manager.setTransferTimeout(1000);
 
 
 //    //callback to lambdas and regular functions
