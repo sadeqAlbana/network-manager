@@ -296,11 +296,12 @@ QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url, cons
     the default implementation calls \a NetworkAccessManager::createRequest internally
 */
 
-NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNetworkRequest originalReq, QIODevice *outgoingData, NetworkResponse *originalResponse)
+NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData, NetworkResponse *originalResponse)
 {
     QNetworkReply *reply=createRequest(op,originalReq,outgoingData);
     NetworkResponse *res;
     if(originalResponse){
+        originalResponse->disconnect();
         res=originalResponse;
         res->swap(reply);
     }
@@ -335,21 +336,21 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
 //        }
 //    });
 
-    connect(reply,&QNetworkReply::finished,this,[this,res](){
+    connect(res,&NetworkResponse::finished,this,[this,res](){
 
 //        NetworkResponse *res=qobject_cast<NetworkResponse *>(sender());
         QNetworkReply::NetworkError error=res->error();
         QNetworkRequest originalRequest=res->networkReply()->request();
         qDebug()<<"finished !";
+        qDebug()<<res->error();
 
 
-        if(!m_ignoredErrors.contains(error) && error!=QNetworkReply::NoError){
+        if(error!=QNetworkReply::NoError && !m_ignoredErrors.contains(error)){
             //do another attempt
-            qDebug()<<"error !";
             int attemptsCount=originalRequest.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::AttemptsCount)).toInt();
             int actualAttempts=originalRequest.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::ActualAttempts)).toInt();
             qDebug()<<"actual attempts: "<<actualAttempts;
-            qDebug()<<"attempts count:"<<attemptsCount;
+//            qDebug()<<"attempts count:"<<attemptsCount;
             if(actualAttempts<attemptsCount && supportedRerequestOperations().contains(res->operation())){
 
                 qDebug()<<"attempting one more time...";
@@ -360,6 +361,12 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
                 oldReply->deleteLater();
                 m_replies.removeOne(oldReply);
 
+            }
+        }
+        else{
+            if(this->callbacks.contains(res)){
+                routeReply(res);
+                //res->deleteLater();
             }
         }
 
@@ -577,7 +584,9 @@ void NetworkAccessManager::routeReply(NetworkResponse *response)
     else{
         emit networkError(response);
     }
-    response->deleteLater();
+
+    //only delete the response if it has reached it's attempted count !
+    //response->deleteLater();
 }
 
 /*!
@@ -630,8 +639,10 @@ QList<QNetworkAccessManager::Operation> NetworkAccessManager::supportedRerequest
     return QList<QNetworkAccessManager::Operation>{
                 QNetworkAccessManager::GetOperation,
                 QNetworkAccessManager::DeleteOperation,
-                QNetworkAccessManager::HeadOperation};
+                        QNetworkAccessManager::HeadOperation};
 }
+
+
 
 int NetworkAccessManager::attemptsCount() const
 {

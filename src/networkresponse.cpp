@@ -335,17 +335,16 @@ QDebug operator <<(QDebug dbg, const NetworkResponse *res)
 }
 
 /*!
-    \fn NetworkResponse * NetworkResponse::subcribe(std::function<void (NetworkResponse *)> cb)
+    \fn NetworkResponse * NetworkResponse::subscribe(std::function<void (NetworkResponse *)> cb)
     routes the \a NetworkResponse object to  parameter cb when finished.
 */
 
-NetworkResponse * NetworkResponse::subcribe(std::function<void (NetworkResponse *)> cb)
+NetworkResponse * NetworkResponse::subscribe(std::function<void (NetworkResponse *)> cb)
 {
 
     NetworkAccessManager *manager = qobject_cast<NetworkAccessManager *>(parent());
     if(manager){
         manager->registerRoute(this,cb);
-        connect(this,&NetworkResponse::finished,manager,[this,manager](){manager->routeReply(this);});
     }
     return this;
 }

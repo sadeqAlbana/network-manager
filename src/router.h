@@ -36,7 +36,7 @@ public:
     }
 
 
-private:
+protected:
     MemberCallbacks callbacks;
 };
 

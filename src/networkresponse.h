@@ -50,17 +50,17 @@ public:
 
     operator bool() const;
 
-    NetworkResponse * subcribe(std::function<void(NetworkResponse *)> cb);
+    NetworkResponse * subscribe(std::function<void(NetworkResponse *)> cb);
 
     /*!
-        \fn template <class T> NetworkResponse * subcribe(T *instance,void(T::*cb) (NetworkResponse *))
+        \fn template <class T> NetworkResponse * subscribe(T *instance,void(T::*cb) (NetworkResponse *))
         this is an overloaded method, it takes an instance of T and a member function pointer to be called later.
     */
 
     template <class T>
-    NetworkResponse * subcribe(T *instance,void(T::*cb) (NetworkResponse *))
+    NetworkResponse * subscribe(T *instance,void(T::*cb) (NetworkResponse *))
 {
-        return this->subcribe(std::bind(cb,instance,std::placeholders::_1));
+        return this->subscribe(std::bind(cb,instance,std::placeholders::_1));
 
 }
 

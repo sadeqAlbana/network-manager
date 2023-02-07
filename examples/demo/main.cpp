@@ -14,9 +14,10 @@ int main(int argc, char *argv[])
 
 
 //    //callback to lambdas and regular functions
-    manager.get(QUrl("https://reqares.in/api/users?page=1"))->subcribe([](NetworkResponse *res)
+    manager.get(QUrl("https://reqares.in/api/users?page=1"))->subscribe([](NetworkResponse *res)
     {
-        qDebug()<<res->json();
+        qDebug()<<"routed";
+        //qDebug()<<res->json();
     });
 
 //    QObject::connect(&manager,&NetworkAccessManager::networkError,[=](NetworkResponse *res){
@@ -29,7 +30,7 @@ int main(int argc, char *argv[])
     TestClass testClass = TestClass();
 
 //    //callbacks to member functions of any class type
-    //manager.get(QUrl("https://reqres.in/api/users?page=1"))->subcribe(&testClass,&TestClass::processData);
+    //manager.get(QUrl("https://reqres.in/api/users?page=1"))->subscribe(&testClass,&TestClass::processData);
 
 //    //synchronus call
 //    NetworkResponse *res=manager.get(QUrl("https://reqres.in/api/users?page=1"));
