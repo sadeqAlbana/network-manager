@@ -13,8 +13,11 @@ int main(int argc, char *argv[])
     manager.setTransferTimeout(1000);
 
 
+    QNetworkRequest request=manager.createNetworkRequest(QUrl("https://reqares.in/api/users?page=1"));
+    request.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::OverrideErrorHandling),true);
+
 //    //callback to lambdas and regular functions
-    manager.get(QUrl("https://reqares.in/api/users?page=1"))->subscribe([](NetworkResponse *res)
+    manager.get(request)->subscribe([](NetworkResponse *res)
     {
         qDebug()<<"routed";
         //qDebug()<<res->json();

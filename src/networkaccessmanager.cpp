@@ -345,6 +345,13 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
         qDebug()<<res->error();
 
 
+
+//find a logic for routing reply with override routing policy
+//        if(this->callbacks.contains(res)){
+//            routeReply(res);
+//            //res->deleteLater();
+//        }
+
         if(error!=QNetworkReply::NoError && !m_ignoredErrors.contains(error)){
             //do another attempt
             int attemptsCount=originalRequest.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::AttemptsCount)).toInt();
@@ -360,6 +367,8 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
                 oldReply->disconnect();
                 oldReply->deleteLater();
                 m_replies.removeOne(oldReply);
+
+
 
             }
         }
