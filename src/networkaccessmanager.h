@@ -143,6 +143,7 @@ protected:
     void setMonitoredRequestCount(int newMonitoredRequestCount);
     QList<QNetworkAccessManager::Operation> supportedRerequestOperations() const;
 
+
 protected:
     QList<NetworkResponse *> m_responses; /**< stores a list of the current responses */
     QList<QNetworkReply *> m_replies; /**< stores a list of the current replies */

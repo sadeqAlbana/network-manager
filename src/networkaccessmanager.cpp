@@ -341,41 +341,41 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
 //        NetworkResponse *res=qobject_cast<NetworkResponse *>(sender());
         QNetworkReply::NetworkError error=res->error();
         QNetworkRequest originalRequest=res->networkReply()->request();
-        qDebug()<<"finished !";
         qDebug()<<res->error();
 
 
 
-//find a logic for routing reply with override routing policy
-//        if(this->callbacks.contains(res)){
-//            routeReply(res);
-//            //res->deleteLater();
-//        }
+
+        int attemptsCount=originalRequest.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::AttemptsCount)).toInt();
+        int actualAttempts=originalRequest.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::ActualAttempts)).toInt();
+
+        //find a logic for routing reply with override routing policy
+
 
         if(error!=QNetworkReply::NoError && !m_ignoredErrors.contains(error)){
             //do another attempt
-            int attemptsCount=originalRequest.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::AttemptsCount)).toInt();
-            int actualAttempts=originalRequest.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::ActualAttempts)).toInt();
-            qDebug()<<"actual attempts: "<<actualAttempts;
+
 //            qDebug()<<"attempts count:"<<attemptsCount;
             if(actualAttempts<attemptsCount && supportedRerequestOperations().contains(res->operation())){
-
-                qDebug()<<"attempting one more time...";
                 originalRequest.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::ActualAttempts),++actualAttempts);
                 QNetworkReply *oldReply=res->networkReply();
                 createNewRequest(res->operation(),originalRequest,nullptr,res);
                 oldReply->disconnect();
                 oldReply->deleteLater();
                 m_replies.removeOne(oldReply);
+            }else{
 
 
-
+                if(this->callbacks.contains(res)){
+                    routeReply(res);
+                    res->deleteLater();
+                }
             }
         }
         else{
             if(this->callbacks.contains(res)){
                 routeReply(res);
-                //res->deleteLater();
+                res->deleteLater();
             }
         }
 
@@ -650,6 +650,8 @@ QList<QNetworkAccessManager::Operation> NetworkAccessManager::supportedRerequest
                 QNetworkAccessManager::DeleteOperation,
                         QNetworkAccessManager::HeadOperation};
 }
+
+
 
 
 
