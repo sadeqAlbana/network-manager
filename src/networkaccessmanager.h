@@ -5,6 +5,7 @@
 #include <QNetworkReply>
 #include <QMap>
 #include "router.h"
+#include "networkresponse.h"
 namespace DataSerialization {
     QByteArray serialize(const QVariant &data);
     QByteArray contentType(const QMetaType::Type type);
@@ -13,7 +14,6 @@ namespace DataSerialization {
 
 using HeadersMap= QMap<QByteArray,QByteArray>;
 
-class NetworkResponse;
 class NetworkAccessManager : public QNetworkAccessManager, protected SNetworkManager::Router
 {
     Q_OBJECT
@@ -35,32 +35,32 @@ public:
     explicit NetworkAccessManager(QObject *parent = nullptr);
 
 
-    NetworkResponse *head(const QUrl &url);
+    Q_INVOKABLE NetworkResponse *head(const QUrl &url);
 
 
     NetworkResponse *head(const QNetworkRequest &request);
 
 
-    NetworkResponse *get(const QUrl &url);
+    Q_INVOKABLE NetworkResponse *get(const QUrl &url);
 
 
     NetworkResponse *get(const QNetworkRequest &request);
 
 
-    NetworkResponse *deleteResource(const QUrl &url);
+    Q_INVOKABLE NetworkResponse *deleteResource(const QUrl &url);
 
 
     NetworkResponse *deleteResource(const QNetworkRequest &request);
 
 
 
-    NetworkResponse *post(const QUrl &url, const QVariant &data);
+    Q_INVOKABLE NetworkResponse *post(const QUrl &url, const QVariant &data);
 
 
     NetworkResponse *post(const QNetworkRequest &request, const QVariant &data);
 
 
-    NetworkResponse *put(const QUrl &url, const QVariant &data);
+    Q_INVOKABLE NetworkResponse *put(const QUrl &url, const QVariant &data);
 
 
     NetworkResponse *put(const QNetworkRequest &request, const QVariant &data);

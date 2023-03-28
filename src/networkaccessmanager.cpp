@@ -341,7 +341,7 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
 //        NetworkResponse *res=qobject_cast<NetworkResponse *>(sender());
         QNetworkReply::NetworkError error=res->error();
         QNetworkRequest originalRequest=res->networkReply()->request();
-        qDebug()<<res->error();
+//        qDebug()<<res->error();
 
 
 
