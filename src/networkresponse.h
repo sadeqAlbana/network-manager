@@ -38,7 +38,7 @@ public:
     ~NetworkResponse();
     QNetworkReply::NetworkError error() const;
     QString errorString() const;
-    QJsonValue json(QString key);
+    SNETWORKMANAGER_INVOKABLE QJsonValue json(QString key);
     SNETWORKMANAGER_INVOKABLE QJsonValue json();
     QByteArray binaryData() const;
     SNETWORKMANAGER_INVOKABLE QVariant data() const;
