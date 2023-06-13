@@ -9,46 +9,67 @@
 #define NETWORKRESPONSE_H
 
 #include <QNetworkReply>
+
+#ifdef QT_QML_LIB
+#include <QQmlEngine>
+#include <QJSValue>
+#include <QJsonObject>
+#include <QVariant>
+#include <QJsonArray>
+#include <QJsonValue>
+#define SNETWORKMANAGER_INVOKABLE Q_INVOKABLE
+#else
+#define SNETWORKMANAGER_INVOKABLE
+#endif
+
+
 class QDebug;
 class QImage;
 
 class NetworkResponse : public QObject
 {
     Q_OBJECT
-
+#ifdef QT_QML_LIB
+    QML_ANONYMOUS
+#endif
     NetworkResponse(QNetworkReply *reply, QObject *parent=nullptr);
 public:
     friend class NetworkAccessManager;
     ~NetworkResponse();
     QNetworkReply::NetworkError error() const;
     QString errorString() const;
-    QJsonValue json(QString key);
-    QJsonValue json();
+    SNETWORKMANAGER_INVOKABLE QJsonValue json(QString key);
+    SNETWORKMANAGER_INVOKABLE QJsonValue json();
     QByteArray binaryData() const;
-    QVariant data() const;
+    SNETWORKMANAGER_INVOKABLE QVariant data() const;
 
-    bool isJson();
-    bool isImage();
-    bool isText();
-    QString contentTypeHeader() const;
-    QUrl url() const;
-    QNetworkAccessManager::Operation operation() const;
+    SNETWORKMANAGER_INVOKABLE bool isJson();
+    SNETWORKMANAGER_INVOKABLE bool isImage();
+    SNETWORKMANAGER_INVOKABLE bool isText();
+    SNETWORKMANAGER_INVOKABLE QString contentTypeHeader() const;
+    SNETWORKMANAGER_INVOKABLE QUrl url() const;
+    SNETWORKMANAGER_INVOKABLE QNetworkAccessManager::Operation operation() const;
     QByteArray rawHeader(const QByteArray &headerName) const;
-    QVariant attribute(QNetworkRequest::Attribute code) const;
-    int status() const;
+    SNETWORKMANAGER_INVOKABLE QVariant attribute(QNetworkRequest::Attribute code) const;
+    SNETWORKMANAGER_INVOKABLE int status() const;
     QNetworkReply *networkReply() const;
     friend QDebug operator <<(QDebug dbg, const NetworkResponse &res);
-    const QJsonObject jsonObject() const;
-    const QJsonArray jsonArray() const;
+    SNETWORKMANAGER_INVOKABLE const QJsonObject jsonObject() const;
+    SNETWORKMANAGER_INVOKABLE const QJsonArray jsonArray() const;
+
 
     //this method lacks the way to know attempts count !
-    void waitForFinished();
+    SNETWORKMANAGER_INVOKABLE void waitForFinished();
     //use union to avoid conversion at request?
 #ifdef QT_HAVE_GUI
     QImage image() const;
 #endif
 
     operator bool() const;
+
+#ifdef QT_QML_LIB
+    Q_INVOKABLE void subscribe(QJSValue cb);
+#endif
 
     NetworkResponse * subscribe(std::function<void(NetworkResponse *)> cb);
 

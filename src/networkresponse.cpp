@@ -350,6 +350,19 @@ NetworkResponse * NetworkResponse::subscribe(std::function<void (NetworkResponse
     return this;
 }
 
+#ifdef QT_QML_LIB
+void NetworkResponse::subscribe(QJSValue cb)
+{
+    if(cb.isCallable()){
+        this->subscribe([cb](NetworkResponse *res){
+            QJSValueList args{qjsEngine(res)->newQObject(res)};
+             cb.call(args);
+
+        });
+    }
+}
+#endif
+
 void NetworkResponse::swap(QNetworkReply *newReply)
 {
     if(!newReply)
