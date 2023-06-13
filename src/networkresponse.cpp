@@ -32,7 +32,8 @@ NetworkResponse::NetworkResponse(QNetworkReply *reply, QObject *parent): QObject
 
 NetworkResponse::~NetworkResponse()
 {
-    m_reply->deleteLater();
+    if(m_reply)
+        m_reply->deleteLater();
 }
 
 /*!
