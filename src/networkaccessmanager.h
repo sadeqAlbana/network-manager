@@ -6,6 +6,7 @@
 #include <QMap>
 #include "router.h"
 #include "networkresponse.h"
+#include <QSslError>
 namespace DataSerialization {
     QByteArray serialize(const QVariant &data);
     QByteArray contentType(const QMetaType::Type type);
@@ -81,10 +82,10 @@ public:
 
     const QPair<QString, QString> &proxyAuthenticationCredentials() const;
     void setProxyAuthenticationCredentials(const QPair<QString, QString> &newProxyAuthenticationCredentials);
-
+#ifndef QT_NO_SSL
     QList<QSslError> ignoredSslErrors() const;
     void setIgnoredSslErrors(const QList<QSslError> &newIgnoredSslErrors);
-
+#endif
     QList<QNetworkReply::NetworkError> ignoredErrors() const;
     void setIgnoredErrors(const QList<QNetworkReply::NetworkError> &newIgnoredErrors);
 
@@ -153,7 +154,9 @@ protected:
     QPair<QString,QString> m_proxyAuthenticationCredentials;
 
     QList<QNetworkReply::NetworkError> m_ignoredErrors;
+#ifndef QT_NO_SSL
     QList<QSslError> m_ignoredSslErrors={QSslError(QSslError::NoError)};
+#endif
     int m_monitoredRequestCount=0;
     QMap<QNetworkRequest::Attribute,QVariant> m_defaultRequestAttributes;
     int m_attemptsCount=1;

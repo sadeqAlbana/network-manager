@@ -27,9 +27,10 @@ NetworkAccessManager::NetworkAccessManager(QObject *parent)
     : QNetworkAccessManager{parent},m_ignoredErrors{
                                         QNetworkReply::ContentOperationNotPermittedError,
                                         QNetworkReply::ContentNotFoundError,
-                                        QNetworkReply::NoError
-                                        },
-      m_ignoredSslErrors{QSslError(QSslError::SelfSignedCertificate),QSslError(QSslError::SelfSignedCertificateInChain)}
+                                        QNetworkReply::NoError}
+#ifndef QT_NO_SSL
+    ,m_ignoredSslErrors{QSslError(QSslError::SelfSignedCertificate),QSslError(QSslError::SelfSignedCertificateInChain)}
+#endif
 {
 
 }
@@ -714,23 +715,25 @@ void NetworkAccessManager::setIgnoredErrors(const QList<QNetworkReply::NetworkEr
     returns a list of the ssl errors that are passed to \a QNetworkReply::ignoreSslErrors().
 */
 
+#ifndef QT_NO_SSL
 
 QList<QSslError> NetworkAccessManager::ignoredSslErrors() const
 {
     return m_ignoredSslErrors;
 }
-
+#endif
 /*!
     \fn void NetworkAccessManager::setIgnoredSslErrors(const QList<QSslError> &newIgnoredSslErrors)
 
     sets the list for ssl errors that will be passed to \a QNetworkReply::ignoreSslErrors().
 */
 
+#ifndef QT_NO_SSL
 void NetworkAccessManager::setIgnoredSslErrors(const QList<QSslError> &newIgnoredSslErrors)
 {
     m_ignoredSslErrors = newIgnoredSslErrors;
 }
-
+#endif
 /*!
     \fn const QPair<QString, QString> &NetworkAccessManager::proxyAuthenticationCredentials() const
 
