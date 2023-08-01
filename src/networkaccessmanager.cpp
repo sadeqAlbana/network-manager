@@ -143,6 +143,28 @@ NetworkResponse *NetworkAccessManager::post(const QNetworkRequest &request, cons
     return createNewRequest(QNetworkAccessManager::PostOperation,request,DataSerialization::serialize(data));
 }
 
+/*!
+    \fn NetworkResponse * NetworkAccessManager::post(const QNetworkRequest &request, QHttpMultiPart *multiPart)
+
+    sends a post request with the passed request object and multiPart, internally creates a \a QNetworkRequset Object from the factory.
+    returns a pointer to the created NetworkResponse wrapper object.
+    the returned pointer must be deleted with \a deleteLater() unless it was routed with subscribe method, in which it will be deleted after the routing call.
+*/
+
+NetworkResponse *NetworkAccessManager::post(const QNetworkRequest &request, QHttpMultiPart *multiPart)
+{
+    QNetworkReply *reply=QNetworkAccessManager::post(request,multiPart);
+
+    return createAndConfigureResponse(request,reply,nullptr);
+}
+
+NetworkResponse *NetworkAccessManager::post(const QUrl &url, QHttpMultiPart *multiPart)
+{
+    QNetworkRequest request=createNetworkRequest(url);
+    QNetworkReply *reply=QNetworkAccessManager::post(request,multiPart);
+
+    return createAndConfigureResponse(request,reply,nullptr);
+}
 
 /*!
     \fn NetworkResponse * NetworkAccessManager::put(const QUrl &url, const QVariant &data)
@@ -300,99 +322,7 @@ QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url, cons
 NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNetworkRequest &originalReq, QIODevice *outgoingData, NetworkResponse *originalResponse)
 {
     QNetworkReply *reply=createRequest(op,originalReq,outgoingData);
-    NetworkResponse *res;
-    if(originalResponse){
-        originalResponse->disconnect();
-        res=originalResponse;
-        res->swap(reply);
-    }
-    else{
-        res=new NetworkResponse(reply,this);
-        m_responses << res;
-    }
-
-
-
-
-#if QT_CONFIG(ssl)
-
-    if(m_ignoredSslErrors.size()){
-        if(!m_ignoredErrors.contains(QSslError::NoError)){
-            reply->ignoreSslErrors(m_ignoredSslErrors);
-        }
-    }else{
-        reply->ignoreSslErrors();
-    }
-#endif
-
-    if(originalReq.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::MonitorProgressAttribute)).toBool()){
-        connect(reply,&QNetworkReply::downloadProgress,this,[=](qint64 bytesReceived, qint64 bytesTotal){
-            emit this->downloadProgress(bytesReceived,bytesTotal,res);
-        });
-    }
-
-//    connect(reply,&QNetworkReply::errorOccurred,this,[this,res](QNetworkReply::NetworkError error){
-//        if(!m_ignoredErrors.contains(error)){
-//            emit networkError(res);
-//        }
-//    });
-
-    connect(res,&NetworkResponse::finished,this,[this,res](){
-
-//        NetworkResponse *res=qobject_cast<NetworkResponse *>(sender());
-        QNetworkReply::NetworkError error=res->error();
-        QNetworkRequest originalRequest=res->networkReply()->request();
-//        qDebug()<<res->error();
-
-
-
-
-        int attemptsCount=originalRequest.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::AttemptsCount)).toInt();
-        int actualAttempts=originalRequest.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::ActualAttempts)).toInt();
-
-        //find a logic for routing reply with override routing policy
-
-
-        if(error!=QNetworkReply::NoError && !m_ignoredErrors.contains(error)){
-            //do another attempt
-
-//            qDebug()<<"attempts count:"<<attemptsCount;
-            if(actualAttempts<attemptsCount && supportedRerequestOperations().contains(res->operation())){
-                originalRequest.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::ActualAttempts),++actualAttempts);
-                QNetworkReply *oldReply=res->networkReply();
-                createNewRequest(res->operation(),originalRequest,nullptr,res);
-                oldReply->disconnect();
-                oldReply->deleteLater();
-                m_replies.removeOne(oldReply);
-            }else{
-
-
-                if(this->callbacks.contains(res)){
-                    routeReply(res);
-                    res->deleteLater();
-                }
-            }
-        }
-        else{
-            if(this->callbacks.contains(res)){
-                routeReply(res);
-                res->deleteLater();
-            }
-        }
-
-        if(res->networkReply()->request().attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::NotifyActivity)).toBool()){
-            setMonitoredRequestCount(m_monitoredRequestCount-1);
-        }
-    });
-
-    if(res->networkReply()->request().attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::NotifyActivity)).toBool()){
-        setMonitoredRequestCount(m_monitoredRequestCount+1);
-
-    }
-
-    emit networkActivity(originalReq.url());
-
-    return res;
+    return createAndConfigureResponse(originalReq,reply,originalResponse);
 }
 
 /*!
@@ -649,7 +579,102 @@ QList<QNetworkAccessManager::Operation> NetworkAccessManager::supportedRerequest
     return QList<QNetworkAccessManager::Operation>{
                 QNetworkAccessManager::GetOperation,
                 QNetworkAccessManager::DeleteOperation,
-                        QNetworkAccessManager::HeadOperation};
+        QNetworkAccessManager::HeadOperation};
+}
+
+NetworkResponse * NetworkAccessManager::createAndConfigureResponse(const QNetworkRequest &originalReq, QNetworkReply *reply, NetworkResponse *originalResponse) //this method was made due to multipart handling
+{
+    NetworkResponse *res;
+    if(originalResponse){
+        originalResponse->disconnect();
+        res=originalResponse;
+        res->swap(reply);
+    }
+    else{
+        res=new NetworkResponse(reply,this);
+        m_responses << res;
+    }
+
+
+#if QT_CONFIG(ssl)
+
+    if(m_ignoredSslErrors.size()){
+        if(!m_ignoredErrors.contains(QSslError::NoError)){
+            reply->ignoreSslErrors(m_ignoredSslErrors);
+        }
+    }else{
+        reply->ignoreSslErrors();
+    }
+#endif
+
+    if(originalReq.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::MonitorProgressAttribute)).toBool()){
+        connect(reply,&QNetworkReply::downloadProgress,this,[=](qint64 bytesReceived, qint64 bytesTotal){
+            emit this->downloadProgress(bytesReceived,bytesTotal,res);
+        });
+    }
+
+    //    connect(reply,&QNetworkReply::errorOccurred,this,[this,res](QNetworkReply::NetworkError error){
+    //        if(!m_ignoredErrors.contains(error)){
+    //            emit networkError(res);
+    //        }
+    //    });
+
+    connect(res,&NetworkResponse::finished,this,[this,res](){
+
+        //        NetworkResponse *res=qobject_cast<NetworkResponse *>(sender());
+        QNetworkReply::NetworkError error=res->error();
+        QNetworkRequest originalRequest=res->networkReply()->request();
+        //        qDebug()<<res->error();
+
+
+
+
+        int attemptsCount=originalRequest.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::AttemptsCount)).toInt();
+        int actualAttempts=originalRequest.attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::ActualAttempts)).toInt();
+
+        //find a logic for routing reply with override routing policy
+
+
+        if(error!=QNetworkReply::NoError && !m_ignoredErrors.contains(error)){
+            //do another attempt
+
+            //            qDebug()<<"attempts count:"<<attemptsCount;
+            if(actualAttempts<attemptsCount && supportedRerequestOperations().contains(res->operation())){
+                originalRequest.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::ActualAttempts),++actualAttempts);
+                QNetworkReply *oldReply=res->networkReply();
+                createNewRequest(res->operation(),originalRequest,nullptr,res);
+                oldReply->disconnect();
+                oldReply->deleteLater();
+                m_replies.removeOne(oldReply);
+            }else{
+
+
+                if(this->callbacks.contains(res)){
+                    routeReply(res);
+                    res->deleteLater();
+                }
+            }
+        }
+        else{
+            if(this->callbacks.contains(res)){
+                routeReply(res);
+                res->deleteLater();
+            }
+        }
+
+        if(res->networkReply()->request().attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::NotifyActivity)).toBool()){
+            setMonitoredRequestCount(m_monitoredRequestCount-1);
+        }
+    });
+
+    if(res->networkReply()->request().attribute(static_cast<QNetworkRequest::Attribute>(RequstAttribute::NotifyActivity)).toBool()){
+        setMonitoredRequestCount(m_monitoredRequestCount+1);
+
+    }
+
+    emit networkActivity(originalReq.url());
+
+    return res;
 }
 
 

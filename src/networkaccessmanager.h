@@ -56,9 +56,11 @@ public:
 
 
     Q_INVOKABLE NetworkResponse *post(const QUrl &url, const QVariant &data);
+    NetworkResponse *post(const QUrl &url, QHttpMultiPart *multiPart);
 
 
     NetworkResponse *post(const QNetworkRequest &request, const QVariant &data);
+    NetworkResponse *post(const QNetworkRequest &request, QHttpMultiPart *multiPart);
 
 
     Q_INVOKABLE NetworkResponse *put(const QUrl &url, const QVariant &data);
@@ -102,6 +104,7 @@ public:
     int attemptsCount() const;
     void setAttemptsCount(int newAttemptsCount);
 
+
 signals:
     /*!
         \fn void NetworkAccessManager::networkActivity(QUrl url)
@@ -144,6 +147,7 @@ protected:
     void setMonitoredRequestCount(int newMonitoredRequestCount);
     QList<QNetworkAccessManager::Operation> supportedRerequestOperations() const;
 
+    virtual NetworkResponse * createAndConfigureResponse(const QNetworkRequest &originalReq, QNetworkReply *reply, NetworkResponse *originalResponse); //this method was made due to multipart handling
 
 protected:
     QList<NetworkResponse *> m_responses; /**< stores a list of the current responses */
