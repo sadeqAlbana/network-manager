@@ -70,7 +70,7 @@ public:
 
 
 
-    void abortAllRequests();
+    Q_INVOKABLE void abortAllRequests();
 
 
     HeadersMap rawHeaders() const;

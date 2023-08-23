@@ -336,6 +336,9 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
 
     m_replies << reply;
 
+//    connect(reply,&QNetworkReply::finished,this,[this,reply](){
+//        m_replies.removeOne(reply);});
+
     return reply;
 }
 
