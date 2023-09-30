@@ -177,6 +177,7 @@ NetworkResponse *NetworkAccessManager::post(const QUrl &url, QHttpMultiPart *mul
 
 NetworkResponse *NetworkAccessManager::put(const QUrl &url, const QVariant &data)
 {
+    qDebug()<<"request datadata: " << data;
     QNetworkRequest request = createNetworkRequest(url,data);
     return put(request,data);
 }
@@ -274,9 +275,17 @@ QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url, cons
     request.setUrl(requestUrl);
     request.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::AttemptsCount),m_attemptsCount);
     request.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::ActualAttempts),1);
-
     if(!data.isNull()){
-        QByteArray contentType=DataSerialization::contentType(static_cast<QMetaType::Type>(data.typeId()));
+        QByteArray contentType;
+        if(data.typeName()==QStringLiteral("QJSValue")){
+            QJSValue jsValue=data.value<QJSValue>();
+            auto typeId=jsValue.toVariant(QJSValue::ConvertJSObjects).typeId();
+            contentType=DataSerialization::contentType(static_cast<QMetaType::Type>
+                                                         (typeId));
+
+        }else{
+            contentType=DataSerialization::contentType(static_cast<QMetaType::Type>(data.typeId()));
+        }
         if(!contentType.isEmpty()){
             request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
         }
@@ -363,6 +372,13 @@ NetworkResponse *NetworkAccessManager::createNewRequest(Operation op, const QNet
 QByteArray DataSerialization::serialize(const QVariant &data)
 {
     QMetaType::Type type=static_cast<QMetaType::Type>(data.typeId());
+
+
+    if(data.canConvert<QJSValue>()){
+        QJSValue jsValue=data.value<QJSValue>();
+        return DataSerialization::serialize(jsValue.toVariant(QJSValue::ConvertJSObjects));
+    }
+
 
     /**************************json**************************/
     if(type==QMetaType::Type::QJsonObject)
@@ -465,6 +481,9 @@ QByteArray DataSerialization::serialize(const QVariant &data)
 #endif
 
 
+    if(type==QMetaType::QVariantMap){
+        return DataSerialization::serialize(QJsonObject::fromVariantMap(data.toMap()));
+    }
     if(type==QMetaType::Type::UnknownType)
         return QByteArray();
 
@@ -480,6 +499,7 @@ QByteArray DataSerialization::contentType(const QMetaType::Type type)
 
     QByteArray contentType;
     //QMetaType::Type::Type type=static_cast<QMetaType::Type::Type>(data.type());
+
     switch ((type)) {
     case QMetaType::Type::QJsonObject  :
     case QMetaType::Type::QJsonValue   :
@@ -487,8 +507,9 @@ QByteArray DataSerialization::contentType(const QMetaType::Type type)
     case QMetaType::Type::QJsonDocument: contentType = "application/json"; break;
     case QMetaType::Type::QImage       : contentType = "image/png";        break;
     case QMetaType::Type::QString      : contentType = "text/plain";       break;
+    case QMetaType::Type::QVariantMap  : contentType = "application/json"; break;
 
-    default                      :                                         break;
+    default: qWarning()<<"DataSerialization::contentType : unsupported QVariant type: " << static_cast<QMetaType::Type>(type); break;
     }
     return contentType;
 }
