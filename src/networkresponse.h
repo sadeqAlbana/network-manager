@@ -36,8 +36,8 @@ class NetworkResponse : public QObject
 public:
     friend class NetworkAccessManager;
     ~NetworkResponse();
-    QNetworkReply::NetworkError error() const;
-    QString errorString() const;
+    SNETWORKMANAGER_INVOKABLE QNetworkReply::NetworkError error() const;
+    SNETWORKMANAGER_INVOKABLE QString errorString() const;
     SNETWORKMANAGER_INVOKABLE QJsonValue json(QString key);
     SNETWORKMANAGER_INVOKABLE QJsonValue json();
     QByteArray binaryData() const;
