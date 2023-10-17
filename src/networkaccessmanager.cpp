@@ -277,6 +277,7 @@ QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url, cons
     request.setAttribute(static_cast<QNetworkRequest::Attribute>(NetworkAccessManager::RequstAttribute::ActualAttempts),1);
     if(!data.isNull()){
         QByteArray contentType;
+#ifdef QT_QML_LIB
         if(data.typeName()==QStringLiteral("QJSValue")){
             QJSValue jsValue=data.value<QJSValue>();
             auto typeId=jsValue.toVariant(QJSValue::ConvertJSObjects).typeId();
@@ -286,6 +287,9 @@ QNetworkRequest NetworkAccessManager::createNetworkRequest(const QUrl &url, cons
         }else{
             contentType=DataSerialization::contentType(static_cast<QMetaType::Type>(data.typeId()));
         }
+#else
+            contentType=DataSerialization::contentType(static_cast<QMetaType::Type>(data.typeId()));
+#endif
         if(!contentType.isEmpty()){
             request.setHeader(QNetworkRequest::ContentTypeHeader,contentType);
         }
@@ -373,11 +377,12 @@ QByteArray DataSerialization::serialize(const QVariant &data)
 {
     QMetaType::Type type=static_cast<QMetaType::Type>(data.typeId());
 
-
+#ifdef QT_QML_LIB
     if(data.canConvert<QJSValue>()){
         QJSValue jsValue=data.value<QJSValue>();
         return DataSerialization::serialize(jsValue.toVariant(QJSValue::ConvertJSObjects));
     }
+#endif
 
 
     /**************************json**************************/
