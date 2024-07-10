@@ -720,6 +720,11 @@ void NetworkAccessManager::setAttemptsCount(int newAttemptsCount)
     m_attemptsCount = newAttemptsCount;
 }
 
+void NetworkAccessManager::removeRoute(NetworkResponse *reply)
+{
+    Router::removeRoute(reply);
+}
+
 /*!
     \fn const QUrl &NetworkAccessManager::baseUrl() const
     returns the base url used for requests with relative urls.

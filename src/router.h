@@ -35,6 +35,8 @@ public:
         callbacks.insert(reply, cb);
     }
 
+    void removeRoute(NetworkResponse *reply);
+
 
 protected:
     MemberCallbacks callbacks;

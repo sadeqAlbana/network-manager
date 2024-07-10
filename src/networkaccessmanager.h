@@ -103,6 +103,7 @@ public:
 
     int attemptsCount() const;
     void setAttemptsCount(int newAttemptsCount);
+    void removeRoute(NetworkResponse *reply);
 
 
 signals:
@@ -133,6 +134,8 @@ signals:
     */
 
     void monitoredRequestCountChanged();
+
+
 
 
 protected:

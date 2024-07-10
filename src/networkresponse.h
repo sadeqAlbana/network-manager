@@ -87,6 +87,9 @@ public:
 
     void swap(QNetworkReply *newReply);
 
+
+    void unsubscribe();
+
 signals:
     /*!
         \fn void finished()

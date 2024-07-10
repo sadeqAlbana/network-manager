@@ -24,3 +24,8 @@ void SNetworkManager::Router::registerRoute(NetworkResponse *reply, Callback cb)
     callbacks.insert(reply, cb);
 }
 
+void SNetworkManager::Router::removeRoute(NetworkResponse *reply)
+{
+    callbacks.remove(reply);
+}
+

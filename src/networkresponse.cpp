@@ -32,8 +32,17 @@ NetworkResponse::NetworkResponse(QNetworkReply *reply, QObject *parent): QObject
 
 NetworkResponse::~NetworkResponse()
 {
-    if(m_reply)
+    qDebug()<<"~NetworkResponse()";
+    if(m_reply){
+        m_reply->disconnect();
         m_reply->deleteLater();
+
+    }
+
+    NetworkAccessManager *manager = qobject_cast<NetworkAccessManager *>(parent());
+    if(manager){
+        manager->removeRoute(this);
+    }
 }
 
 /*!
@@ -371,6 +380,14 @@ void NetworkResponse::swap(QNetworkReply *newReply)
     m_reply=newReply;
 
     QObject::connect(m_reply,&QNetworkReply::finished,this,&NetworkResponse::onReplyFinished);
+}
+
+void NetworkResponse::unsubscribe()
+{
+    NetworkAccessManager *manager = qobject_cast<NetworkAccessManager *>(parent());
+    if(manager){
+        manager->removeRoute(this);
+    }
 }
 
 
