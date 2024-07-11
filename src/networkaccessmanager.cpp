@@ -177,7 +177,6 @@ NetworkResponse *NetworkAccessManager::post(const QUrl &url, QHttpMultiPart *mul
 
 NetworkResponse *NetworkAccessManager::put(const QUrl &url, const QVariant &data)
 {
-    qDebug()<<"request datadata: " << data;
     QNetworkRequest request = createNetworkRequest(url,data);
     return put(request,data);
 }
